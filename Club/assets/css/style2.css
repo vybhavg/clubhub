@@ -1,0 +1,245 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+
+  * {box-sizing: border-box;
+  text-decoration: none;
+  }
+  
+ body{
+    background: white;
+    font-family:"Open Sans";
+ }
+ header{
+    top:-10px;
+ }
+ .navbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: #151b41;
+    justify-content: space-between;
+  }
+  .navbar ul{
+    display: flex;
+    padding: 5px;
+}
+
+.navbar ul li a{
+    display: block;
+    color: white;
+    font-weight: 200;
+    font-family:"Open Sans";
+    font-size: 18px;
+    padding: 2px 25px;
+    transition: 0.2s;
+    border-radius: 30px;
+
+}
+.navbar ul li a:hover{
+    background-color: white;
+    color: #151b41;
+
+}
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+  }
+  .logo-img {
+    width: 50px;
+    height:50px;
+  }
+  .logo-text {
+    font-size: 30px;
+    color: rgb(222, 221, 221);
+    font-weight: bold;
+    font-family: 'Tilt Prism';
+
+  }
+  .navbar-pc-menu {
+    display: flex;
+    align-items: center;
+  }
+  .navbar-pc-menu a {
+    color: rgb(222, 221, 221);
+    font-size: 15px;
+    list-style: none;
+    transition: 0.35s;
+    cursor: pointer;
+  }
+  .navbar-pc-menu li {
+    list-style: none;
+  }
+  .btn-2 {
+      letter-spacing: 0;
+  }
+  
+  .btn-2:hover,
+  .btn-2:active {
+    letter-spacing: 5px;
+  }
+  
+  .btn-2:after,
+  .btn-2:before {
+    backface-visibility: hidden;
+    bottom: 0px;
+    content: " ";
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    transition: all 280ms ease-in-out;
+    width: 0;
+  }
+  
+  .btn-2:hover:after,
+  .btn-2:hover:before {
+    backface-visibility: hidden;
+    transition: width 350ms ease-in-out;
+    width: 70%;
+  }
+  .btn-2:hover:before {
+    bottom: auto;
+    top: 0;
+    width: 70%;
+  }
+  .separator {
+    width: 1.5px;
+    height: 22px;
+    background: #f8f1f1;
+  }
+
+  .nav-icon {
+    color: #adb5bd;
+    font-size: 20px;
+  }
+  .navbar-mobile {
+    display: none;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    position: relative;
+  }
+  .bar:nth-child(1) {
+    height: 2.25px;
+    width: 30px;
+    border-radius: 99px;
+  }
+  .bar:nth-child(2) {
+    height: 2.25px;
+    width: 30px;
+    border-radius: 99px;
+  }
+  .bar:nth-child(3) {
+    height: 2.25px;
+    width: 30px;
+    border-radius: 99px;
+  }
+  .navbar-mobile-menu {
+    position: absolute;
+    top: 50px;
+    background: #242424;
+    border: 1.5px solid #3b3b3b;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    width: 250px;
+    transform: translateX(800px);
+    z-index: 1;
+  }
+  .open-menu {
+    transform: translateX(0);
+  }
+  .navbar-mobile-menu li {
+    list-style: none;
+    font-size: 15px;
+    color: white;
+  
+  }
+  .navbar-mobile-menu li a{
+    transition: 0.35s;
+  }
+  .btn-2 {
+      letter-spacing: 0;
+      color: white;
+  
+  }
+  
+  .btn-2:hover,
+  .btn-2:active {
+    letter-spacing: 5px;
+  }
+  
+  .btn-2:after,
+  .btn-2:before {
+    backface-visibility: hidden;
+    border: 1px solid rgba(#fff, 0);
+    bottom: 0px;
+    content: " ";
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    transition: all 280ms ease-in-out;
+    width: 0;
+  }
+  
+  .btn-2:hover:after,
+  .btn-2:hover:before {
+    backface-visibility: hidden;
+    border-color: #fff;
+    transition: width 350ms ease-in-out;
+    width: 70%;
+  }
+  
+  .btn-2:hover:before {
+    bottom: auto;
+    top: 0;
+    width: 70%;
+  }
+  
+  .mobile-separator {
+    width: 80%;
+    height: 2px;
+    background: #3b3b3b;
+  }
+.back-text{
+    text-align: center;
+    margin: 0 auto;
+    font-size: 25px;
+    font-weight: 500;
+    color: #151b41;
+    padding: 60px 20px;
+}
+.back-text h2{
+    font-size: 22px;
+}
+.dot {
+    height: 30px;
+    width: 30px;
+    background-color: #151b41;
+    border-radius: 50%;
+    
+}
+.design{
+    display: flex;
+    justify-content: center;
+}
+.text-color{
+  color:#151b41
+}
+.custom-bg{
+  background-color: #151b41;
+}
+.custom-bg .btn-outline-info:hover,.custom-bg .btn-outline-light:hover{
+  color:rgb(92, 88, 88);
+}
