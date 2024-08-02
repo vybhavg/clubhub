@@ -1,8 +1,8 @@
 <?php
 // Database connection settings
 $db_host = '127.0.0.1'; // Localhost for the same EC2 instance
-$db_username = 'clubhub'; // Replace with your database username
-$db_password = 'vybhav'; // Replace with your database password
+$db_username = 'root'; // Replace with your database username
+$db_password = 'Vybhav@123ABC!'; // Replace with your database password
 $db_name = 'mydatabase'; // Replace with your database name
 
 // Create a connection to the database
