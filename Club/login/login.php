@@ -3,6 +3,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
 // Database connection settings
 $db_host = '127.0.0.1'; // Localhost for the same EC2 instance
 $db_username = 'root'; // Replace with your database username
@@ -33,8 +34,8 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
 
-        // Verify the password (assuming hashed passwords in the database)
-        if (password_verify($password, $user['password'])) {
+        // Verify the password (plain text comparison)
+        if ($password === $user['password']) {
             // Login successful, redirect to dashboard page
             header('Location: https://github.com/vybhavg/clubhub.github.io/blob/main/members.html');
             exit;
@@ -50,6 +51,7 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
