@@ -37,7 +37,7 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
         // Verify the password (plain text comparison)
         if ($password === $user['password']) {
             // Login successful, redirect to dashboard page
-            header('Location: https://github.com/vybhavg/clubhub.github.io/blob/main/members.html');
+            header('Location: Club/login/members.html');
             exit;
         } else {
             $error_message = "Invalid username or password";
