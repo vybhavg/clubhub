@@ -1,4 +1,8 @@
+
+
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // Database connection settings
 $db_host = '127.0.0.1'; // Localhost for the same EC2 instance
 $db_username = 'root'; // Replace with your database username
