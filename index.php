@@ -189,51 +189,47 @@ $conn->close();
     <!-- ======= About Section ======= -->
     <!-- About content here -->
 
-    <!-- Updates Section -->
-    <section id="update" class="contact section-bg">
-        <div class="container" data-aos="fade-up">
-            <div class="section-title">
-                <h2>Updates</h2>
-            </div>
+  <!-- Updates Section -->
+  <section id="update" class="contact section-bg">
+    <div class="container" data-aos="fade-up">
+      <div class="section-title">
+        <h2>Updates</h2>
+      </div>
 
-            <div class="row">
-                <div class="col-lg-12 d-flex justify-content-center">
-                    <ul id="update-flters">
-                        <li data-filter=".filter-events" class="filter-active">Events</li>
-                        <li data-filter=".filter-recruitment">Recruitments</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Inside your HTML, display the updates -->
-           <div class="upbox update-item filter-events">
-    <h3>Events</h3>
-    <?php foreach ($updates as $update): ?>
-        <?php if ($update['category'] == 'events'): ?>
-            <div class="update-entry">
-                <h4><?php echo htmlspecialchars($update['title']); ?></h4>
-                <p><?php echo htmlspecialchars($update['description']); ?></p>
-            </div>
-        <?php endif; ?>
-    <?php endforeach; ?>
-</div>
-
-<div class="upbox update-item filter-recruitment" style="display: none;">
-    <h3>Recruitments</h3>
-    <?php foreach ($updates as $update): ?>
-        <?php if ($update['category'] == 'recruitments'): ?>
-            <div class="update-entry">
-                <h4><?php echo htmlspecialchars($update['title']); ?></h4>
-                <p><?php echo htmlspecialchars($update['description']); ?></p>
-                <?php if ($update['deadline']): ?>
-                    <p><strong>Deadline:</strong> <?php echo htmlspecialchars(date('F j, Y', strtotime($update['deadline']))); ?></p>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-    <?php endforeach; ?>
-</div>
+      <div class="row">
+        <div class="col-lg-12 d-flex justify-content-center">
+          <ul id="update-flters">
+            <li data-filter=".filter-events" class="filter-active">Events</li>
+            <li data-filter=".filter-recruitment">Recruitments</li>
+          </ul>
         </div>
-    </section><!-- End Updates Section -->
+      </div>
+
+      <div class="upbox update-item filter-events">
+        <h3>Events</h3>
+        <?php foreach ($updates as $update): ?>
+          <?php if ($update['category'] == 'events'): ?>
+            <div class="update-entry">
+              <h4><?php echo htmlspecialchars($update['title']); ?></h4>
+              <p><?php echo htmlspecialchars($update['description']); ?></p>
+            </div>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      </div>
+
+      <div class="upbox update-item filter-recruitment" style="display: none;">
+        <h3>Recruitments</h3>
+        <?php foreach ($updates as $update): ?>
+          <?php if ($update['category'] == 'recruitments'): ?>
+            <div class="update-entry">
+              <h4><?php echo htmlspecialchars($update['title']); ?></h4>
+              <p><?php echo htmlspecialchars($update['description']); ?></p>
+            </div>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </section><!-- End Updates Section -->
     <!-- ======= Services Section ======= -->
     <section id="services" class="services">
       <div class="container">
