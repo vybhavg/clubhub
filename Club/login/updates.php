@@ -17,8 +17,8 @@ if ($conn->query($sql) === FALSE) {
 }
 
 // Insert recruitments into updates
-$sql = "INSERT INTO updates (title, description, category) 
-        SELECT title, description, 'recruitments' AS category 
+$sql = "INSERT INTO updates (title, description, category,deadline) 
+        SELECT role, description, 'recruitments' AS category, deadline
         FROM recruitments";
 if ($conn->query($sql) === FALSE) {
     error_log("Error inserting recruitments: " . $conn->error);
