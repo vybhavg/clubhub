@@ -173,7 +173,7 @@ $conn->close();
                 <h2>Updates</h2>
             </div>
 
-            <div class="row" data-aos="fade-in">
+            <div class="row">
                 <div class="col-lg-12 d-flex justify-content-center">
                     <ul id="update-flters">
                         <li data-filter=".filter-events" class="filter-active">Events</li>
