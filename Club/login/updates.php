@@ -1,5 +1,4 @@
 <?php
-// update_updates.php
 
 include('/var/www/html/db_connect.php'); // Ensure this path is correct
 
