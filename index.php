@@ -1,3 +1,27 @@
+<?php
+// index.php
+
+// Start the session and include the database connection file
+session_start();
+include('/var/www/html/db_connect.php'); // Adjust the path if necessary
+
+// Fetch updates from the database
+$sql = "SELECT title, description, category FROM updates";
+$result = $conn->query($sql);
+
+$updates = [];
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $updates[] = $row;
+    }
+} else {
+    // Handle no updates found
+}
+
+$conn->close();
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -144,47 +168,47 @@
 
       </div>
     </section><!-- End About Section -->
-<!-- ======= Updates Section ======= -->
-<section id="update" class="contact section-bg">
-  <div class="container" data-aos="fade-up">
-    <div class="section-title">
-      <h2>Updates</h2>
-    </div>
+  <!-- ======= Updates Section ======= -->
+  <section id="update" class="contact section-bg">
+    <div class="container" data-aos="fade-up">
+      <div class="section-title">
+        <h2>Updates</h2>
+      </div>
 
-    <div class="row" data-aos="fade-in">
-      <div class="col-lg-12 d-flex justify-content-center">
-        <ul id="update-flters">
-          <li data-filter=".filter-events" class="filter-active">Events</li>
-          <li data-filter=".filter-recruitment">Recruitments</li>
-        </ul>
+      <div class="row" data-aos="fade-in">
+        <div class="col-lg-12 d-flex justify-content-center">
+          <ul id="update-flters">
+            <li data-filter=".filter-events" class="filter-active">Events</li>
+            <li data-filter=".filter-recruitment">Recruitments</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="upbox update-item filter-events">
+        <h3>Events</h3>
+        <?php foreach ($updates as $update): ?>
+          <?php if ($update['category'] == 'events'): ?>
+            <div class="update-entry">
+              <h4><?php echo htmlspecialchars($update['title']); ?></h4>
+              <p><?php echo htmlspecialchars($update['description']); ?></p>
+            </div>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      </div>
+
+      <div class="upbox update-item filter-recruitment" style="display: none;">
+        <h3>Recruitments</h3>
+        <?php foreach ($updates as $update): ?>
+          <?php if ($update['category'] == 'recruitment'): ?>
+            <div class="update-entry">
+              <h4><?php echo htmlspecialchars($update['title']); ?></h4>
+              <p><?php echo htmlspecialchars($update['description']); ?></p>
+            </div>
+          <?php endif; ?>
+        <?php endforeach; ?>
       </div>
     </div>
-<!-- Inside your HTML, display the updates -->
-<div class="upbox update-item filter-events">
-  <h3>Events</h3>
-  <?php foreach ($updates as $update): ?>
-    <?php if ($update['category'] == 'events'): ?>
-      <div class="update-entry">
-        <h4><?php echo htmlspecialchars($update['title']); ?></h4>
-        <p><?php echo htmlspecialchars($update['description']); ?></p>
-      </div>
-    <?php endif; ?>
-  <?php endforeach; ?>
-</div>
-
-<div class="upbox update-item filter-recruitment" style="display: none;">
-  <h3>Recruitments</h3>
-  <?php foreach ($updates as $update): ?>
-    <?php if ($update['category'] == 'recruitment'): ?>
-      <div class="update-entry">
-        <h4><?php echo htmlspecialchars($update['title']); ?></h4>
-        <p><?php echo htmlspecialchars($update['description']); ?></p>
-      </div>
-    <?php endif; ?>
-  <?php endforeach; ?>
-</div>
-  </div>
-</section><!-- End Updates Section -->
+  </section><!-- End Updates Section -->
 
 
 
