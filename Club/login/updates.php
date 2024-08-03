@@ -12,9 +12,9 @@ $sql = "INSERT INTO updates (title, description, category)
         FROM events";
 $conn->query($sql);
 
-// Insert recruitments into updates
-$sql = "INSERT INTO updates (title, description, category) 
-        SELECT title, description, 'recruitments' AS category 
+// Insert recruitments into updates, including the deadline
+$sql = "INSERT INTO updates (title, description, category, deadline) 
+        SELECT title, description, 'recruitments' AS category, deadline
         FROM recruitments";
 $conn->query($sql);
 
