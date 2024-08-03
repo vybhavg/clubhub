@@ -105,7 +105,7 @@ if ($eventsResult) {
     $eventsResult->bind_param("i", $selectedClub);
     $eventsResult->execute();
 $eventsResult = $eventsResult->get_result();
-
+}
 if ($recruitmentsResult) {
     $recruitmentsResult->bind_param("i", $selectedClub);
     $recruitmentsResult->execute();
