@@ -678,14 +678,15 @@ section {
 /*Updates section*/
 /* Hide all update items by default */
 /* Update items without animation */
+/* Add a transition for fading */
 .update-item {
-  display: none; /* Ensure items are hidden by default */
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .update-item.active {
-  display: block; /* Ensure active items are displayed */
+  opacity: 1;
 }
-
 
 /* Make sure the filter active styling is applied correctly */
 #update-flters {
