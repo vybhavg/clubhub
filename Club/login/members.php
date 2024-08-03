@@ -13,6 +13,7 @@ $selectedBranch = $_SESSION['selected_branch'] ?? null;
 $selectedClub = $_SESSION['selected_club'] ?? null;
 $updateType = $_SESSION['update_type'] ?? 'events'; // Default to 'events'
 
+// Process form submissions if method is POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         // Handle adding events
@@ -136,7 +137,7 @@ if ($selectedClub) {
             <select name="branch_id" onchange="this.form.submit()">
                 <option value="">Select Branch</option>
                 <?php while ($branch = $branchesResult->fetch_assoc()): ?>
-                    <option value="<?php echo $branch['id']; ?>" <?php echo ($branch['id'] == $selectedBranch) ? 'selected' : ''; ?>>
+                    <option value="<?php echo htmlspecialchars($branch['id']); ?>" <?php echo ($branch['id'] == $selectedBranch) ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($branch['branch_name']); ?>
                     </option>
                 <?php endwhile; ?>
@@ -151,7 +152,7 @@ if ($selectedClub) {
                 <option value="">Select Club</option>
                 <?php if ($clubsResult): ?>
                     <?php while ($club = $clubsResult->fetch_assoc()): ?>
-                        <option value="<?php echo $club['id']; ?>" <?php echo ($club['id'] == $selectedClub) ? 'selected' : ''; ?>>
+                        <option value="<?php echo htmlspecialchars($club['id']); ?>" <?php echo ($club['id'] == $selectedClub) ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($club['club_name']); ?>
                         </option>
                     <?php endwhile; ?>
@@ -170,7 +171,7 @@ if ($selectedClub) {
             <input type="hidden" name="select_update_type" value="1">
         </form>
     <?php else: ?>
-        <!-- Display Events or Recruitments -->
+        <!-- Display Content Based on Update Type -->
         <?php if ($updateType == 'events'): ?>
             <h2>Events</h2>
             <form method="post">
@@ -188,13 +189,12 @@ if ($selectedClub) {
                         <h4><?php echo htmlspecialchars($event['title']); ?></h4>
                         <p><?php echo htmlspecialchars($event['description']); ?></p>
                         <form method="post" style="display:inline;">
-                            <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
+                            <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
                             <input type="submit" name="delete_event" value="Delete Event">
                         </form>
                     </div>
                 <?php endwhile; ?>
             <?php endif; ?>
-
         <?php elseif ($updateType == 'recruitments'): ?>
             <h2>Recruitments</h2>
             <form method="post">
@@ -215,7 +215,7 @@ if ($selectedClub) {
                         <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
                         <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
                         <form method="post" style="display:inline;">
-                            <input type="hidden" name="recruitment_id" value="<?php echo $recruitment['id']; ?>">
+                            <input type="hidden" name="recruitment_id" value="<?php echo htmlspecialchars($recruitment['id']); ?>">
                             <input type="submit" name="delete_recruitment" value="Delete Recruitment">
                         </form>
                     </div>
