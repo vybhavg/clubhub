@@ -1,7 +1,7 @@
 <?php
 // Start session and include the database connection file
 session_start();
-include('db_connect.php'); // Include your database connection file here
+include('/var/www/html/db_connect.php'); // Include your database connection file here
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
