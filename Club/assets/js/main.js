@@ -162,7 +162,7 @@
 /**
    * Updates section
    */
-  window.addEventListener('load', () => {
+window.addEventListener('load', () => {
     let updateFilters = document.querySelectorAll('#update-flters li');
     let updateItems = document.querySelectorAll('.update-item');
 
@@ -190,24 +190,17 @@
             // Get the filter value
             let filterValue = this.getAttribute('data-filter');
 
-            // Show the selected section with fade-up effect
+            // Show the selected section
             updateItems.forEach(item => {
                 if (item.classList.contains(filterValue.substring(1))) {
-                    item.style.display = 'block';
-                    setTimeout(() => {
-                        item.classList.add('active');
-                    }, 10); // Slight delay to allow display:block to apply
+                    item.style.display = 'block'; // Show item
                 } else {
-                    item.classList.remove('active');
-                    setTimeout(() => {
-                        item.style.display = 'none';
-                    }, 800); // Matches the transition duration in CSS
+                    item.style.display = 'none'; // Hide item
                 }
             });
         });
     });
 });
-
 
   /**
    * Porfolio isotope and filter
