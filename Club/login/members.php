@@ -5,6 +5,7 @@ include('/var/www/html/db_connect.php'); // Include your database connection fil
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 $selectedBranch = $_SESSION['selected_branch'] ?? null;
 $selectedClub = $_SESSION['selected_club'] ?? null;
 $updateType = $_SESSION['update_type'] ?? 'events'; // Default to 'events'
@@ -68,17 +69,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['select_branch'])) {
         $_SESSION['selected_branch'] = $_POST['branch_id'];
         $selectedBranch = $_POST['branch_id'];
+        $selectedClub = null; // Reset selected club
+        $updateType = 'events'; // Reset update type
     } elseif (isset($_POST['select_club'])) {
         $_SESSION['selected_club'] = $_POST['club_id'];
         $selectedClub = $_POST['club_id'];
+        $updateType = 'events'; // Reset update type
     } elseif (isset($_POST['select_update_type'])) {
         $_SESSION['update_type'] = $_POST['update_type'];
         $updateType = $_POST['update_type'];
     }
 }
 
-// Fetch branches and clubs based on selected branch
+// Fetch branches
 $branchesResult = $conn->query("SELECT * FROM branches");
+
+// Fetch clubs based on selected branch
 $clubsResult = $selectedBranch ? $conn->prepare("SELECT * FROM clubs WHERE branch_id = ?") : null;
 if ($clubsResult) {
     $clubsResult->bind_param("i", $selectedBranch);
@@ -118,20 +124,22 @@ if ($recruitmentsResult) {
     }
     ?>
 
-    <form method="post">
-        <h2>Select Branch</h2>
-        <select name="branch_id" onchange="this.form.submit()">
-            <option value="">Select Branch</option>
-            <?php while ($branch = $branchesResult->fetch_assoc()): ?>
-                <option value="<?php echo $branch['id']; ?>" <?php echo ($branch['id'] == $selectedBranch) ? 'selected' : ''; ?>>
-                    <?php echo $branch['branch_name']; ?>
-                </option>
-            <?php endwhile; ?>
-        </select>
-        <input type="hidden" name="select_branch" value="1">
-    </form>
-
-    <?php if ($selectedBranch): ?>
+    <!-- Branch Selection Form -->
+    <?php if (!$selectedBranch): ?>
+        <form method="post">
+            <h2>Select Branch</h2>
+            <select name="branch_id" onchange="this.form.submit()">
+                <option value="">Select Branch</option>
+                <?php while ($branch = $branchesResult->fetch_assoc()): ?>
+                    <option value="<?php echo $branch['id']; ?>" <?php echo ($branch['id'] == $selectedBranch) ? 'selected' : ''; ?>>
+                        <?php echo $branch['branch_name']; ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+            <input type="hidden" name="select_branch" value="1">
+        </form>
+    <?php elseif (!$selectedClub): ?>
+        <!-- Club Selection Form -->
         <form method="post">
             <h2>Select Club</h2>
             <select name="club_id" onchange="this.form.submit()">
@@ -144,9 +152,8 @@ if ($recruitmentsResult) {
             </select>
             <input type="hidden" name="select_club" value="1">
         </form>
-    <?php endif; ?>
-
-    <?php if ($selectedClub): ?>
+    <?php elseif (!$updateType): ?>
+        <!-- Update Type Selection Form -->
         <form method="post">
             <h2>Select Update Type</h2>
             <select name="update_type" onchange="this.form.submit()">
@@ -155,7 +162,8 @@ if ($recruitmentsResult) {
             </select>
             <input type="hidden" name="select_update_type" value="1">
         </form>
-
+    <?php else: ?>
+        <!-- Display Events or Recruitments -->
         <?php if ($updateType == 'events'): ?>
             <h2>Events</h2>
             <form method="post">
