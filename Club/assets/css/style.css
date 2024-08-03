@@ -708,7 +708,6 @@ section {
   text-transform: uppercase;
   color: #2f4d5a;
   margin-bottom: 5px;
-  transition: all 0.3s ease-in-out;
 }
 
 #update-flters li:hover,
