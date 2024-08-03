@@ -128,7 +128,7 @@ $conn->close();
         <select name="branch_id" id="branch_id">
             <option value="">Select Branch</option>
             <?php while ($branch = $branchesResult->fetch_assoc()) {?>
-                <option value="<?php echo $branch['id'];?>" <?php if ($selectedBranch == $branch['id']) echo 'selected';?>><?php echo $branch['name'];?></option>
+                <option value="<?php echo $branch['id'];?>" <?php if ($selectedBranch == $branch['id']) echo 'selected';?>><?php echo $branch['branch_name'];?></option>
             <?php }?>
         </select>
         <input type="submit" name="select_branch" value="Select Branch">
@@ -139,7 +139,7 @@ $conn->close();
         <select name="club_id" id="club_id">
             <option value="">Select Club</option>
             <?php while ($club = $clubsResult->fetch_assoc()) {?>
-                <option value="<?php echo $club['id'];?>" <?php if ($selectedClub == $club['id']) echo 'selected';?>><?php echo $club['name'];?></option>
+                <option value="<?php echo $club['id'];?>" <?php if ($selectedClub == $club['id']) echo 'selected';?>><?php echo $club['club_name'];?></option>
             <?php }?>
         </select>
         <input type="submit" name="select_club" value="Select Club">
