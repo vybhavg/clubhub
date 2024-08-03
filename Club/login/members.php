@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('../db_connect.php'); // Adjust the path if needed
+include('var/www/html/db_connect.php'); // Adjust the path if needed
 
 $selectedBranch = $_SESSION['selected_branch'] ?? null;
 $selectedClub = $_SESSION['selected_club'] ?? null;
