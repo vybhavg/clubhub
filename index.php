@@ -183,7 +183,7 @@ $conn->close();
             </div>
 
             <!-- Inside your HTML, display the updates -->
-            <div class="upbox update-item filter-events" data-aos="fade-up">
+            <div class="upbox update-item filter-events" >
                 <h3>Events</h3>
                 <?php foreach ($updates as $update): ?>
                     <?php if ($update['category'] == 'events'): ?>
@@ -195,7 +195,7 @@ $conn->close();
                 <?php endforeach; ?>
             </div>
 
-            <div class="upbox update-item filter-recruitment" data-aos="fade-up" style="display: none;">
+            <div class="upbox update-item filter-recruitment" style="display: none;">
                 <h3>Recruitments</h3>
                 <?php foreach ($updates as $update): ?>
                     <?php if ($update['category'] == 'recruitment'): ?>
