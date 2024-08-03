@@ -168,10 +168,10 @@ window.addEventListener('load', () => {
 
     // Default settings: Show events by default
     let defaultFilter = '.filter-events';
-    document.querySelector(defaultFilter).style.opacity = '1'; // Make sure default is visible
+    document.querySelector(defaultFilter).style.display = 'block';
     updateItems.forEach(item => {
         if (!item.classList.contains(defaultFilter.substring(1))) {
-            item.style.opacity = '0'; // Hide items not in default filter
+            item.style.display = 'none';
         }
     });
 
@@ -188,7 +188,7 @@ window.addEventListener('load', () => {
             // Get the filter value
             let filterValue = this.getAttribute('data-filter');
 
-            // Apply fade-in effect
+            // Show the selected section
             updateItems.forEach(item => {
                 if (item.classList.contains(filterValue.substring(1))) {
                     item.classList.add('active'); // Show item
@@ -199,6 +199,7 @@ window.addEventListener('load', () => {
         });
     });
 });
+
 
   /**
    * Porfolio isotope and filter
