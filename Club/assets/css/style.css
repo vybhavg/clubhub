@@ -676,6 +676,23 @@ section {
   }
 }
 /*Updates section*/
+/* Hide all update items by default */
+.update-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.update-item.active {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+  z-index: 1;
+}
 
 /* Make sure the filter active styling is applied correctly */
 #update-flters {
