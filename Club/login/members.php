@@ -1,7 +1,6 @@
 <?php
 // Connect to the database
 include('var/www/db_connect.php');
-<?php
 // Fetch branches
 $branches_sql = "SELECT id, branch_name FROM branches";
 $branches_result = $conn->query($branches_sql);
