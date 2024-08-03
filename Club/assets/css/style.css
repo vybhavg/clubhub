@@ -681,7 +681,6 @@ section {
 /* Add a transition for fading */
 .update-item {
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
 }
 
 .update-item.active {
