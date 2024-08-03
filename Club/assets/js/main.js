@@ -159,6 +159,9 @@
       }
     }
   });
+  /**
+   * Updates section
+   */
   window.addEventListener('load', () => {
     let updateFilters = document.querySelectorAll('#update-flters li');
     let updateItems = document.querySelectorAll('.update-item');
