@@ -124,7 +124,7 @@ if ($recruitmentsResult) {
             <option value="">Select Branch</option>
             <?php while ($branch = $branchesResult->fetch_assoc()): ?>
                 <option value="<?php echo $branch['id']; ?>" <?php echo ($branch['id'] == $selectedBranch) ? 'selected' : ''; ?>>
-                    <?php echo $branch['name']; ?>
+                    <?php echo $branch['branch_name']; ?>
                 </option>
             <?php endwhile; ?>
         </select>
