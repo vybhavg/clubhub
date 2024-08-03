@@ -125,42 +125,88 @@ $conn->close();
     <h1>Club Management System</h1>
     <form method="post">
         <label for="branch_id">Select Branch:</label>
-        <select name="branch_id" id="branch_id" onchange="this.form.submit()">
+        <select name="branch_id" id="branch_id">
             <option value="">Select Branch</option>
             <?php while ($branch = $branchesResult->fetch_assoc()) {?>
-                <option value="<?php echo $branch['id'];?>" <?php if ($selectedBranch == $branch['id']) echo 'elected';?>><?php echo $branch['branch_name'];?></option>
+                <option value="<?php echo $branch['id'];?>" <?php if ($selectedBranch == $branch['id']) echo 'selected';?>><?php echo $branch['branch_name'];?></option>
             <?php }?>
         </select>
+        <input type="submit" name="select_branch" value="Select Branch">
     </form>
 
     <form method="post">
         <label for="club_id">Select Club:</label>
-        <select name="club_id" id="club_id" onchange="this.form.submit()">
+        <select name="club_id" id="club_id">
             <option value="">Select Club</option>
             <?php while ($club = $clubsResult->fetch_assoc()) {?>
-                <option value="<?php echo $club['id'];?>" <?php if ($selectedClub == $club['id']) echo 'elected';?>><?php echo $club['club_name'];?></option>
+                <option value="<?php echo $club['id'];?>" <?php if ($selectedClub == $club['id']) echo 'selected';?>><?php echo $club['club_name'];?></option>
             <?php }?>
         </select>
+        <input type="submit" name="select_club" value="Select Club">
     </form>
 
-    <?php if ($selectedClub) {?>
+    <form method="post">
+        <label for="update_type">Select Update Type:</label>
+        <select name="update_type" id="update_type">
+            <option value="events" <?php if ($updateType == 'events') echo 'selected';?>>Events</option>
+            <option value="recruitments" <?php if ($updateType == 'recruitments') echo 'selected';?>>Recruitments</option>
+        </select>
+        <input type="submit" name="select_update_type" value="Select Update Type">
+    </form>
+
+    <?php if ($updateType == 'events') {?>
         <h2>Events</h2>
+        <form method="post">
+            <label for="event_title">Event Title:</label>
+            <input type="text" name="event_title" id="event_title"><br><br>
+            <label for="event_description">Event Description:</label>
+            <textarea name="event_description" id="event_description"></textarea><br><br>
+            <input type="hidden" name="club_id" value="<?php echo $selectedClub;?>">
+            <input type="submit" name="add_event" value="Add Event">
+        </form>
+
+        <h2>Existing Events</h2>
         <ul>
             <?php while ($event = $eventsResult->fetch_assoc()) {?>
                 <li>
                     <?php echo $event['title'];?> (<?php echo $event['description'];?>)
+                    <form method="post">
+                        <input type="hidden" name="event_id" value="<?php echo $event['id'];?>">
+                        <input type="submit" name="delete_event" value="Delete">
+                    </form>
                 </li>
             <?php }?>
         </ul>
-
+    <?php } elseif ($updateType == 'recruitments') {?>
         <h2>Recruitments</h2>
+        <form method="post">
+            <label for="role">Role:</label>
+            <input type="text" name="role" id="role"><br><br>
+            <label for="recruitment_description">Recruitment Description:</label>
+            <textarea name="recruitment_description" id="recruitment_description"></textarea><br><br>
+            <label for="deadline">Deadline:</label>
+            <input type="date" name="deadline" id="deadline"><br><br>
+            <input type="hidden" name="club_id" value="<?php echo $selectedClub;?>">
+            <input type="submit" name="add_recruitment" value="Add Recruitment">
+        </form>
+
+        <h2>Existing Recruitments</h2>
         <ul>
             <?php while ($recruitment = $recruitmentsResult->fetch_assoc()) {?>
                 <li>
                     <?php echo $recruitment['role'];?> (<?php echo $recruitment['description'];?>) - Deadline: <?php echo $recruitment['deadline'];?>
+                    <form method="post">
+                        <input type="hidden" name="recruitment_id" value="<?php echo $recruitment['id'];?>">
+                                               <input type="submit" name="delete_recruitment" value="Delete">
+                    </form>
                 </li>
             <?php }?>
         </ul>
+    <?php }?>
+    
+    <?php if (isset($_SESSION['message'])) {?>
+        <p><?php echo $_SESSION['message'];?></p>
+        <?php unset($_SESSION['message']);?>
     <?php }?>
     
 </body>
