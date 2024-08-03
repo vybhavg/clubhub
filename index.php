@@ -224,6 +224,7 @@ $conn->close();
             <div class="update-entry">
               <h4><?php echo htmlspecialchars($update['title']); ?></h4>
               <p><?php echo htmlspecialchars($update['description']); ?></p>
+    <p>Deadline: <?php echo htmlspecialchars($update['deadline']); ?></p>
             </div>
           <?php endif; ?>
         <?php endforeach; ?>
