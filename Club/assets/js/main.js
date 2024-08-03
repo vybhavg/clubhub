@@ -159,7 +159,7 @@
       }
     }
   });
-  /**
+/**
    * Updates section
    */
   window.addEventListener('load', () => {
