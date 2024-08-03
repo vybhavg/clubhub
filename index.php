@@ -176,8 +176,8 @@ $conn->close();
             <div class="row">
                 <div class="col-lg-12 d-flex justify-content-center">
                     <ul id="update-flters">
-                        <li data-filter=".filter-events" class="filter-active">Events</li>
-                        <li data-filter=".filter-recruitment">Recruitments</li>
+                        <li data-filter=".filter-events"  data-aos="fade-up" class="filter-active">Events</li>
+                        <li data-filter=".filter-recruitment"  data-aos="fade-up">Recruitments</li>
                     </ul>
                 </div>
             </div>
