@@ -176,14 +176,14 @@ $conn->close();
             <div class="row">
                 <div class="col-lg-12 d-flex justify-content-center">
                     <ul id="update-flters">
-                        <li data-filter=".filter-events"  data-aos="fade-up" class="filter-active">Events</li>
-                        <li data-filter=".filter-recruitment"  data-aos="fade-up">Recruitments</li>
+                        <li data-filter=".filter-events"  data-aos="fade-in" class="filter-active">Events</li>
+                        <li data-filter=".filter-recruitment"  data-aos="fade-in">Recruitments</li>
                     </ul>
                 </div>
             </div>
 
             <!-- Inside your HTML, display the updates -->
-            <div class="upbox update-item filter-events">
+            <div class="upbox update-item filter-events" data-aos="fade-up">
                 <h3>Events</h3>
                 <?php foreach ($updates as $update): ?>
                     <?php if ($update['category'] == 'events'): ?>
@@ -195,7 +195,7 @@ $conn->close();
                 <?php endforeach; ?>
             </div>
 
-            <div class="upbox update-item filter-recruitment" style="display: none;">
+            <div class="upbox update-item filter-recruitment" data-aos="fade-up" style="display: none;">
                 <h3>Recruitments</h3>
                 <?php foreach ($updates as $update): ?>
                     <?php if ($update['category'] == 'recruitment'): ?>
