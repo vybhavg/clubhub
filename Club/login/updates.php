@@ -3,19 +3,24 @@
 include('/var/www/html/db_connect.php'); // Ensure this path is correct
 
 // Clear existing updates
+// Clear existing updates
 $conn->query("TRUNCATE TABLE updates");
 
 // Insert events into updates
 $sql = "INSERT INTO updates (title, description, category) 
         SELECT title, description, 'events' AS category 
         FROM events";
-$conn->query($sql);
+if ($conn->query($sql) === FALSE) {
+    echo "Error: " . $conn->error;
+}
 
-// Insert recruitments into updates, including the deadline
-$sql = "INSERT INTO updates (title, description, category, deadline) 
-        SELECT title, description, 'recruitments' AS category, deadline
+// Insert recruitments into updates
+$sql = "INSERT INTO updates (title, description, category) 
+        SELECT title, description, 'recruitments' AS category 
         FROM recruitments";
-$conn->query($sql);
+if ($conn->query($sql) === FALSE) {
+    echo "Error: " . $conn->error;
+}
 
 $conn->close();
 ?>
