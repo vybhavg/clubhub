@@ -159,19 +159,32 @@
         </ul>
       </div>
     </div>
+<!-- Inside your HTML, display the updates -->
+<div class="upbox update-item filter-events">
+  <h3>Events</h3>
+  <?php foreach ($updates as $update): ?>
+    <?php if ($update['category'] == 'events'): ?>
+      <div class="update-entry">
+        <h4><?php echo htmlspecialchars($update['title']); ?></h4>
+        <p><?php echo htmlspecialchars($update['description']); ?></p>
+      </div>
+    <?php endif; ?>
+  <?php endforeach; ?>
+</div>
 
-    <div class="upbox update-item filter-events">
-      <h3>Events</h3>
-      <p>Details about upcoming events...</p>
-    </div>
-
-    <div class="upbox update-item filter-recruitment" style="display: none;">
-      <h3>Recruitments</h3>
-      <p>Details about recruitment updates...</p>
-    </div>
+<div class="upbox update-item filter-recruitment" style="display: none;">
+  <h3>Recruitments</h3>
+  <?php foreach ($updates as $update): ?>
+    <?php if ($update['category'] == 'recruitment'): ?>
+      <div class="update-entry">
+        <h4><?php echo htmlspecialchars($update['title']); ?></h4>
+        <p><?php echo htmlspecialchars($update['description']); ?></p>
+      </div>
+    <?php endif; ?>
+  <?php endforeach; ?>
+</div>
   </div>
 </section><!-- End Updates Section -->
-
 
 
 
