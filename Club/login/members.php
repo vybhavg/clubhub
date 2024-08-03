@@ -13,14 +13,14 @@ $selectedBranch = $_SESSION['selected_branch'] ?? null;
 $selectedClub = $_SESSION['selected_club'] ?? null;
 $updateType = $_SESSION['update_type'] ?? 'events'; // Default to 'events'
 
-// Process form submissions if method is POST
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['add_event'])) {
-        // Handle adding events
-        $title = $_POST['event_title'];
-        $description = $_POST['event_description'];
-        $club_id = $_POST['club_id'];
+// Process form submissions
+if (isset($_POST['add_event'])) {
+    // Handle adding events
+    $title = $_POST['event_title'] ?? '';
+    $description = $_POST['event_description'] ?? '';
+    $club_id = $_POST['club_id'] ?? 0;
 
+    if ($title && $description && $club_id) {
         $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $title, $description, $club_id);
@@ -30,13 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['message'] = "Error adding event.";
         }
         $stmt->close();
-    } elseif (isset($_POST['add_recruitment'])) {
-        // Handle adding recruitments
-        $role = $_POST['role'];
-        $description = $_POST['recruitment_description'];
-        $deadline = $_POST['deadline'];
-        $club_id = $_POST['club_id'];
+    }
+} elseif (isset($_POST['add_recruitment'])) {
+    // Handle adding recruitments
+    $role = $_POST['role'] ?? '';
+    $description = $_POST['recruitment_description'] ?? '';
+    $deadline = $_POST['deadline'] ?? '';
+    $club_id = $_POST['club_id'] ?? 0;
 
+    if ($role && $description && $deadline && $club_id) {
         $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
@@ -46,9 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['message'] = "Error adding recruitment.";
         }
         $stmt->close();
-    } elseif (isset($_POST['delete_event'])) {
-        // Handle deleting events
-        $event_id = $_POST['event_id'];
+    }
+} elseif (isset($_POST['delete_event'])) {
+    // Handle deleting events
+    $event_id = $_POST['event_id'] ?? 0;
+
+    if ($event_id) {
         $sql = "DELETE FROM events WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $event_id);
@@ -58,9 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['message'] = "Error deleting event.";
         }
         $stmt->close();
-    } elseif (isset($_POST['delete_recruitment'])) {
-        // Handle deleting recruitments
-        $recruitment_id = $_POST['recruitment_id'];
+    }
+} elseif (isset($_POST['delete_recruitment'])) {
+    // Handle deleting recruitments
+    $recruitment_id = $_POST['recruitment_id'] ?? 0;
+
+    if ($recruitment_id) {
         $sql = "DELETE FROM recruitments WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $recruitment_id);
@@ -70,19 +78,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['message'] = "Error deleting recruitment.";
         }
         $stmt->close();
-    } elseif (isset($_POST['select_branch'])) {
-        $_SESSION['selected_branch'] = $_POST['branch_id'];
-        $selectedBranch = $_POST['branch_id'];
-        $selectedClub = null; // Reset selected club
-        $updateType = 'events'; // Reset update type
-    } elseif (isset($_POST['select_club'])) {
-        $_SESSION['selected_club'] = $_POST['club_id'];
-        $selectedClub = $_POST['club_id'];
-        $updateType = 'events'; // Reset update type
-    } elseif (isset($_POST['select_update_type'])) {
-        $_SESSION['update_type'] = $_POST['update_type'];
-        $updateType = $_POST['update_type'];
     }
+} elseif (isset($_POST['select_branch'])) {
+    $_SESSION['selected_branch'] = $_POST['branch_id'] ?? null;
+    $selectedBranch = $_SESSION['selected_branch'];
+    $selectedClub = null; // Reset selected club
+    $updateType = 'events'; // Reset update type
+} elseif (isset($_POST['select_club'])) {
+    $_SESSION['selected_club'] = $_POST['club_id'] ?? null;
+    $selectedClub = $_SESSION['selected_club'];
+    $updateType = 'events'; // Reset update type
+} elseif (isset($_POST['select_update_type'])) {
+    $_SESSION['update_type'] = $_POST['update_type'] ?? 'events';
+    $updateType = $_SESSION['update_type'];
 }
 
 // Fetch branches
@@ -125,7 +133,7 @@ if ($selectedClub) {
 
     <?php
     if (isset($_SESSION['message'])) {
-        echo "<p>" . $_SESSION['message'] . "</p>";
+        echo "<p>" . htmlspecialchars($_SESSION['message']) . "</p>";
         unset($_SESSION['message']);
     }
     ?>
