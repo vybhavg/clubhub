@@ -159,6 +159,53 @@
       }
     }
   });
+  window.addEventListener('load', () => {
+    let updateFilters = document.querySelectorAll('#update-flters li');
+    let updateItems = document.querySelectorAll('.update-item');
+  
+    // Default settings: Show events by default
+    let defaultFilter = '.filter-events';
+    updateItems.forEach(item => {
+      if (item.classList.contains(defaultFilter.substring(1))) {
+        item.classList.add('active');
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  
+    updateFilters.forEach(filter => {
+      filter.addEventListener('click', function(e) {
+        e.preventDefault();
+  
+        // Remove 'filter-active' class from all filters
+        updateFilters.forEach(el => el.classList.remove('filter-active'));
+  
+        // Add 'filter-active' class to the clicked filter
+        this.classList.add('filter-active');
+  
+        // Get the filter value
+        let filterValue = this.getAttribute('data-filter');
+  
+        // Show the selected section with fade-up effect
+        updateItems.forEach(item => {
+          if (item.classList.contains(filterValue.substring(1))) {
+            item.style.display = 'block';
+            setTimeout(() => {
+              item.classList.add('active');
+            }, 10); // Slight delay to allow display:block to apply
+          } else {
+            item.classList.remove('active');
+            setTimeout(() => {
+              item.style.display = 'none';
+            }, 800); // Matches the transition duration in CSS
+          }
+        });
+      });
+    });
+  });
+  
+
+
 
   /**
    * Porfolio isotope and filter

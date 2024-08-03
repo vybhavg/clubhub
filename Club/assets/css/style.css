@@ -675,6 +675,64 @@ section {
     text-align: center;
   }
 }
+/* Hide all update items by default */
+.update-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.update-item.active {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+  z-index: 1;
+}
+
+
+/* Make sure the filter active styling is applied correctly */
+#update-flters {
+  padding: 0;
+  margin: 0 auto 35px auto;
+  list-style: none;
+  text-align: center;
+  background: #ecf5f9;
+  border-radius: 50px;
+  padding: 2px 15px;
+}
+
+#update-flters li {
+  cursor: pointer;
+  display: inline-block;
+  padding: 10px 15px 8px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #2f4d5a;
+  margin-bottom: 5px;
+  transition: all 0.3s ease-in-out;
+}
+
+#update-flters li:hover,
+#update-flters li.filter-active {
+  color: #67b0d1;
+}
+
+#update-flters li:last-child {
+  margin-right: 0;
+}
+
+.upbox {
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 0 30px rgba(214, 215, 216, 0.6);
+}
+
 
 /*--------------------------------------------------------------
 # Services
