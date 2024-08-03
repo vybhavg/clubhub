@@ -168,12 +168,10 @@ window.addEventListener('load', () => {
 
     // Default settings: Show events by default
     let defaultFilter = '.filter-events';
+    document.querySelector(defaultFilter).style.opacity = '1'; // Make sure default is visible
     updateItems.forEach(item => {
-        if (item.classList.contains(defaultFilter.substring(1))) {
-            item.classList.add('active');
-            item.style.display = 'block'; // Ensure visibility
-        } else {
-            item.style.display = 'none';
+        if (!item.classList.contains(defaultFilter.substring(1))) {
+            item.style.opacity = '0'; // Hide items not in default filter
         }
     });
 
@@ -190,12 +188,12 @@ window.addEventListener('load', () => {
             // Get the filter value
             let filterValue = this.getAttribute('data-filter');
 
-            // Show the selected section
+            // Apply fade-in effect
             updateItems.forEach(item => {
                 if (item.classList.contains(filterValue.substring(1))) {
-                    item.style.display = 'block'; // Show item
+                    item.classList.add('active'); // Show item
                 } else {
-                    item.style.display = 'none'; // Hide item
+                    item.classList.remove('active'); // Hide item
                 }
             });
         });
