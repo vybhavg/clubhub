@@ -1,45 +1,71 @@
 <?php
 // Start session and include the database connection file
 session_start();
-include('/var/www/html/db_connect.php'); // Include your database connection file here
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-// Handle deletion
-if (isset($_POST['delete'])) {
-    $event_id = $_POST['event_id'];
-    $delete_sql = "DELETE FROM events WHERE id = ?";
-    $stmt = $conn->prepare($delete_sql);
-    $stmt->bind_param("i", $event_id);
-    if ($stmt->execute()) {
-        $_SESSION['success'] = "Event deleted successfully!";
-    } else {
-        $_SESSION['error'] = "Error deleting the event.";
-    }
+include('/var/www/html/db_connect.php'); // Update path as needed
+
+// Fetch branches
+$branches_sql = "SELECT id, branch_name FROM branches";
+$branches_result = $conn->query($branches_sql);
+
+// Handle branch selection and fetch corresponding clubs
+$selected_branch_id = isset($_POST['branch_id']) ? $_POST['branch_id'] : null;
+$clubs_result = null;
+if ($selected_branch_id) {
+    $clubs_sql = "SELECT id, club_name FROM clubs WHERE branch_id = ?";
+    $stmt = $conn->prepare($clubs_sql);
+    $stmt->bind_param("i", $selected_branch_id);
+    $stmt->execute();
+    $clubs_result = $stmt->get_result();
     $stmt->close();
 }
 
-// Handle addition
-if (isset($_POST['add'])) {
-    $club_id = $_POST['club_id'];
-    $title = $_POST['title'];
-    $description = $_POST['description'];
-    $category = $_POST['category'];
+// Handle club selection and fetch corresponding events
+$selected_club_id = isset($_POST['club_id']) ? $_POST['club_id'] : null;
+$events_result = null;
+if ($selected_club_id) {
+    $events_sql = "SELECT id, event_name FROM events WHERE club_id = ?";
+    $stmt = $conn->prepare($events_sql);
+    $stmt->bind_param("i", $selected_club_id);
+    $stmt->execute();
+    $events_result = $stmt->get_result();
+    $stmt->close();
+}
 
-    $add_sql = "INSERT INTO events (club_id, title, description, category) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($add_sql);
-    $stmt->bind_param("isss", $club_id, $title, $description, $category);
+// Handle adding an event
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_event'])) {
+    $event_name = $_POST['event_name'];
+    $add_event_sql = "INSERT INTO events (event_name, club_id) VALUES (?, ?)";
+    $stmt = $conn->prepare($add_event_sql);
+    $stmt->bind_param("si", $event_name, $selected_club_id);
+    
     if ($stmt->execute()) {
         $_SESSION['success'] = "Event added successfully!";
     } else {
-        $_SESSION['error'] = "Error adding the event.";
+        $_SESSION['error'] = "There was an error adding the event.";
     }
+    
     $stmt->close();
+    header("Location: members.php"); // Redirect to avoid form resubmission
+    exit();
 }
 
-// Fetch clubs
-$clubs_sql = "SELECT id, club_name FROM clubs";
-$clubs_result = $conn->query($clubs_sql);
+// Handle deleting an event
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_event'])) {
+    $event_id = $_POST['event_id'];
+    $delete_event_sql = "DELETE FROM events WHERE id = ?";
+    $stmt = $conn->prepare($delete_event_sql);
+    $stmt->bind_param("i", $event_id);
+    
+    if ($stmt->execute()) {
+        $_SESSION['success'] = "Event deleted successfully!";
+    } else {
+        $_SESSION['error'] = "There was an error deleting the event.";
+    }
+    
+    $stmt->close();
+    header("Location: members.php"); // Redirect to avoid form resubmission
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -52,77 +78,75 @@ $clubs_result = $conn->query($clubs_sql);
 <body>
     <h1>Manage Club Events</h1>
 
+    <!-- Display success or error messages -->
     <?php
     if (isset($_SESSION['success'])) {
         echo "<p style='color: green;'>" . $_SESSION['success'] . "</p>";
         unset($_SESSION['success']);
     }
-
     if (isset($_SESSION['error'])) {
         echo "<p style='color: red;'>" . $_SESSION['error'] . "</p>";
         unset($_SESSION['error']);
     }
     ?>
 
-    <!-- Club Selection -->
-    <form method="GET" action="members.php">
-        <label for="club">Select Club:</label>
-        <select id="club" name="club_id" onchange="this.form.submit()" required>
-            <option value="">--Select Club--</option>
-            <?php while ($club = $clubs_result->fetch_assoc()): ?>
-                <option value="<?php echo $club['id']; ?>" <?php echo isset($_GET['club_id']) && $_GET['club_id'] == $club['id'] ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($club['club_name']); ?>
+    <!-- Branch Selection Form -->
+    <form method="post" action="members.php">
+        <label for="branch_id">Select Branch:</label>
+        <select name="branch_id" id="branch_id" onchange="this.form.submit()">
+            <option value="">--Select Branch--</option>
+            <?php while ($row = $branches_result->fetch_assoc()): ?>
+                <option value="<?php echo $row['id']; ?>" <?php echo ($selected_branch_id == $row['id']) ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($row['branch_name']); ?>
                 </option>
             <?php endwhile; ?>
         </select>
     </form>
 
-    <?php
-    if (isset($_GET['club_id'])):
-        $club_id = $_GET['club_id'];
-        $events_sql = "SELECT id, title, description, category FROM events WHERE club_id = ?";
-        $stmt = $conn->prepare($events_sql);
-        $stmt->bind_param("i", $club_id);
-        $stmt->execute();
-        $events_result = $stmt->get_result();
-    ?>
-    <!-- Display Events -->
-    <h2>Events for <?php echo htmlspecialchars($clubs_result->fetch_assoc()['club_name']); ?></h2>
-    <?php while ($event = $events_result->fetch_assoc()): ?>
-        <div class="event">
-            <h3><?php echo htmlspecialchars($event['title']); ?></h3>
-            <p><?php echo htmlspecialchars($event['description']); ?></p>
-            <p>Category: <?php echo htmlspecialchars($event['category']); ?></p>
-            <form method="POST" action="members.php">
-                <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
-                <button type="submit" name="delete">Delete</button>
-            </form>
-        </div>
-    <?php endwhile; ?>
+    <?php if ($clubs_result): ?>
+        <!-- Club Selection Form -->
+        <form method="post" action="members.php">
+            <input type="hidden" name="branch_id" value="<?php echo $selected_branch_id; ?>">
+            <label for="club_id">Select Club:</label>
+            <select name="club_id" id="club_id" onchange="this.form.submit()">
+                <option value="">--Select Club--</option>
+                <?php while ($row = $clubs_result->fetch_assoc()): ?>
+                    <option value="<?php echo $row['id']; ?>" <?php echo ($selected_club_id == $row['id']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($row['club_name']); ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </form>
+    <?php endif; ?>
 
-    <!-- Add Event Form -->
-    <h3>Add New Event</h3>
-    <form method="POST" action="members.php">
-        <input type="hidden" name="club_id" value="<?php echo $club_id; ?>">
-        <label for="title">Title:</label><br>
-        <input type="text" id="title" name="title" required><br><br>
+    <?php if ($events_result): ?>
+        <!-- Display Events and Options to Delete or Add -->
+        <h2>Events for Selected Club</h2>
+        <ul>
+            <?php while ($row = $events_result->fetch_assoc()): ?>
+                <li>
+                    <?php echo htmlspecialchars($row['event_name']); ?>
+                    <form method="post" action="members.php" style="display:inline;">
+                        <input type="hidden" name="branch_id" value="<?php echo $selected_branch_id; ?>">
+                        <input type="hidden" name="club_id" value="<?php echo $selected_club_id; ?>">
+                        <input type="hidden" name="event_id" value="<?php echo $row['id']; ?>">
+                        <input type="submit" name="delete_event" value="Delete">
+                    </form>
+                </li>
+            <?php endwhile; ?>
+        </ul>
 
-        <label for="description">Description:</label><br>
-        <textarea id="description" name="description" rows="4" required></textarea><br><br>
-
-        <label for="category">Category:</label><br>
-        <select id="category" name="category" required>
-            <option value="events">Events</option>
-            <option value="recruitment">Recruitments</option>
-        </select><br><br>
-
-        <button type="submit" name="add">Add Event</button>
-    </form>
-
-    <?php
-    endif;
-    ?>
-
+        <!-- Form to Add a New Event -->
+        <h2>Add a New Event</h2>
+        <form method="post" action="members.php">
+            <input type="hidden" name="branch_id" value="<?php echo $selected_branch_id; ?>">
+            <input type="hidden" name="club_id" value="<?php echo $selected_club_id; ?>">
+            <label for="event_name">Event Name:</label>
+            <input type="text" name="event_name" id="event_name" required>
+            <input type="submit" name="add_event" value="Add Event">
+        </form>
+    <?php endif; ?>
 </body>
 </html>
+
 
