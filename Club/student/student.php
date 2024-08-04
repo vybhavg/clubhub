@@ -10,44 +10,18 @@ error_reporting(E_ALL);
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $resume = $_FILES['resume'];
 
-    // Directory where resumes will be uploaded
-    $target_dir = "uploads/";
-    $target_file = $target_dir . basename($resume["name"]);
-    $uploadOk = 1;
-    $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    // Prepare and execute the SQL statement
+    $sql = "INSERT INTO students (name, email) VALUES (?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $name, $email);
 
-    // Check if file is a real PDF
-    if ($fileType != "pdf") {
-        $_SESSION['message'] = "Sorry, only PDF files are allowed.";
-        $uploadOk = 0;
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "Student added successfully.";
+    } else {
+        $_SESSION['message'] = "Error adding student.";
     }
-
-    // Check file size (e.g., max 5MB)
-    if ($resume["size"] > 5000000) {
-        $_SESSION['message'] = "Sorry, your file is too large.";
-        $uploadOk = 0;
-    }
-
-    // Upload file if all checks are passed
-    if ($uploadOk == 1) {
-        if (move_uploaded_file($resume["tmp_name"], $target_file)) {
-            // Prepare and execute the SQL statement
-            $sql = "INSERT INTO students (name, email, resume_path) VALUES (?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $name, $email, $target_file);
-
-            if ($stmt->execute()) {
-                $_SESSION['message'] = "Student added successfully.";
-            } else {
-                $_SESSION['message'] = "Error adding student.";
-            }
-            $stmt->close();
-        } else {
-            $_SESSION['message'] = "Sorry, there was an error uploading your file.";
-        }
-    }
+    $stmt->close();
 }
 
 // Fetch the list of students
@@ -69,13 +43,11 @@ $conn->close();
     <h1>Manage Students</h1>
     
     <!-- Form to add a new student -->
-    <form method="post" enctype="multipart/form-data">
+    <form method="post">
         <label for="name">Name:</label>
         <input type="text" name="name" id="name" required><br><br>
         <label for="email">Email:</label>
         <input type="email" name="email" id="email" required><br><br>
-        <label for="resume">Upload Resume (PDF only):</label>
-        <input type="file" name="resume" id="resume" accept=".pdf" required><br><br>
         <input type="submit" name="add_student" value="Add Student">
     </form>
 
@@ -83,8 +55,7 @@ $conn->close();
     <ul>
         <?php while ($student = $studentsResult->fetch_assoc()) { ?>
             <li>
-                <?php echo $student['name']; ?> (<?php echo $student['email']; ?>) - 
-                <a href="<?php echo $student['resume_path']; ?>" target="_blank">View Resume</a>
+                <?php echo $student['name']; ?> (<?php echo $student['email']; ?>)
             </li>
         <?php } ?>
     </ul>
