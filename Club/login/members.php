@@ -21,8 +21,7 @@ $selectedBranch = $_SESSION['selected_branch'];
 $selectedClub = $_SESSION['selected_club'];
 $updateType = $_SESSION['update_type'];
 
-// Handle form submissions
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         // Handle adding events
         $title = $_POST['event_title'];
@@ -32,9 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = "INSERT INTO events (title, description, club_id) VALUES (?,?,?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $title, $description, $club_id);
-        $stmt->execute();
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Event added successfully.";
+        } else {
+            $_SESSION['message'] = "Error adding event.";
+        }
         $stmt->close();
-        $_SESSION['message'] = "Event added successfully.";
     } elseif (isset($_POST['add_recruitment'])) {
         // Handle adding recruitments
         $role = $_POST['role'];
@@ -45,27 +47,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?,?,?,?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
-        $stmt->execute();
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Recruitment added successfully.";
+        } else {
+            $_SESSION['message'] = "Error adding recruitment.";
+        }
         $stmt->close();
-        $_SESSION['message'] = "Recruitment added successfully.";
     } elseif (isset($_POST['delete_event'])) {
         // Handle deleting events
         $event_id = $_POST['event_id'];
         $sql = "DELETE FROM events WHERE id =?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $event_id);
-        $stmt->execute();
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Event deleted successfully.";
+        } else {
+            $_SESSION['message'] = "Error deleting event.";
+        }
         $stmt->close();
-        $_SESSION['message'] = "Event deleted successfully.";
     } elseif (isset($_POST['delete_recruitment'])) {
         // Handle deleting recruitments
         $recruitment_id = $_POST['recruitment_id'];
         $sql = "DELETE FROM recruitments WHERE id =?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $recruitment_id);
-        $stmt->execute();
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Recruitment deleted successfully.";
+        } else {
+            $_SESSION['message'] = "Error deleting recruitment.";
+        }
         $stmt->close();
-        $_SESSION['message'] = "Recruitment deleted successfully.";
     } elseif (isset($_POST['select_branch'])) {
         $_SESSION['selected_branch'] = $_POST['branch_id'];
         $selectedBranch = $_POST['branch_id'];
@@ -75,25 +86,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['select_update_type'])) {
         $_SESSION['update_type'] = $_POST['update_type'];
         $updateType = $_POST['update_type'];
-    } elseif (isset($_POST['select_applications'])) {
-        $updateType = 'applications';
     }
 }
 
 // Fetch branches and clubs based on selected branch
 $branchesResult = $conn->query("SELECT * FROM branches");
-$clubsResult = $selectedBranch ? $conn->prepare("SELECT * FROM clubs WHERE branch_id =?") : null;
+$clubsResult = $selectedBranch? $conn->prepare("SELECT * FROM clubs WHERE branch_id =?") : null;
 if ($clubsResult) {
     $clubsResult->bind_param("i", $selectedBranch);
     $clubsResult->execute();
     $clubsResult = $clubsResult->get_result();
 }
 
-// Fetch events, recruitments, or applications based on selected club and update type
-$eventsResult = $selectedClub && $updateType == 'events' ? $conn->prepare("SELECT * FROM events WHERE club_id =?") : null;
-$recruitmentsResult = $selectedClub && $updateType == 'recruitments' ? $conn->prepare("SELECT * FROM recruitments WHERE club_id =?") : null;
-$applicationsResult = $selectedClub && $updateType == 'applications' ? $conn->prepare("SELECT * FROM students WHERE club_id =?") : null;
-
+// Fetch events and recruitments based on selected club
+$eventsResult = $selectedClub? $conn->prepare("SELECT * FROM events WHERE club_id =?") : null;
+$recruitmentsResult = $selectedClub? $conn->prepare("SELECT * FROM recruitments WHERE club_id =?") : null;
 if ($eventsResult) {
     $eventsResult->bind_param("i", $selectedClub);
     $eventsResult->execute();
@@ -104,6 +111,9 @@ if ($recruitmentsResult) {
     $recruitmentsResult->execute();
     $recruitmentsResult = $recruitmentsResult->get_result();
 }
+
+// Fetch applications based on selected club
+$applicationsResult = $selectedClub? $conn->prepare("SELECT s.name as student_name, s.email as email, a.status as status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id =?") : null;
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $selectedClub);
     $applicationsResult->execute();
@@ -114,21 +124,18 @@ if ($applicationsResult) {
 $conn->close();
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<!-- HTML code here -->
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Club Management System</title>
-    <link rel="stylesheet" href="members.css">
+    <link rel="stylesheet" type="text/css" href="members.css">
 </head>
 <body>
     <div class="navbar">
-        <a href="#" onclick="document.getElementById('update_type').value='events'; this.closest('form').submit();">Updates</a>
-        <a href="#" onclick="document.getElementById('update_type').value='recruitments'; this.closest('form').submit();">Recruitments</a>
-        <a href="#" onclick="document.getElementById('update_type').value='applications'; this.closest('form').submit();">Applications</a>
+        <a href="?update_type=events">Updates</a>
+        <a href="?update_type=recruitments">Recruitments</a>
+        <a href="?update_type=applications">Applications</a>
     </div>
-
     <h1>Club Management System</h1>
     <form method="post">
         <label for="branch_id">Select Branch:</label>
@@ -152,9 +159,14 @@ $conn->close();
         <input type="submit" name="select_club" value="Select Club">
     </form>
 
-    <form method="post" style="display:none;">
-        <input type="hidden" name="update_type" id="update_type" value="<?php echo $updateType; ?>">
-        <input type="submit" name="select_update_type">
+    <form method="post">
+        <label for="update_type">Select Update Type:</label>
+        <select name="update_type" id="update_type">
+            <option value="events" <?php if ($updateType == 'events') echo 'selected'; ?>>Events</option>
+            <option value="recruitments" <?php if ($updateType == 'recruitments') echo 'selected'; ?>>Recruitments</option>
+            <option value="applications" <?php if ($updateType == 'applications') echo 'selected'; ?>>Applications</option>
+        </select>
+        <input type="submit" name="select_update_type" value="Select Update Type">
     </form>
 
     <?php if ($updateType == 'events') { ?>
@@ -210,7 +222,7 @@ $conn->close();
         <ul>
             <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
                 <li>
-                    <?php echo $application['student_name']; ?> - <?php echo $application['email']; ?> - <?php echo $application['status']; ?>
+                    <?php echo $application['student_name']; ?> - <?php echo $application['email']; ?> - Status: <?php echo $application['status']; ?>
                 </li>
             <?php } ?>
         </ul>
