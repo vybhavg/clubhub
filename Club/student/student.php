@@ -7,6 +7,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = htmlspecialchars($_POST['name']);
     $email = htmlspecialchars($_POST['email']);
     $resume = $_FILES['resume'];
+    $club_id = intval($_POST['club_id']); // Retrieve club ID from the form
+
+    // Assuming student_id is retrieved from session or another source
+    $student_id = $_SESSION['student_id']; // Replace this with actual method of getting student ID
 
     // Directory where resume will be uploaded
     $target_dir = "uploads/";
@@ -31,9 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (move_uploaded_file($resume["tmp_name"], $target_file)) {
             // Prepare an insert statement
             $stmt = $conn->prepare("INSERT INTO applications (student_id, club_id, resume_path) VALUES (?, ?, ?)");
-            // Assume you have student ID and club ID somehow
-            $student_id = 1; // Replace with actual student ID
-            $club_id = 1; // Replace with actual club ID
             $stmt->bind_param("iis", $student_id, $club_id, $target_file);
 
             // Execute the statement
@@ -61,7 +62,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apply for Recruitment</title>
-    <link rel="stylesheet" href="student.css">
+    <link rel="stylesheet" href="path_to_your_css_file.css">
 </head>
 <body>
     <div class="container">
@@ -78,6 +79,10 @@ $conn->close();
             <div class="form-group">
                 <label for="resume">Upload Resume (PDF only):</label>
                 <input type="file" id="resume" name="resume" accept=".pdf" required>
+            </div>
+            <div class="form-group">
+                <label for="club_id">Club ID:</label>
+                <input type="number" id="club_id" name="club_id" required>
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Submit Application</button>
