@@ -6,8 +6,14 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Fetch updates from the database
-$sql = "SELECT * FROM updates ORDER BY id DESC"; // Adjust query as needed
+// Fetch events and recruitments from the database with club names
+$sql = "
+    SELECT u.id, u.title, u.description, u.category, u.deadline, c.club_name
+    FROM updates u
+    LEFT JOIN clubs c ON u.club_id = c.id
+    ORDER BY u.id DESC
+";
+
 $result = $conn->query($sql);
 
 $updates = array();
@@ -18,7 +24,6 @@ if ($result->num_rows > 0) {
 }
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -166,72 +171,53 @@ $conn->close();
 
       </div>
     </section><!-- End About Section -->
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>ClubHub</title>
-  <!-- Other meta tags and CSS links -->
-</head>
 
-<body>
+    <!-- Updates Section -->
+    <section id="update" class="contact section-bg">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title">
+                <h2>Updates</h2>
+            </div>
 
-  <!-- ======= Header ======= -->
-  <!-- Header content here -->
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <ul id="update-flters">
+                        <li data-filter=".filter-events" class="filter-active">Events</li>
+                        <li data-filter=".filter-recruitment">Recruitments</li>
+                    </ul>
+                </div>
+            </div>
 
-  <!-- ======= Hero Section ======= -->
-  <!-- Hero content here -->
+            <div class="upbox update-item filter-events">
+                <h3>Events</h3>
+                <?php foreach ($updates as $update): ?>
+                    <?php if ($update['category'] == 'events'): ?>
+                        <div class="update-entry">
+                            <h4><?php echo htmlspecialchars($update['title']); ?></h4>
+                            <p><?php echo htmlspecialchars($update['description']); ?></p>
+                            <p>Club: <?php echo htmlspecialchars($update['club_name']); ?></p>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
 
-  <main id="main">
-
-    <!-- ======= About Section ======= -->
-    <!-- About content here -->
-
-<!-- Updates Section -->
-<section id="update" class="contact section-bg">
-  <div class="container" data-aos="fade-up">
-    <div class="section-title">
-      <h2>Updates</h2>
-    </div>
-
-    <div class="row">
-      <div class="col-lg-12 d-flex justify-content-center">
-        <ul id="update-flters">
-          <li data-filter=".filter-events" class="filter-active">Events</li>
-          <li data-filter=".filter-recruitment">Recruitments</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="upbox update-item filter-events">
-      <h3>Events</h3>
-      <?php foreach ($updates as $update): ?>
-        <?php if ($update['category'] == 'events'): ?>
-          <div class="update-entry">
-            <h4><?php echo htmlspecialchars($update['title']); ?></h4>
-            <p><?php echo htmlspecialchars($update['description']); ?></p>
-          </div>
-        <?php endif; ?>
-      <?php endforeach; ?>
-    </div>
-
-    <div class="upbox update-item filter-recruitment" style="display: none;">
-      <h3>Recruitments</h3>
-      <?php foreach ($updates as $update): ?>
-        <?php if ($update['category'] == 'recruitments'): ?>
-          <div class="update-entry">
-            <h4><?php echo htmlspecialchars($update['title']); ?></h4>
-            <p><?php echo htmlspecialchars($update['description']); ?></p>
-            <p>Deadline: <?php echo htmlspecialchars($update['deadline']); ?></p>
-            <a href="Club/student/student.php" class="btn btn-primary">Apply</a>
-          </div>
-        <?php endif; ?>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section><!-- End Updates Section -->
+            <div class="upbox update-item filter-recruitment" style="display: none;">
+                <h3>Recruitments</h3>
+                <?php foreach ($updates as $update): ?>
+                    <?php if ($update['category'] == 'recruitments'): ?>
+                        <div class="update-entry">
+                            <h4><?php echo htmlspecialchars($update['title']); ?></h4>
+                            <p><?php echo htmlspecialchars($update['description']); ?></p>
+                            <p>Deadline: <?php echo htmlspecialchars($update['deadline']); ?></p>
+                            <p>Club: <?php echo htmlspecialchars($update['club_name']); ?></p>
+                            <a href="Club/student/student.php" class="btn btn-primary">Apply</a>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section><!-- End Updates Section -->
 
     <!-- ======= Services Section ======= -->
     <section id="services" class="services">
