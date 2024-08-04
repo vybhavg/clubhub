@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $description = $_POST['event_description'];
         $club_id = $_POST['club_id'];
 
-        $sql = "INSERT INTO events (title, description, club_id) VALUES (?,?,?)";
+        $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $title, $description, $club_id);
         if ($stmt->execute()) {
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $deadline = $_POST['deadline'];
         $club_id = $_POST['club_id'];
 
-        $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?,?,?,?)";
+        $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
         if ($stmt->execute()) {
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['delete_event'])) {
         // Handle deleting events
         $event_id = $_POST['event_id'];
-        $sql = "DELETE FROM events WHERE id =?";
+        $sql = "DELETE FROM events WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $event_id);
         if ($stmt->execute()) {
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['delete_recruitment'])) {
         // Handle deleting recruitments
         $recruitment_id = $_POST['recruitment_id'];
-        $sql = "DELETE FROM recruitments WHERE id =?";
+        $sql = "DELETE FROM recruitments WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $recruitment_id);
         if ($stmt->execute()) {
@@ -91,7 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Fetch branches and clubs based on selected branch
 $branchesResult = $conn->query("SELECT * FROM branches");
-$clubsResult = $selectedBranch? $conn->prepare("SELECT * FROM clubs WHERE branch_id =?") : null;
+
+$clubsResult = $selectedBranch ? $conn->prepare("SELECT * FROM clubs WHERE branch_id = ?") : null;
 if ($clubsResult) {
     $clubsResult->bind_param("i", $selectedBranch);
     $clubsResult->execute();
@@ -99,8 +100,8 @@ if ($clubsResult) {
 }
 
 // Fetch events and recruitments based on selected club
-$eventsResult = $selectedClub? $conn->prepare("SELECT * FROM events WHERE club_id =?") : null;
-$recruitmentsResult = $selectedClub? $conn->prepare("SELECT * FROM recruitments WHERE club_id =?") : null;
+$eventsResult = $selectedClub ? $conn->prepare("SELECT * FROM events WHERE club_id = ?") : null;
+$recruitmentsResult = $selectedClub ? $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?") : null;
 if ($eventsResult) {
     $eventsResult->bind_param("i", $selectedClub);
     $eventsResult->execute();
@@ -113,18 +114,12 @@ if ($recruitmentsResult) {
 }
 
 // Fetch applications based on selected club
-$applicationsResult = $selectedClub? $conn->prepare("
-    SELECT s.name as student_name, s.email as email, a.status as status
-    FROM applications a
-    INNER JOIN students s ON a.student_id = s.id
-    WHERE a.club_id =?
-") : null;
+$applicationsResult = $selectedClub ? $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?") : null;
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $selectedClub);
     $applicationsResult->execute();
     $applicationsResult = $applicationsResult->get_result();
 }
-
 
 // Close the database connection
 $conn->close();
@@ -140,11 +135,12 @@ $conn->close();
 </head>
 <body>
     <div class="navbar">
-        <a href="?update_type=events">Updates</a>
+        <a href="?update_type=events">Events</a>
         <a href="?update_type=recruitments">Recruitments</a>
         <a href="?update_type=applications">Applications</a>
     </div>
     <h1>Club Management System</h1>
+    
     <form method="post">
         <label for="branch_id">Select Branch:</label>
         <select name="branch_id" id="branch_id">
@@ -196,7 +192,6 @@ $conn->close();
                     <form method="post">
                         <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
                         <input type="submit" name="delete_event" value="Delete">
-                   
                     </form>
                 </li>
             <?php } ?>
@@ -206,7 +201,7 @@ $conn->close();
         <form method="post">
             <label for="role">Role:</label>
             <input type="text" name="role" id="role"><br><br>
-            <label for="recruitment_description">Recruitment Description:</label>
+            <label for="recruitment_description">Description:</label>
             <textarea name="recruitment_description" id="recruitment_description"></textarea><br><br>
             <label for="deadline">Deadline:</label>
             <input type="date" name="deadline" id="deadline"><br><br>
@@ -226,17 +221,16 @@ $conn->close();
                 </li>
             <?php } ?>
         </ul>
-<?php } elseif ($updateType == 'applications') { ?>
-    <h2>Applications</h2>
-    <ul>
-        <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
-            <li>
-                <?php echo $application['student_name']; ?> - <?php echo $application['email']; ?> - Status: <?php echo $application['status']; ?>
-            </li>
-        <?php } ?>
-    </ul>
-<?php } ?>
-
+    <?php } elseif ($updateType == 'applications') { ?>
+        <h2>Applications</h2>
+        <ul>
+            <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
+                <li>
+                    <?php echo $application['student_name']; ?> (<?php echo $application['email']; ?>) - Resume: <a href="<?php echo $application['resume_path']; ?>" target="_blank">View Resume</a>
+                </li>
+            <?php } ?>
+        </ul>
+    <?php } ?>
 
     <?php if (isset($_SESSION['message'])) { ?>
         <p><?php echo $_SESSION['message']; ?></p>
