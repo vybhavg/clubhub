@@ -1,14 +1,18 @@
 <?php
-// Include database connection
-require '/var/www/html/db_connect.php';
+// Start session and include the database connection file
+session_start();
+include('/var/www/html/db_connect.php'); // Include your database connection file here
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = htmlspecialchars($_POST['name']);
-    $email = htmlspecialchars($_POST['email']);
+// Handle adding new students
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
     $resume = $_FILES['resume'];
 
-    // Directory where resume will be uploaded
+    // Directory where resumes will be uploaded
     $target_dir = "uploads/";
     $target_file = $target_dir . basename($resume["name"]);
     $uploadOk = 1;
@@ -16,37 +20,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Check if file is a real PDF
     if ($fileType != "pdf") {
-        echo "Sorry, only PDF files are allowed.";
+        $_SESSION['message'] = "Sorry, only PDF files are allowed.";
         $uploadOk = 0;
     }
 
-    // Check file size (optional, e.g., max 5MB)
+    // Check file size (e.g., max 5MB)
     if ($resume["size"] > 5000000) {
-        echo "Sorry, your file is too large.";
+        $_SESSION['message'] = "Sorry, your file is too large.";
         $uploadOk = 0;
     }
 
     // Upload file if all checks are passed
     if ($uploadOk == 1) {
         if (move_uploaded_file($resume["tmp_name"], $target_file)) {
-            // Prepare an insert statement
-            $stmt = $conn->prepare("INSERT INTO applications (name, email, resume_path) VALUES (?, ?, ?)");
+            // Prepare and execute the SQL statement
+            $sql = "INSERT INTO students (name, email, resume_path) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql);
             $stmt->bind_param("sss", $name, $email, $target_file);
 
-            // Execute the statement
             if ($stmt->execute()) {
-                echo "The file " . htmlspecialchars(basename($resume["name"])) . " has been uploaded and your application has been submitted.";
+                $_SESSION['message'] = "Student added successfully.";
             } else {
-                echo "Error: " . $stmt->error;
+                $_SESSION['message'] = "Error adding student.";
             }
-
-            // Close statement
             $stmt->close();
         } else {
-            echo "Sorry, there was an error uploading your file.";
+            $_SESSION['message'] = "Sorry, there was an error uploading your file.";
         }
     }
 }
+
+// Fetch the list of students
+$studentsResult = $conn->query("SELECT * FROM students");
 
 // Close the database connection
 $conn->close();
@@ -57,29 +62,36 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apply for Recruitment</title>
-<link rel="stylesheet" href="student.css">
+    <title>Manage Students</title>
+    <link rel="stylesheet" type="text/css" href="students.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Apply for Recruitment</h2>
-        <form action="student.php" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="resume">Upload Resume (PDF only):</label>
-                <input type="file" id="resume" name="resume" accept=".pdf" required>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Submit Application</button>
-            </div>
-        </form>
-    </div>
+    <h1>Manage Students</h1>
+    
+    <!-- Form to add a new student -->
+    <form method="post" enctype="multipart/form-data">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" required><br><br>
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required><br><br>
+        <label for="resume">Upload Resume (PDF only):</label>
+        <input type="file" name="resume" id="resume" accept=".pdf" required><br><br>
+        <input type="submit" name="add_student" value="Add Student">
+    </form>
+
+    <h2>Existing Students</h2>
+    <ul>
+        <?php while ($student = $studentsResult->fetch_assoc()) { ?>
+            <li>
+                <?php echo $student['name']; ?> (<?php echo $student['email']; ?>) - 
+                <a href="<?php echo $student['resume_path']; ?>" target="_blank">View Resume</a>
+            </li>
+        <?php } ?>
+    </ul>
+
+    <?php if (isset($_SESSION['message'])) { ?>
+        <p><?php echo $_SESSION['message']; ?></p>
+        <?php unset($_SESSION['message']); ?>
+    <?php } ?>
 </body>
 </html>
