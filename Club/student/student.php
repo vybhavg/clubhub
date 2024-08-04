@@ -58,7 +58,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apply for Recruitment</title>
-    <link rel="stylesheet" href="path_to_your_css_file.css">
+<link rel="stylesheet" href="path_to_your_css_file/students.css">
 </head>
 <body>
     <div class="container">
