@@ -225,7 +225,7 @@ $conn->close();
             <h4><?php echo htmlspecialchars($update['title']); ?></h4>
             <p><?php echo htmlspecialchars($update['description']); ?></p>
             <p>Deadline: <?php echo htmlspecialchars($update['deadline']); ?></p>
-            <a href="student.php" class="btn btn-primary">Apply</a>
+            <a href="Club/student/student.php" class="btn btn-primary">Apply</a>
           </div>
         <?php endif; ?>
       <?php endforeach; ?>
