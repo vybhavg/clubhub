@@ -21,7 +21,7 @@ $selectedBranch = $_SESSION['selected_branch'];
 $selectedClub = $_SESSION['selected_club'];
 $updateType = $_SESSION['update_type'];
 
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         // Handle adding events
         $title = $_POST['event_title'];
@@ -124,9 +124,11 @@ if ($applicationsResult) {
 $conn->close();
 ?>
 
-<!-- HTML code here -->
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Club Management System</title>
     <link rel="stylesheet" type="text/css" href="members.css">
 </head>
@@ -188,6 +190,7 @@ $conn->close();
                     <form method="post">
                         <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
                         <input type="submit" name="delete_event" value="Delete">
+                   
                     </form>
                 </li>
             <?php } ?>
