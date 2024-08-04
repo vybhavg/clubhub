@@ -113,12 +113,18 @@ if ($recruitmentsResult) {
 }
 
 // Fetch applications based on selected club
-$applicationsResult = $selectedClub? $conn->prepare("SELECT s.name as student_name, s.email as email, a.status as status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id =?") : null;
+$applicationsResult = $selectedClub? $conn->prepare("
+    SELECT s.name as student_name, s.email as email, a.status as status
+    FROM applications a
+    INNER JOIN students s ON a.student_id = s.id
+    WHERE a.club_id =?
+") : null;
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $selectedClub);
     $applicationsResult->execute();
     $applicationsResult = $applicationsResult->get_result();
 }
+
 
 // Close the database connection
 $conn->close();
@@ -220,16 +226,17 @@ $conn->close();
                 </li>
             <?php } ?>
         </ul>
-    <?php } elseif ($updateType == 'applications') { ?>
-        <h2>Applications</h2>
-        <ul>
-            <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
-                <li>
-                    <?php echo $application['student_name']; ?> - <?php echo $application['email']; ?> - Status: <?php echo $application['status']; ?>
-                </li>
-            <?php } ?>
-        </ul>
-    <?php } ?>
+<?php } elseif ($updateType == 'applications') { ?>
+    <h2>Applications</h2>
+    <ul>
+        <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
+            <li>
+                <?php echo $application['student_name']; ?> - <?php echo $application['email']; ?> - Status: <?php echo $application['status']; ?>
+            </li>
+        <?php } ?>
+    </ul>
+<?php } ?>
+
 
     <?php if (isset($_SESSION['message'])) { ?>
         <p><?php echo $_SESSION['message']; ?></p>
