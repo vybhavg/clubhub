@@ -24,3 +24,4 @@ jobs:
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --follow-symlinks --delete ./ s3://${{ secrets.AWS_S3_BUCKET }}
+        # Remove env section as it is not needed here
