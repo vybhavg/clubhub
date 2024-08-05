@@ -1,6 +1,6 @@
 <?php
 // index.php
-
+//hi
 include('db_connect.php'); // Ensure this path is correct
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
