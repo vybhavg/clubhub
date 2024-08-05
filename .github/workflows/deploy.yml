@@ -23,10 +23,7 @@ jobs:
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@master
       with:
-        args: --acl public-read --follow-symlinks --delete
-        source-dir: './'  # Sync from the root of your repository
-        destination-dir: 's3://clubhubbb'  # Deploy to your bucket
+        args: --acl public-read --follow-symlinks --delete ./ s3://clubhubbb
       env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}  # Optional, remove if not used
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
