@@ -151,7 +151,7 @@ $conn->close();
         <div class="row no-gutters">
           <div class="content col-xl-5 d-flex align-items-stretch" data-aos="fade-up">
             <div class="content">
-              <h3>ClubHub Purposeeeeeeeeee</h3>
+              <h3>ClubHub Purpose</h3>
               <p>
                 The purpose of a club hub is to simplify the process of discovering, joining, and participating in student clubs, while also facilitating communication and support for club activities within a university.              </p>
               <a href="Club/comm.html" class="about-btn">About us <i class="bx bx-chevron-right"></i></a>
