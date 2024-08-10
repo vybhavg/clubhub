@@ -27,25 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 
     // Directory where resume will be uploaded
     $target_dir = "uploads/";
-    // Ensure directory exists and is writable
-    if (!file_exists($target_dir)) {
-        mkdir($target_dir, 0755, true); // Create directory if it doesn't exist
-    }
+
     $target_file = $target_dir . basename($resume["name"]);
     $uploadOk = 1;
-    $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-    // Check if file is a real PDF
-    if ($fileType != "pdf") {
-        $_SESSION['message'] = "Sorry, only PDF files are allowed.";
-        $uploadOk = 0;
-    }
-
-    // Check file size (optional, e.g., max 5MB)
-    if ($resume["size"] > 5000000) {
-        $_SESSION['message'] = "Sorry, your file is too large.";
-        $uploadOk = 0;
-    }
+    
 
     // Upload file if all checks are passed
     if ($uploadOk == 1) {
