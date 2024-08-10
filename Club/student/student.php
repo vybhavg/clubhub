@@ -5,6 +5,11 @@ require '/var/www/html/db_connect.php';
 // Start session
 session_start();
 
+// Display errors for debugging
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Ensure club_id is set in session or request
 if (!isset($_SESSION['selected_club']) || empty($_SESSION['selected_club'])) {
     echo "No club selected.";
@@ -22,6 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 
     // Directory where resume will be uploaded
     $target_dir = "uploads/";
+    if (!file_exists($target_dir)) {
+        mkdir($target_dir, 0755, true); // Create directory if it doesn't exist
+    }
     $target_file = $target_dir . basename($resume["name"]);
     $uploadOk = 1;
     $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
