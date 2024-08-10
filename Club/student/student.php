@@ -25,6 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
     $email = htmlspecialchars($_POST['email']);
     $resume = $_FILES['resume'];
 
+    // Debugging: Print form data
+    echo "Name: " . $name . "<br>";
+    echo "Email: " . $email . "<br>";
+    echo "Resume: " . $resume['name'] . "<br>";
+
     // Directory where resume will be uploaded
     $target_dir = "uploads/";
     // Ensure directory exists and is writable
@@ -79,6 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 <!DOCTYPE html>
