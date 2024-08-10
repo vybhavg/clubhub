@@ -150,7 +150,7 @@ $conn->close();
         <div class="row no-gutters">
           <div class="content col-xl-5 d-flex align-items-stretch" data-aos="fade-up">
             <div class="content">
-              <h3>ClubHub Purpose</h3>
+              <h3>ClubHub Purposeeeeeeeeee</h3>
               <p>
                 The purpose of a club hub is to simplify the process of discovering, joining, and participating in student clubs, while also facilitating communication and support for club activities within a university.              </p>
               <a href="Club/comm.html" class="about-btn">About us <i class="bx bx-chevron-right"></i></a>
@@ -188,7 +188,8 @@ $conn->close();
     </section><!-- End About Section -->
 
 
-   
+
+<!-- Updates Section -->
 <section id="update" class="contact section-bg">
   <div class="container" data-aos="fade-up">
     <div class="section-title">
@@ -204,28 +205,31 @@ $conn->close();
       </div>
     </div>
 
-    <div class="upbox update-item filter-recruitment">
+    <div class="upbox update-item filter-events">
+      <h3>Events</h3>
+      <?php foreach ($events as $event): ?>
+        <div class="update-entry">
+          <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+          <p><?php echo htmlspecialchars($event['description']); ?></p>
+          <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+    <div class="upbox update-item filter-recruitment" style="display: none;">
       <h3>Recruitments</h3>
       <?php foreach ($recruitments as $recruitment): ?>
         <div class="update-entry">
-          <h4>
-            <?php 
-              echo !empty($recruitment['title']) ? htmlspecialchars($recruitment['title']) : "No title available"; 
-            ?>
-          </h4>
+          <h4><?php echo htmlspecialchars($recruitment['role']); ?></h4>
           <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
-          <p>Deadline: 
-            <?php 
-              echo !empty($recruitment['deadline_date']) ? htmlspecialchars($recruitment['deadline_date']) : "No deadline"; 
-            ?>
-          </p>
+          <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
           <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
           <a href="Club/student/student.php" class="btn btn-primary">Apply</a>
         </div>
       <?php endforeach; ?>
     </div>
   </div>
-</section>
+</section><!-- End Updates Section -->
 
 
     <!-- ======= Services Section ======= -->
