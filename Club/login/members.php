@@ -19,7 +19,7 @@ if (!isset($_SESSION['update_type'])) {
 
 $selectedBranch = $_SESSION['selected_branch'];
 $selectedClub = $_SESSION['selected_club'];
-$updateType = $_SESSION['update_type'];
+$updateType = isset($_GET['update_type']) ? $_GET['update_type'] : $_SESSION['update_type'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
@@ -83,9 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['select_club'])) {
         $_SESSION['selected_club'] = $_POST['club_id'];
         $selectedClub = $_POST['club_id'];
-    } elseif (isset($_POST['select_update_type'])) {
-        $_SESSION['update_type'] = $_POST['update_type'];
-        $updateType = $_POST['update_type'];
     }
 }
 
@@ -164,16 +161,6 @@ $conn->close();
         <input type="submit" name="select_club" value="Select Club">
     </form>
 
-    <form method="post">
-        <label for="update_type">Select Update Type:</label>
-        <select name="update_type" id="update_type">
-            <option value="events" <?php if ($updateType == 'events') echo 'selected'; ?>>Events</option>
-            <option value="recruitments" <?php if ($updateType == 'recruitments') echo 'selected'; ?>>Recruitments</option>
-            <option value="applications" <?php if ($updateType == 'applications') echo 'selected'; ?>>Applications</option>
-        </select>
-        <input type="submit" name="select_update_type" value="Select Update Type">
-    </form>
-
     <?php if ($updateType == 'events') { ?>
         <h2>Events</h2>
         <form method="post">
@@ -208,7 +195,7 @@ $conn->close();
             <label for="deadline">Deadline:</label>
             <input type="date" name="deadline" id="deadline"><br><br>
             <input type="hidden" name="club_id" value="<?php echo $selectedClub; ?>">
-            <input type="submit" name="add_recruitment" value="Add Recruitment">
+                                                                <input type="submit" name="add_recruitment" value="Add Recruitment">
         </form>
 
         <h2>Existing Recruitments</h2>
@@ -225,20 +212,19 @@ $conn->close();
         </ul>
 
     <?php } elseif ($updateType == 'applications') { ?>
-    <h2>Applications</h2>
-    <ul class="applications-list">
-        <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
-            <li class="application-item">
-                <div class="application-details">
-                    <strong><?php echo htmlspecialchars($application['student_name']); ?></strong>
-                    <span class="email">(Email: <?php echo htmlspecialchars($application['email']); ?>)</span>
-                </div>
-                <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" target="_blank" class="view-resume">View Resume</a>
-            </li>
-        <?php } ?>
-    </ul>
-<?php } ?>
-
+        <h2>Applications</h2>
+        <ul class="applications-list">
+            <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
+                <li class="application-item">
+                    <div class="application-details">
+                        <strong><?php echo htmlspecialchars($application['student_name']); ?></strong>
+                        <span class="email">(Email: <?php echo htmlspecialchars($application['email']); ?>)</span>
+                    </div>
+                    <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" target="_blank" class="view-resume">View Resume</a>
+                </li>
+            <?php } ?>
+        </ul>
+    <?php } ?>
 
     <div class="messages">
         <?php
