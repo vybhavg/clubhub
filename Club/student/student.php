@@ -1,4 +1,3 @@
-
 <?php
 // Include database connection
 require '/var/www/html/db_connect.php';
@@ -59,19 +58,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 
             // Execute the statement
             if ($stmt->execute()) {
-                echo "The file " . htmlspecialchars(basename($resume["name"])) . " has been uploaded and your application has been submitted.";
+                $_SESSION['message'] = "The file " . htmlspecialchars(basename($resume["name"])) . " has been uploaded and your application has been submitted.";
             } else {
-                echo "Error: " . $stmt->error;
+                $_SESSION['message'] = "Error: " . $stmt->error;
             }
 
             // Close statement
             $stmt->close();
         } else {
-            echo "Sorry, there was an error uploading your file.";
-            echo "Temporary file path: " . $resume["tmp_name"] . "<br>";
-            echo "Target path: " . $target_file;
+            $_SESSION['message'] = "Sorry, there was an error uploading your file.";
+            $_SESSION['message'] .= " Temporary file path: " . $resume["tmp_name"] . "<br>";
+            $_SESSION['message'] .= " Target path: " . $target_file;
         }
+    } else {
+        $_SESSION['message'] = "File upload failed.";
     }
+
+    header("Location: student.php"); // Redirect to avoid resubmission on refresh
+    exit();
 }
 
 // Close the database connection
@@ -106,6 +110,10 @@ $conn->close();
                 <button type="submit" name="apply" class="btn btn-primary">Submit Application</button>
             </div>
         </form>
+        <?php if (isset($_SESSION['message'])) { ?>
+            <p><?php echo $_SESSION['message']; ?></p>
+            <?php unset($_SESSION['message']); ?>
+        <?php } ?>
     </div>
 </body>
 </html>
