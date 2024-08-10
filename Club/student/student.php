@@ -27,6 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 
     // Directory where resume will be uploaded
     $target_dir = "uploads/";
+    // Ensure directory exists and is writable
     if (!file_exists($target_dir)) {
         mkdir($target_dir, 0755, true); // Create directory if it doesn't exist
     }
@@ -66,6 +67,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
             $stmt->close();
         } else {
             echo "Sorry, there was an error uploading your file.";
+            echo "Temporary file path: " . $resume["tmp_name"] . "<br>";
+            echo "Target path: " . $target_file;
         }
     }
 }
@@ -85,7 +88,7 @@ $conn->close();
 <body>
     <div class="container">
         <h2>Apply for Recruitment</h2>
-        <form action="students.php" method="post" enctype="multipart/form-data">
+        <form action="student.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required>
