@@ -225,16 +225,20 @@ $conn->close();
         </ul>
 
     <?php } elseif ($updateType == 'applications') { ?>
-        <h2>Applications</h2>
-        <ul>
-            <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
-                <li>
-                    <?php echo $application['student_name']; ?> (Email: <?php echo $application['email']; ?>)
-                    <a href="<?php echo $application['resume_path']; ?>" target="_blank">View Resume</a>
-                </li>
-            <?php } ?>
-        </ul>
-    <?php } ?>
+    <h2>Applications</h2>
+    <ul class="applications-list">
+        <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
+            <li class="application-item">
+                <div class="application-details">
+                    <strong><?php echo htmlspecialchars($application['student_name']); ?></strong>
+                    <span class="email">(Email: <?php echo htmlspecialchars($application['email']); ?>)</span>
+                </div>
+                <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" target="_blank" class="view-resume">View Resume</a>
+            </li>
+        <?php } ?>
+    </ul>
+<?php } ?>
+
 
     <div class="messages">
         <?php
