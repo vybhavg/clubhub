@@ -25,11 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
     $email = htmlspecialchars($_POST['email']);
     $resume = $_FILES['resume'];
 
-    // Debugging: Print form data
-    echo "Name: " . $name . "<br>";
-    echo "Email: " . $email . "<br>";
-    echo "Resume: " . $resume['name'] . "<br>";
-
     // Directory where resume will be uploaded
     $target_dir = "uploads/";
     // Ensure directory exists and is writable
@@ -42,22 +37,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 
     // Check if file is a real PDF
     if ($fileType != "pdf") {
-        echo "Sorry, only PDF files are allowed.";
+        $_SESSION['message'] = "Sorry, only PDF files are allowed.";
         $uploadOk = 0;
     }
 
     // Check file size (optional, e.g., max 5MB)
     if ($resume["size"] > 5000000) {
-        echo "Sorry, your file is too large.";
+        $_SESSION['message'] = "Sorry, your file is too large.";
         $uploadOk = 0;
     }
 
     // Upload file if all checks are passed
     if ($uploadOk == 1) {
         if (move_uploaded_file($resume["tmp_name"], $target_file)) {
-            // Prepare an insert statement
-            $stmt = $conn->prepare("INSERT INTO applications (student_id, club_id, resume_path) VALUES ((SELECT id FROM students WHERE email = ?), ?, ?)");
-            $stmt->bind_param("sis", $email, $club_id, $target_file);
+            // Check if student already exists
+            $stmt = $conn->prepare("SELECT id FROM students WHERE name = ? AND email = ?");
+            $stmt->bind_param("ss", $name, $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                // Student exists, get the student ID
+                $student = $result->fetch_assoc();
+                $student_id = $student['id'];
+
+                // Update the student's record if needed
+                $stmt = $conn->prepare("UPDATE students SET name = ?, email = ? WHERE id = ?");
+                $stmt->bind_param("ssi", $name, $email, $student_id);
+                $stmt->execute();
+                $stmt->close();
+            } else {
+                // Insert new student record
+                $stmt = $conn->prepare("INSERT INTO students (name, email) VALUES (?, ?)");
+                $stmt->bind_param("ss", $name, $email);
+                $stmt->execute();
+                $student_id = $stmt->insert_id; // Get the newly inserted student ID
+                $stmt->close();
+            }
+
+            // Insert or update the application record
+            $stmt = $conn->prepare("INSERT INTO applications (student_id, club_id, resume_path) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE resume_path = ?");
+            $stmt->bind_param("iiss", $student_id, $club_id, $target_file, $target_file);
 
             // Execute the statement
             if ($stmt->execute()) {
@@ -84,8 +104,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 // Close the database connection
 $conn->close();
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
