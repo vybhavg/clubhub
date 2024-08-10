@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
     $resume = $_FILES['resume'];
 
     // Directory where resume will be uploaded
-    $target_dir = "/var/www/html/Club/student/uploads/";
+    $target_dir = "uploads/";
     // Ensure directory exists and is writable
     if (!file_exists($target_dir)) {
         mkdir($target_dir, 0755, true); // Create directory if it doesn't exist
@@ -37,7 +37,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 
     // Check if file is a real PDF
     if ($fileType != "pdf") {
-        echo "Sorry, only PDF files are allowed.";
+        $_SESSION['message'] = "Sorry, only PDF files are allowed.";
+        $uploadOk = 0;
+    }
+
+    // Check file size (optional, e.g., max 5MB)
+    if ($resume["size"] > 5000000) {
+        $_SESSION['message'] = "Sorry, your file is too large.";
         $uploadOk = 0;
     }
 
@@ -61,8 +67,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
             $stmt->close();
         } else {
             $_SESSION['message'] = "Sorry, there was an error uploading your file.";
-            $_SESSION['message'] .= " Temporary file path: " . $resume["tmp_name"] . "<br>";
-            $_SESSION['message'] .= " Target path: " . $target_file;
         }
     } else {
         $_SESSION['message'] = "File upload failed.";
