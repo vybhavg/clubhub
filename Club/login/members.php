@@ -156,9 +156,10 @@ $conn->close();
         <label for="club_id">Select Club:</label>
         <select name="club_id" id="club_id">
             <option value="">Select Club</option>
-            <?php while ($club = $clubsResult->fetch_assoc()) { ?>
-                <option value="<?php echo $club['id']; ?>" <?php if ($selectedClub == $club['id']) echo 'selected'; ?>><?php echo $club['club_name']; ?></option>
-            <?php } ?>
+            <?php if ($clubsResult) { 
+                while ($club = $clubsResult->fetch_assoc()) { ?>
+                    <option value="<?php echo $club['id']; ?>" <?php if ($selectedClub == $club['id']) echo 'selected'; ?>><?php echo $club['club_name']; ?></option>
+            <?php } } ?>
         </select>
         <input type="submit" name="select_club" value="Select Club">
     </form>
@@ -189,13 +190,14 @@ $conn->close();
             <?php while ($event = $eventsResult->fetch_assoc()) { ?>
                 <li>
                     <?php echo $event['title']; ?> (<?php echo $event['description']; ?>)
-                    <form method="post">
+                    <form method="post" style="display:inline;">
                         <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
                         <input type="submit" name="delete_event" value="Delete">
                     </form>
                 </li>
             <?php } ?>
         </ul>
+
     <?php } elseif ($updateType == 'recruitments') { ?>
         <h2>Recruitments</h2>
         <form method="post">
@@ -213,28 +215,34 @@ $conn->close();
         <ul>
             <?php while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
                 <li>
-                    <?php echo $recruitment['role']; ?> (<?php echo $recruitment['description']; ?>) - Deadline: <?php echo $recruitment['deadline']; ?>
-                    <form method="post">
+                    <?php echo $recruitment['role']; ?> (<?php echo $recruitment['description']; ?>, Deadline: <?php echo $recruitment['deadline']; ?>)
+                    <form method="post" style="display:inline;">
                         <input type="hidden" name="recruitment_id" value="<?php echo $recruitment['id']; ?>">
                         <input type="submit" name="delete_recruitment" value="Delete">
                     </form>
                 </li>
             <?php } ?>
         </ul>
+
     <?php } elseif ($updateType == 'applications') { ?>
         <h2>Applications</h2>
         <ul>
             <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
                 <li>
-                    <?php echo $application['student_name']; ?> (<?php echo $application['email']; ?>) - Resume: <a href="<?php echo $application['resume_path']; ?>" target="_blank">View Resume</a>
+                    <?php echo $application['student_name']; ?> (Email: <?php echo $application['email']; ?>)
+                    <a href="<?php echo $application['resume_path']; ?>" target="_blank">View Resume</a>
                 </li>
             <?php } ?>
         </ul>
     <?php } ?>
 
-    <?php if (isset($_SESSION['message'])) { ?>
-        <p><?php echo $_SESSION['message']; ?></p>
-        <?php unset($_SESSION['message']); ?>
-    <?php } ?>
+    <div class="messages">
+        <?php
+        if (isset($_SESSION['message'])) {
+            echo $_SESSION['message'];
+            unset($_SESSION['message']);
+        }
+        ?>
+    </div>
 </body>
 </html>
