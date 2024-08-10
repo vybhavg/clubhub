@@ -1,7 +1,8 @@
 <?php
 // index.php
-//hi
 include('db_connect.php'); // Ensure this path is correct
+
+// Display errors for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -14,7 +15,7 @@ $events_sql = "SELECT e.*, c.club_name
 $events_result = $conn->query($events_sql);
 
 $events = array();
-if ($events_result->num_rows > 0) {
+if ($events_result && $events_result->num_rows > 0) {
     while($row = $events_result->fetch_assoc()) {
         $events[] = $row;
     }
@@ -28,14 +29,16 @@ $recruitments_sql = "SELECT r.*, c.club_name
 $recruitments_result = $conn->query($recruitments_sql);
 
 $recruitments = array();
-if ($recruitments_result->num_rows > 0) {
-    while($row = $recruitments_result->fetch_assoc()) {
+if ($recruitments_result && $recruitments_result->num_rows > 0) {
+    while ($row = $recruitments_result->fetch_assoc()) {
         $recruitments[] = $row;
     }
 }
 
+// Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
