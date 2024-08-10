@@ -1,5 +1,6 @@
 <?php
 // index.php
+//hii
 include('db_connect.php'); // Ensure this path is correct
 
 // Display errors for debugging
