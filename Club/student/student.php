@@ -27,20 +27,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 
     // Directory where resume will be uploaded
     $target_dir = "uploads/";
-
+    // Ensure directory exists and is writable
+    if (!file_exists($target_dir)) {
+        mkdir($target_dir, 0755, true); // Create directory if it doesn't exist
+    }
     $target_file = $target_dir . basename($resume["name"]);
     $uploadOk = 1;
+    $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-    
+    // Check if file is a real PDF
+    if ($fileType != "pdf") {
+        echo "Sorry, only PDF files are allowed.";
+        $uploadOk = 0;
+    }
+
+    // Check file size (optional, e.g., max 5MB)
+    if ($resume["size"] > 5000000) {
+        echo "Sorry, your file is too large.";
+        $uploadOk = 0;
+    }
 
     // Upload file if all checks are passed
     if ($uploadOk == 1) {
         if (move_uploaded_file($resume["tmp_name"], $target_file)) {
             // Prepare an insert statement
-            $stmt = $conn->prepare("INSERT INTO applications (student_id, club_id, resume_path) VALUES (?, ?, ?)");
-            // Assume you have student ID somehow, replace with actual student ID
-            $student_id = 1; // Replace with actual student ID
-            $stmt->bind_param("iis", $student_id, $club_id, $target_file);
+            $stmt = $conn->prepare("INSERT INTO applications (student_id, club_id, resume_path) VALUES ((SELECT id FROM students WHERE email = ?), ?, ?)");
+            $stmt->bind_param("sis", $email, $club_id, $target_file);
 
             // Execute the statement
             if ($stmt->execute()) {
@@ -53,6 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
             $stmt->close();
         } else {
             $_SESSION['message'] = "Sorry, there was an error uploading your file.";
+            $_SESSION['message'] .= " Temporary file path: " . $resume["tmp_name"] . "<br>";
+            $_SESSION['message'] .= " Target path: " . $target_file;
         }
     } else {
         $_SESSION['message'] = "File upload failed.";
@@ -65,6 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
