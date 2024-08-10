@@ -52,6 +52,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
         if (move_uploaded_file($resume["tmp_name"], $target_file)) {
             // Check if student already exists
             $stmt = $conn->prepare("SELECT id FROM students WHERE name = ? AND email = ?");
+            if ($stmt === false) {
+                die('Prepare failed: ' . htmlspecialchars($conn->error));
+            }
             $stmt->bind_param("ss", $name, $email);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -61,32 +64,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
                 $student = $result->fetch_assoc();
                 $student_id = $student['id'];
 
-                // Update the student's record if needed
+                // Update the student's record
                 $stmt = $conn->prepare("UPDATE students SET name = ?, email = ? WHERE id = ?");
+                if ($stmt === false) {
+                    die('Prepare failed: ' . htmlspecialchars($conn->error));
+                }
                 $stmt->bind_param("ssi", $name, $email, $student_id);
-                $stmt->execute();
+                if (!$stmt->execute()) {
+                    die('Execute failed: ' . htmlspecialchars($stmt->error));
+                }
                 $stmt->close();
             } else {
                 // Insert new student record
                 $stmt = $conn->prepare("INSERT INTO students (name, email) VALUES (?, ?)");
+                if ($stmt === false) {
+                    die('Prepare failed: ' . htmlspecialchars($conn->error));
+                }
                 $stmt->bind_param("ss", $name, $email);
-                $stmt->execute();
+                if (!$stmt->execute()) {
+                    die('Execute failed: ' . htmlspecialchars($stmt->error));
+                }
                 $student_id = $stmt->insert_id; // Get the newly inserted student ID
                 $stmt->close();
             }
 
             // Insert or update the application record
             $stmt = $conn->prepare("INSERT INTO applications (student_id, club_id, resume_path) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE resume_path = ?");
-            $stmt->bind_param("iiss", $student_id, $club_id, $target_file, $target_file);
-
-            // Execute the statement
-            if ($stmt->execute()) {
-                $_SESSION['message'] = "The file " . htmlspecialchars(basename($resume["name"])) . " has been uploaded and your application has been submitted.";
-            } else {
-                $_SESSION['message'] = "Error: " . $stmt->error;
+            if ($stmt === false) {
+                die('Prepare failed: ' . htmlspecialchars($conn->error));
             }
-
-            // Close statement
+            $stmt->bind_param("iiss", $student_id, $club_id, $target_file, $target_file);
+            if (!$stmt->execute()) {
+                die('Execute failed: ' . htmlspecialchars($stmt->error));
+            }
+            $_SESSION['message'] = "The file " . htmlspecialchars(basename($resume["name"])) . " has been uploaded and your application has been submitted.";
             $stmt->close();
         } else {
             $_SESSION['message'] = "Sorry, there was an error uploading your file.";
