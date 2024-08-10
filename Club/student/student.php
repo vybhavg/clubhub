@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
     $resume = $_FILES['resume'];
 
     // Directory where resume will be uploaded
-    $target_dir = "uploads/";
+    $target_dir = "/var/www/html/Club/student/uploads/";
     // Ensure directory exists and is writable
     if (!file_exists($target_dir)) {
         mkdir($target_dir, 0755, true); // Create directory if it doesn't exist
