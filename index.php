@@ -206,9 +206,9 @@ $conn->close();
       <h3>Events</h3>
       <?php foreach ($events as $event): ?>
         <div class="update-entry">
-          <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-          <p><?php echo htmlspecialchars($event['description']); ?></p>
-          <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
+          <h4><?php echo isset($event['title']) ? htmlspecialchars($event['title']) : 'No title available'; ?></h4>
+          <p><?php echo isset($event['description']) ? htmlspecialchars($event['description']) : 'No description available'; ?></p>
+          <p>Club: <?php echo isset($event['club_name']) ? htmlspecialchars($event['club_name']) : 'Unknown club'; ?></p>
         </div>
       <?php endforeach; ?>
     </div>
@@ -217,10 +217,10 @@ $conn->close();
       <h3>Recruitments</h3>
       <?php foreach ($recruitments as $recruitment): ?>
         <div class="update-entry">
-          <h4><?php echo htmlspecialchars($recruitment['title']); ?></h4>
-          <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
-          <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline_date']); ?></p>
-          <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
+          <h4><?php echo isset($recruitment['title']) ? htmlspecialchars($recruitment['title']) : 'No title available'; ?></h4>
+          <p><?php echo isset($recruitment['description']) ? htmlspecialchars($recruitment['description']) : 'No description available'; ?></p>
+          <p>Deadline: <?php echo isset($recruitment['deadline_date']) ? htmlspecialchars($recruitment['deadline_date']) : 'No deadline'; ?></p>
+          <p>Club: <?php echo isset($recruitment['club_name']) ? htmlspecialchars($recruitment['club_name']) : 'Unknown club'; ?></p>
           <a href="Club/student/student.php" class="btn btn-primary">Apply</a>
         </div>
       <?php endforeach; ?>
