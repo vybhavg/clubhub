@@ -95,7 +95,7 @@ $conn->close();
         <ul>
           <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
           <li><a class="nav-link scrollto" href="Club/comm.html">About Us</a></li>
-          <li><a class="nav-link scrollto" href="#services">Campusessssssssssss</a></li>
+          <li><a class="nav-link scrollto" href="#services">Campusesssss</a></li>
                     
           <li class="dropdown megamenu"><a href="#Clubs"><span>Clubs</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
