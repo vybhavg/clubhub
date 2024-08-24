@@ -1,41 +1,43 @@
-/* Base Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Body */
+/* Global Styles */
 body {
     font-family: Arial, sans-serif;
-    line-height: 1.6;
-    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
 }
 
-/* Navbar */
+header {
+    background-color: #003366; /* Dark Blue */
+    color: white;
+    padding: 10px 0;
+}
+
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background-color: #333;
+    padding: 0 20px;
 }
 
 .navbar-logo h1 {
-    color: #fff;
     margin: 0;
+    font-size: 24px;
 }
 
-.navbar-menu a, .navbar-mobile-links a {
-    color: #fff;
+.navbar-menu {
+    display: flex;
+}
+
+.navbar-menu a {
+    color: white;
     text-decoration: none;
-    padding: 0.5rem 1rem;
-    display: inline-block;
+    padding: 10px 15px;
+    font-size: 18px;
 }
 
-.navbar-menu a:hover, .navbar-mobile-links a:hover {
-    background-color: #555;
-    border-radius: 4px;
+.navbar-menu a:hover {
+    background-color: #004080; /* Lighter Blue */
+    border-radius: 5px;
 }
 
 .navbar-mobile-menu {
@@ -45,108 +47,105 @@ body {
 .navbar-toggle {
     background: none;
     border: none;
-    color: #fff;
-    font-size: 1.5rem;
+    color: white;
+    font-size: 24px;
     cursor: pointer;
 }
 
-.navbar-toggle-icon {
-    font-size: 1.5rem;
-}
-
-/* Welcome Section */
-.welcome-section {
-    margin-top: 2rem;
-}
-
-.welcome-background {
-    background: url('path/to/your/background-image.jpg') no-repeat center center;
-    background-size: cover;
-    padding: 4rem 2rem;
-    text-align: center;
-    color: #fff;
-}
-
-.welcome-text {
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 2rem;
-    border-radius: 10px;
-    display: inline-block;
-}
-
-.welcome-text h2 {
-    margin: 0;
-    font-size: 2rem;
-}
-
-.welcome-text p {
-    font-size: 1.2rem;
-    margin-top: 0.5rem;
-}
-
-/* Forms */
-form {
-    margin: 1rem 0;
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-}
-
-form label {
+.navbar-mobile-links a {
     display: block;
-    margin-bottom: 0.5rem;
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.navbar-mobile-links a:hover {
+    background-color: #004080; /* Lighter Blue */
+    border-radius: 5px;
+}
+
+/* Background Section */
+.background-section {
+    background: url('your-background-image.jpg') no-repeat center center;
+    background-size: cover;
+    padding: 60px 20px;
+    text-align: center;
+    color: white;
+}
+
+.background-section h2 {
+    font-size: 36px;
+    margin: 0;
+}
+
+/* Forms and Buttons */
+form {
+    margin: 20px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
     font-weight: bold;
 }
 
-form input[type="text"], form input[type="date"], form textarea, form select {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
+input[type="text"],
+input[type="date"],
+textarea,
+select {
+    width: calc(100% - 22px);
+    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    margin-bottom: 10px;
 }
 
-form input[type="submit"] {
-    background-color: #333;
-    color: #fff;
+input[type="submit"] {
+    background-color: #003366; /* Dark Blue */
+    color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
+    padding: 10px 15px;
     border-radius: 4px;
+    cursor: pointer;
 }
 
-form input[type="submit"]:hover {
-    background-color: #555;
+input[type="submit"]:hover {
+    background-color: #004080; /* Lighter Blue */
 }
 
-/* Lists */
+/* Content Styling */
+h2 {
+    color: #003366; /* Dark Blue */
+}
+
 ul {
-    list-style: none;
+    list-style-type: none;
     padding: 0;
 }
 
 ul li {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    border: 1px solid #ddd;
+    background: white;
+    padding: 10px;
+    margin: 5px 0;
     border-radius: 4px;
-    background-color: #f9f9f9;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-ul li form {
-    display: inline;
+ul li a {
+    color: #003366; /* Dark Blue */
+    text-decoration: none;
 }
 
-ul li form input[type="submit"] {
-    background-color: #f44336;
+ul li a:hover {
+    text-decoration: underline;
 }
 
-ul li form input[type="submit"]:hover {
-    background-color: #d32f2f;
-}
-
-/* Mobile Responsiveness */
+/* Responsive Design */
 @media (max-width: 768px) {
     .navbar-menu {
         display: none;
@@ -157,6 +156,10 @@ ul li form input[type="submit"]:hover {
     }
 
     .navbar-mobile-links {
+        display: none;
+    }
+
+    .navbar-toggle.active + .navbar-mobile-links {
         display: block;
     }
 }
