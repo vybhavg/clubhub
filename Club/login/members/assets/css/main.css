@@ -870,7 +870,7 @@ section,
 }
 
 .about .content p {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .about .content .about-btn {
@@ -994,10 +994,6 @@ section,
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-container h2 {
-        margin-top: 20px;
     }
 
     .form-container ul {
