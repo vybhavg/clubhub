@@ -2,7 +2,8 @@
 body {
     font-family: 'Arial', sans-serif;
     margin: 20px;
-    background-color: #f0f0f5;
+    background: url("../img/about-bg.jpg")
+    background-size: cover;
     color: #333;
 }
 
