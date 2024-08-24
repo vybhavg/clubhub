@@ -578,6 +578,82 @@ $conn->close();
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+<script>
+$(document).ready(function() {
+    // Handle branch form submission
+    $('#branch-form').on('submit', function(event) {
+        event.preventDefault(); // Prevent traditional form submission
+        fetchData();
+    });
+
+    // Handle club form submission
+    $('#club-form').on('submit', function(event) {
+        event.preventDefault(); // Prevent traditional form submission
+        fetchData();
+    });
+
+    // Handle event form submission
+    $('#event-form').on('submit', function(event) {
+        event.preventDefault(); // Prevent traditional form submission
+        $.ajax({
+            url: 'fetch_data.php',
+            type: 'POST',
+            data: $(this).serialize(), // Serialize form data
+            success: function(response) {
+                // Handle success - update the page with the response
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(error);
+            }
+        });
+    });
+
+    // Handle recruitment form submission
+    $('#recruitment-form').on('submit', function(event) {
+        event.preventDefault(); // Prevent traditional form submission
+        $.ajax({
+            url: 'fetch_data.php',
+            type: 'POST',
+            data: $(this).serialize(), // Serialize form data
+            success: function(response) {
+                // Handle success - update the page with the response
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(error);
+            }
+        });
+    });
+
+    function fetchData() {
+        var branch = $('#branch_id').val();
+        var club = $('#club_id').val();
+        var updateType = $('#update_type').val();
+
+        $.ajax({
+            url: 'fetch_data.php',
+            type: 'POST',
+            data: {
+                branch: branch,
+                club: club,
+                updateType: updateType
+            },
+            success: function(response) {
+                // Handle success - update the page with the response
+                // Example: Update a section of the page with new data
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(error);
+            }
+        });
+    }
+});
+</script>
 
 </body>
 
