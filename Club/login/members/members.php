@@ -228,8 +228,10 @@ $conn->close();
     </section><!-- /About Section -->
     <?php } ?>
 
-  <div class="form-container">
-    <form method="post" class="mb-4">
+    
+<div class="form-container">
+    <!-- Branch Selection Form -->
+    <form id="branch-form" method="post" class="mb-4">
         <div class="form-group">
             <label for="branch_id">Select Branch:</label>
             <select name="branch_id" id="branch_id" class="form-control">
@@ -248,7 +250,8 @@ $conn->close();
         <button type="submit" name="select_branch" class="btn btn-custom">Select Branch</button>
     </form>
 
-    <form method="post" class="mb-4">
+    <!-- Club Selection Form -->
+    <form id="club-form" method="post" class="mb-4">
         <div class="form-group">
             <label for="club_id">Select Club:</label>
             <select name="club_id" id="club_id" class="form-control">
@@ -267,8 +270,9 @@ $conn->close();
         <button type="submit" name="select_club" class="btn btn-custom">Select Club</button>
     </form>
 
+    <!-- Event Form -->
     <?php if ($updateType == 'events') { ?>
-        <form method="post" class="mb-4">
+        <form id="event-form" method="post" class="mb-4">
             <div class="form-group">
                 <label for="event_title">Event Title:</label>
                 <input type="text" name="event_title" id="event_title" class="form-control">
@@ -277,14 +281,14 @@ $conn->close();
                 <label for="event_description">Event Description:</label>
                 <textarea name="event_description" id="event_description" class="form-control"></textarea>
             </div>
-            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
+            <input type="hidden" name="club_id" id="event_club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
             <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
         </form>
+    <?php } ?>
 
-        
-
-    <?php } elseif ($updateType == 'recruitments') { ?>
-        <form method="post" class="mb-4">
+    <!-- Recruitment Form -->
+    <?php if ($updateType == 'recruitments') { ?>
+        <form id="recruitment-form" method="post" class="mb-4">
             <div class="form-group">
                 <label for="role">Role:</label>
                 <input type="text" name="role" id="role" class="form-control">
@@ -297,10 +301,9 @@ $conn->close();
                 <label for="deadline">Deadline:</label>
                 <input type="date" name="deadline" id="deadline" class="form-control">
             </div>
-            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
+            <input type="hidden" name="club_id" id="recruitment_club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
             <button type="submit" name="add_recruitment" class="btn btn-custom">Add Recruitment</button>
         </form>
-        
     <?php } ?>
 </div>
 
