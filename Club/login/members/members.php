@@ -192,7 +192,7 @@ $conn->close();
         <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
            <div class="cont" ><h2>Welcome, Club Members!</h2>
             <p>Manage your events, recruitments, and applications efficiently.</p></div>
-            <a href="#about" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
+            <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
         </div>
     </section><!-- /Hero Section -->
     
