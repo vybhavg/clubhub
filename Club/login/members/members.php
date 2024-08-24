@@ -187,17 +187,23 @@ $conn->close();
    document.querySelectorAll('.scroll-link').forEach(link => {
   link.addEventListener('click', function (event) {
     event.preventDefault();
-    const targetSection = document.querySelector('#' + this.getAttribute('data-scroll'));
-
+    
+    const targetSectionId = this.getAttribute('data-scroll');
+    const targetSection = document.querySelector('#' + targetSectionId);
+    
     // Update URL without reloading the page
     const url = new URL(window.location.href);
-    url.searchParams.set('update_type', this.getAttribute('href').split('?update_type=')[1].split('#')[0]);
+    const updateType = this.getAttribute('href').split('?update_type=')[1].split('#')[0];
+    url.searchParams.set('update_type', updateType);
     history.pushState(null, null, url.toString());
-
+    
     // Scroll to the target section
-    targetSection.scrollIntoView({ behavior: 'smooth' });
+    if (targetSection) {
+      targetSection.scrollIntoView({ behavior: 'smooth' });
+    }
   });
 });
+
 
   </script>
     </div>
