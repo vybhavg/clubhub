@@ -281,24 +281,7 @@ $conn->close();
             <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
         </form>
 
-        <h2>Existing Events</h2>
-        <ul class="list-group">
-            <?php 
-            if ($eventsResult && $eventsResult->num_rows > 0) {
-                while ($event = $eventsResult->fetch_assoc()) { ?>
-                    <li class="list-group-item">
-                        <?php echo htmlspecialchars($event['title']); ?> (<?php echo htmlspecialchars($event['description']); ?>)
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
-                            <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-                    </li>
-                <?php }
-            } else {
-                echo "<li class='list-group-item'>No events available</li>";
-            }
-            ?>
-        </ul>
+        
 
     <?php } elseif ($updateType == 'recruitments') { ?>
         <form method="post" class="mb-4">
@@ -317,41 +300,7 @@ $conn->close();
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
             <button type="submit" name="add_recruitment" class="btn btn-custom">Add Recruitment</button>
         </form>
-
-        <h2>Existing Recruitments</h2>
-        <ul class="list-group">
-            <?php 
-            if ($recruitmentsResult && $recruitmentsResult->num_rows > 0) {
-                while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
-                    <li class="list-group-item">
-                        <?php echo htmlspecialchars($recruitment['role']); ?> (<?php echo htmlspecialchars($recruitment['description']); ?>, Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?>)
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="recruitment_id" value="<?php echo htmlspecialchars($recruitment['id']); ?>">
-                            <button type="submit" name="delete_recruitment" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-                    </li>
-                <?php }
-            } else {
-                echo "<li class='list-group-item'>No recruitments available</li>";
-            }
-            ?>
-        </ul>
-
-    <?php } elseif ($updateType == 'applications') { ?>
-        <ul class="list-group">
-            <?php 
-            if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                while ($application = $applicationsResult->fetch_assoc()) { ?>
-                    <li class="list-group-item">
-                        <?php echo htmlspecialchars($application['student_name']); ?> (<?php echo htmlspecialchars($application['email']); ?>)
-                        <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-primary btn-sm" target="_blank">View Resume</a>
-                    </li>
-                <?php }
-            } else {
-                echo "<li class='list-group-item'>No applications available</li>";
-            }
-            ?>
-        </ul>
+        
     <?php } ?>
 </div>
 
@@ -361,78 +310,92 @@ $conn->close();
 
     <!-- Faq Section -->
     <section id="faq" class="faq section light-background">
+    <div class="container section-title" data-aos="fade-up">
+        <?php if ($updateType == 'events') { ?>
+            <h2>Frequently Asked Questions: Events</h2>
+            <p>Here are the existing events.</p>
+        <?php } elseif ($updateType == 'recruitments') { ?>
+            <h2>Frequently Asked Questions: Recruitments</h2>
+            <p>Here are the current recruitment opportunities.</p>
+        <?php } elseif ($updateType == 'applications') { ?>
+            <h2>Frequently Asked Questions: Applications</h2>
+            <p>Here are the applications received.</p>
+        <?php } ?>
+    </div><!-- End Section Title -->
 
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Frequently Asked Questions</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
+    <div class="container">
+        <?php if ($updateType == 'events') { ?>
+            <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-lg-12">
+                    <h4>Existing Events</h4>
+                    <ul class="list-group">
+                        <?php 
+                        if ($eventsResult && $eventsResult->num_rows > 0) {
+                            while ($event = $eventsResult->fetch_assoc()) { ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
+                                    <form method="post" class="d-inline-block">
+                                        <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
+                                        <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </li>
+                            <?php }
+                        } else {
+                            echo "<li class='list-group-item'>No events available</li>";
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
 
-      <div class="container">
+        <?php } elseif ($updateType == 'recruitments') { ?>
+            <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-lg-12">
+                    <h4>Existing Recruitments</h4>
+                    <ul class="list-group">
+                        <?php 
+                        if ($recruitmentsResult && $recruitmentsResult->num_rows > 0) {
+                            while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <?php echo htmlspecialchars($recruitment['role']); ?>: <?php echo htmlspecialchars($recruitment['description']); ?> (Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?>)
+                                    <form method="post" class="d-inline-block">
+                                        <input type="hidden" name="recruitment_id" value="<?php echo htmlspecialchars($recruitment['id']); ?>">
+                                        <button type="submit" name="delete_recruitment" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </li>
+                            <?php }
+                        } else {
+                            echo "<li class='list-group-item'>No recruitments available</li>";
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
 
-        <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
-          <div class="col-lg-5 d-flex">
-            <i class="bi bi-question-circle"></i>
-            <h4>Non consectetur a erat nam at lectus urna duis?</h4>
-          </div>
-          <div class="col-lg-7">
-            <p>
-              Feugiat pretium nibh ipsum consequat. Tempus iaculis urna id volutpat lacus laoreet non curabitur gravida. Venenatis lectus magna fringilla urna porttitor rhoncus dolor purus non.
-            </p>
-          </div>
-        </div><!-- End F.A.Q Item-->
-
-        <div class="row faq-item" data-aos="fade-up" data-aos-delay="200">
-          <div class="col-lg-5 d-flex">
-            <i class="bi bi-question-circle"></i>
-            <h4>Feugiat scelerisque varius morbi enim nunc faucibus a pellentesque?</h4>
-          </div>
-          <div class="col-lg-7">
-            <p>
-              Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim.
-            </p>
-          </div>
-        </div><!-- End F.A.Q Item-->
-
-        <div class="row faq-item" data-aos="fade-up" data-aos-delay="300">
-          <div class="col-lg-5 d-flex">
-            <i class="bi bi-question-circle"></i>
-            <h4>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi?</h4>
-          </div>
-          <div class="col-lg-7">
-            <p>
-              Eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci. Faucibus pulvinar elementum integer enim. Sem nulla pharetra diam sit amet nisl suscipit. Rutrum tellus pellentesque eu tincidunt. Lectus urna duis convallis convallis tellus.
-            </p>
-          </div>
-        </div><!-- End F.A.Q Item-->
-
-        <div class="row faq-item" data-aos="fade-up" data-aos-delay="400">
-          <div class="col-lg-5 d-flex">
-            <i class="bi bi-question-circle"></i>
-            <h4>Ac odio tempor orci dapibus. Aliquam eleifend mi in nulla?</h4>
-          </div>
-          <div class="col-lg-7">
-            <p>
-              Aperiam itaque sit optio et deleniti eos nihil quidem cumque. Voluptas dolorum accusantium sunt sit enim. Provident consequuntur quam aut reiciendis qui rerum dolorem sit odio. Repellat assumenda soluta sunt pariatur error doloribus fuga.
-            </p>
-          </div>
-        </div><!-- End F.A.Q Item-->
-
-        <div class="row faq-item" data-aos="fade-up" data-aos-delay="500">
-          <div class="col-lg-5 d-flex">
-            <i class="bi bi-question-circle"></i>
-            <h4>Tempus quam pellentesque nec nam aliquam sem et tortor consequat?</h4>
-          </div>
-          <div class="col-lg-7">
-            <p>
-              Molestie a iaculis at erat pellentesque adipiscing commodo. Dignissim suspendisse in est ante in. Nunc vel risus commodo viverra maecenas accumsan. Sit amet nisl suscipit adipiscing bibendum est. Purus gravida quis blandit turpis cursus in
-            </p>
-          </div>
-        </div><!-- End F.A.Q Item-->
-
-      </div>
-
-    </section><!-- /Faq Section -->
+        <?php } elseif ($updateType == 'applications') { ?>
+            <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-lg-12">
+                    <h4>Existing Applications</h4>
+                    <ul class="list-group">
+                        <?php 
+                        if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                            while ($application = $applicationsResult->fetch_assoc()) { ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <?php echo htmlspecialchars($application['student_name']); ?>: <?php echo htmlspecialchars($application['email']); ?>
+                                    <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-primary btn-sm" target="_blank">View Resume</a>
+                                </li>
+                            <?php }
+                        } else {
+                            echo "<li class='list-group-item'>No applications available</li>";
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+</section>
+<!-- /Faq Section -->
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
