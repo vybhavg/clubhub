@@ -852,7 +852,7 @@ section,
   opacity:1;
 }
 .cont {
-  background: linear-gradient(135deg, rgba(103, 176, 209, 0.9), rgba(30, 58, 138, 0.7));
+  background: linear-gradient(90deg, rgba(145,223,240,0.70) 0%, rgba(103,176,209,0.70) 45%, rgba(11,145,187,0.70) 100%);
   padding: 20px;
   border-radius: 20px;
   max-width: 800px;
