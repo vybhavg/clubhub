@@ -228,119 +228,133 @@ $conn->close();
     </section><!-- /About Section -->
     <?php } ?>
 
-    <form method="post">
-        <label for="branch_id">Select Branch:</label>
-        <select name="branch_id" id="branch_id">
-            <option value="">Select Branch</option>
-            <?php 
-            if ($branchesResult && $branchesResult->num_rows > 0) {
-                while ($branch = $branchesResult->fetch_assoc()) { ?>
-                    <option value="<?php echo htmlspecialchars($branch['id']); ?>" <?php if ($selectedBranch == $branch['id']) echo 'selected'; ?>><?php echo htmlspecialchars($branch['branch_name']); ?></option>
-                <?php } 
-            } else {
-                echo "<option value=''>No branches available</option>";
-            }
-            ?>
-        </select>
-        <input type="submit" name="select_branch" value="Select Branch">
+  <div class="form-container">
+    <form method="post" class="mb-4">
+        <div class="form-group">
+            <label for="branch_id">Select Branch:</label>
+            <select name="branch_id" id="branch_id" class="form-control">
+                <option value="">Select Branch</option>
+                <?php 
+                if ($branchesResult && $branchesResult->num_rows > 0) {
+                    while ($branch = $branchesResult->fetch_assoc()) { ?>
+                        <option value="<?php echo htmlspecialchars($branch['id']); ?>" <?php if ($selectedBranch == $branch['id']) echo 'selected'; ?>><?php echo htmlspecialchars($branch['branch_name']); ?></option>
+                    <?php } 
+                } else {
+                    echo "<option value=''>No branches available</option>";
+                }
+                ?>
+            </select>
+        </div>
+        <button type="submit" name="select_branch" class="btn btn-custom">Select Branch</button>
     </form>
-    <form method="post">
-        <label for="club_id">Select Club:</label>
-        <select name="club_id" id="club_id">
-            <option value="">Select Club</option>
-            <?php 
-            if ($clubsResult && $clubsResult->num_rows > 0) {
-                while ($club = $clubsResult->fetch_assoc()) { ?>
-                    <option value="<?php echo htmlspecialchars($club['id']); ?>" <?php if ($selectedClub == $club['id']) echo 'selected'; ?>><?php echo htmlspecialchars($club['club_name']); ?></option>
-                <?php } 
-            } else {
-                echo "<option value=''>No clubs available</option>";
-            }
-            ?>
-        </select>
-        <input type="submit" name="select_club" value="Select Club">
+
+    <form method="post" class="mb-4">
+        <div class="form-group">
+            <label for="club_id">Select Club:</label>
+            <select name="club_id" id="club_id" class="form-control">
+                <option value="">Select Club</option>
+                <?php 
+                if ($clubsResult && $clubsResult->num_rows > 0) {
+                    while ($club = $clubsResult->fetch_assoc()) { ?>
+                        <option value="<?php echo htmlspecialchars($club['id']); ?>" <?php if ($selectedClub == $club['id']) echo 'selected'; ?>><?php echo htmlspecialchars($club['club_name']); ?></option>
+                    <?php } 
+                } else {
+                    echo "<option value=''>No clubs available</option>";
+                }
+                ?>
+            </select>
+        </div>
+        <button type="submit" name="select_club" class="btn btn-custom">Select Club</button>
     </form>
 
     <?php if ($updateType == 'events') { ?>
-        <h2>Events</h2>
-        <form method="post">
-            <label for="event_title">Event Title:</label>
-            <input type="text" name="event_title" id="event_title"><br><br>
-            <label for="event_description">Event Description:</label>
-            <textarea name="event_description" id="event_description"></textarea><br><br>
+        <form method="post" class="mb-4">
+            <div class="form-group">
+                <label for="event_title">Event Title:</label>
+                <input type="text" name="event_title" id="event_title" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="event_description">Event Description:</label>
+                <textarea name="event_description" id="event_description" class="form-control"></textarea>
+            </div>
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
-            <input type="submit" name="add_event" value="Add Event">
+            <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
         </form>
 
         <h2>Existing Events</h2>
-        <ul>
+        <ul class="list-group">
             <?php 
             if ($eventsResult && $eventsResult->num_rows > 0) {
                 while ($event = $eventsResult->fetch_assoc()) { ?>
-                    <li>
+                    <li class="list-group-item">
                         <?php echo htmlspecialchars($event['title']); ?> (<?php echo htmlspecialchars($event['description']); ?>)
                         <form method="post" style="display:inline;">
                             <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
-                            <input type="submit" name="delete_event" value="Delete">
+                            <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
                         </form>
                     </li>
                 <?php }
             } else {
-                echo "<li>No events available</li>";
+                echo "<li class='list-group-item'>No events available</li>";
             }
             ?>
         </ul>
 
     <?php } elseif ($updateType == 'recruitments') { ?>
-        <h2>Recruitments</h2>
-        <form method="post">
-            <label for="role">Role:</label>
-            <input type="text" name="role" id="role"><br><br>
-            <label for="recruitment_description">Description:</label>
-            <textarea name="recruitment_description" id="recruitment_description"></textarea><br><br>
-            <label for="deadline">Deadline:</label>
-            <input type="date" name="deadline" id="deadline"><br><br>
+        <form method="post" class="mb-4">
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <input type="text" name="role" id="role" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="recruitment_description">Description:</label>
+                <textarea name="recruitment_description" id="recruitment_description" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="deadline">Deadline:</label>
+                <input type="date" name="deadline" id="deadline" class="form-control">
+            </div>
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
-            <input type="submit" name="add_recruitment" value="Add Recruitment">
+            <button type="submit" name="add_recruitment" class="btn btn-custom">Add Recruitment</button>
         </form>
 
         <h2>Existing Recruitments</h2>
-        <ul>
+        <ul class="list-group">
             <?php 
             if ($recruitmentsResult && $recruitmentsResult->num_rows > 0) {
                 while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
-                    <li>
+                    <li class="list-group-item">
                         <?php echo htmlspecialchars($recruitment['role']); ?> (<?php echo htmlspecialchars($recruitment['description']); ?>, Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?>)
                         <form method="post" style="display:inline;">
                             <input type="hidden" name="recruitment_id" value="<?php echo htmlspecialchars($recruitment['id']); ?>">
-                            <input type="submit" name="delete_recruitment" value="Delete">
+                            <button type="submit" name="delete_recruitment" class="btn btn-danger btn-sm">Delete</button>
                         </form>
                     </li>
                 <?php }
             } else {
-                echo "<li>No recruitments available</li>";
+                echo "<li class='list-group-item'>No recruitments available</li>";
             }
             ?>
         </ul>
 
     <?php } elseif ($updateType == 'applications') { ?>
-        <h2>Applications</h2>
-        <ul>
+        <ul class="list-group">
             <?php 
             if ($applicationsResult && $applicationsResult->num_rows > 0) {
                 while ($application = $applicationsResult->fetch_assoc()) { ?>
-                    <li>
+                    <li class="list-group-item">
                         <?php echo htmlspecialchars($application['student_name']); ?> (<?php echo htmlspecialchars($application['email']); ?>)
-                        <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" target="_blank">View Resume</a>
+                        <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-primary btn-sm" target="_blank">View Resume</a>
                     </li>
                 <?php }
             } else {
-                echo "<li>No applications available</li>";
+                echo "<li class='list-group-item'>No applications available</li>";
             }
             ?>
         </ul>
-
     <?php } ?>
+</div>
+
 </main>
 
 
