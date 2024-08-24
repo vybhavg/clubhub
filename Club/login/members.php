@@ -239,5 +239,20 @@ $conn->close();
         </ul>
 
     <?php } ?>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('navbar-toggle');
+    const mobileMenu = document.getElementById('navbar-mobile-links');
+
+    toggleButton.addEventListener('click', function() {
+        if (mobileMenu.style.display === 'flex') {
+            mobileMenu.style.display = 'none';
+        } else {
+            mobileMenu.style.display = 'flex';
+        }
+    });
+});
+</script>
+
 </body>
 </html>
