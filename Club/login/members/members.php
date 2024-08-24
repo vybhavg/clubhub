@@ -182,7 +182,18 @@ $conn->close();
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
-
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const eventsLink = document.querySelector('a[href="?update_type=events"]');
+      eventsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.history.pushState({}, '', '?update_type=events');
+        const aboutSection = document.querySelector('#about');
+        aboutSection.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
     </div>
   </header>
 <main class="main">
