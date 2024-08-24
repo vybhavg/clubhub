@@ -1,18 +1,34 @@
-/* General Styles */
+/*--------------------------------------------------------------
+# General
+--------------------------------------------------------------*/
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 20px;
-    background: url("../img/about-bg.jpg")
-    background-size: cover;
-    color: #333;
+  font-family: "Open Sans", sans-serif;
+  color: #444444;
 }
 
-h1, h2 {
-    color: #2c3e50;
-    font-weight: bold;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 10px;
+a {
+  text-decoration: none;
+  color: #67b0d1;
 }
+
+a:hover {
+  color: #8ec4dd;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Raleway", sans-serif;
+}
+
+#main {
+  margin-top: 90px;
+}
+
 /*--------------------------------------------------------------
 # Header
 --------------------------------------------------------------*/
