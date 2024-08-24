@@ -134,7 +134,7 @@ $conn->close();
     <header>
         <div class="navbar">
             <div class="navbar-logo">
-                <h1>Club Management System</h1>
+                <h1>ClubHub Members Portal</h1>
             </div>
             <nav class="navbar-menu">
                 <a href="index.php">Home</a>
