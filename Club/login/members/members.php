@@ -170,7 +170,8 @@ $conn->close();
         <!-- <img src="assets/img/logo.png" alt=""> -->
         <h1 class="sitename">CLUBHUB</h1>
       </a>
-<nav id="navmenu" class="navmenu">
+
+      <nav id="navmenu" class="navmenu">
   <ul>
     <li><a href="?update_type=events#hero" class="scroll-link" data-scroll="hero">Home</a></li>
     <li><a href="?update_type=events#events" class="scroll-link" data-scroll="events">Events</a></li>
@@ -181,43 +182,52 @@ $conn->close();
   <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
 </nav>
 
+    </div>
+  </header>
 <main class="main">
 
-  <!-- Hero Section -->
-  <section id="hero" class="hero section accent-background">
-    <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
-    <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
-      <div class="cont">
-        <h2>Welcome, Club Members!</h2>
-        <p>Manage your events, recruitments, and applications efficiently.</p>
-      </div>
-      <a href="#about" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
+    <!-- Hero Section -->
+    <section id="hero" class="hero section accent-background">
+        <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+        <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
+           <div class="cont" ><h2>Welcome, Club Members!</h2>
+            <p>Manage your events, recruitments, and applications efficiently.</p></div>
+            <a href="#about" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
+        </div>
+    </section><!-- /Hero Section -->
+<div id="events">
+    <?php if ($updateType == 'events') { ?>
+        <!-- About Section -->
+    <section id="about" class="about section">
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Events</h2> 
+            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        </div><!-- End Section Title -->
+    </section><!-- /About Section -->
     </div>
-  </section><!-- /Hero Section -->
-
-  <!-- Events Section -->
-  <section id="events" class="about section" style="<?php echo ($updateType == 'events') ? '' : 'display:none;'; ?>">
-    <div class="container section-title" data-aos="fade-up">
-      <h2>Events</h2>
-      <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-    </div><!-- End Section Title -->
-  </section><!-- /Events Section -->
-
-  <!-- Recruitments Section -->
-  <section id="recruitments" class="about section" style="<?php echo ($updateType == 'recruitments') ? '' : 'display:none;'; ?>">
-    <div class="container section-title" data-aos="fade-up">
-      <h2>Recruitments</h2>
-      <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-    </div><!-- End Section Title -->
-  </section><!-- /Recruitments Section -->
-
-  <!-- Applications Section -->
-  <section id="applications" class="about section" style="<?php echo ($updateType == 'applications') ? '' : 'display:none;'; ?>">
-    <div class="container section-title" data-aos="fade-up">
-      <h2>Applications</h2>
-      <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-    </div><!-- End Section Title -->
-  </section><!-- /Applications Section -->
+<div id="recruitments">
+    <?php } elseif ($updateType == 'recruitments') { ?>
+        <!-- About Section -->
+    <section id="about" class="about section">
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Recruitments</h2> 
+            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        </div><!-- End Section Title -->
+    </section><!-- /About Section -->
+    </div>
+  <div id="applications">
+    <?php } elseif ($updateType == 'applications') { ?>
+        <!-- About Section -->
+    <section id="about" class="about section">
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Applications</h2> 
+            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        </div><!-- End Section Title -->
+    </section><!-- /About Section -->
+    <?php } ?></div>
 
     <form method="post">
         <label for="branch_id">Select Branch:</label>
@@ -235,7 +245,6 @@ $conn->close();
         </select>
         <input type="submit" name="select_branch" value="Select Branch">
     </form>
-
     <form method="post">
         <label for="club_id">Select Club:</label>
         <select name="club_id" id="club_id">
