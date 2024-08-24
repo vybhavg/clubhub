@@ -195,7 +195,7 @@ $conn->close();
             <a href="#about" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
         </div>
     </section><!-- /Hero Section -->
-<div id="events">
+    
     <?php if ($updateType == 'events') { ?>
         <!-- About Section -->
     <section id="events" class="about section">
