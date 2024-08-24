@@ -1,9 +1,9 @@
-/* members.css */
+/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
     margin: 20px;
     background-color: #f0f0f5;
-    color: red;
+    color: #333;
 }
 
 h1, h2 {
@@ -13,6 +13,7 @@ h1, h2 {
     padding-bottom: 10px;
 }
 
+/* Navbar */
 .navbar {
     overflow: hidden;
     background-color: #3498db;
@@ -33,6 +34,17 @@ h1, h2 {
     color: #ffffff;
 }
 
+/* Main Container */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Forms */
 form {
     background-color: #ffffff;
     border-radius: 8px;
@@ -74,6 +86,7 @@ input[type="submit"]:hover {
     background-color: #219150;
 }
 
+/* Lists */
 ul {
     list-style-type: none;
     padding: 0;
@@ -92,18 +105,7 @@ ul li:hover {
     background-color: #f9f9f9;
 }
 
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-/* Ensure the styles are correctly targeted and applied */
-
-
-
+/* Messages */
 .message {
     padding: 10px;
     background-color: #dff0d8;
