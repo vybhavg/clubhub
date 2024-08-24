@@ -86,7 +86,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+// Fetch branches and clubs based on selected branch
+$branchesResult = $conn->query("SELECT * FROM branches");
 
+$clubsResult = $selectedBranch ? $conn->prepare("SELECT * FROM clubs WHERE branch_id = ?") : null;
+if ($clubsResult) {
+    $clubsResult->bind_param("i", $selectedBranch);
+    $clubsResult->execute();
+    $clubsResult = $clubsResult->get_result();
+}
 
 // Fetch events and recruitments based on selected club
 $eventsResult = $selectedClub ? $conn->prepare("SELECT * FROM events WHERE club_id = ?") : null;
@@ -123,7 +131,6 @@ $conn->close();
   <title>Index - Squadfree Bootstrap Template</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
@@ -221,10 +228,8 @@ $conn->close();
     </section><!-- /About Section -->
     <?php } ?>
 
-    
-<div class="form-container">
-    <!-- Branch Selection Form -->
-    <form id="branch-form" method="post" class="mb-4">
+  <div class="form-container">
+    <form method="post" class="mb-4">
         <div class="form-group">
             <label for="branch_id">Select Branch:</label>
             <select name="branch_id" id="branch_id" class="form-control">
@@ -243,8 +248,7 @@ $conn->close();
         <button type="submit" name="select_branch" class="btn btn-custom">Select Branch</button>
     </form>
 
-    <!-- Club Selection Form -->
-    <form id="club-form" method="post" class="mb-4">
+    <form method="post" class="mb-4">
         <div class="form-group">
             <label for="club_id">Select Club:</label>
             <select name="club_id" id="club_id" class="form-control">
@@ -263,9 +267,8 @@ $conn->close();
         <button type="submit" name="select_club" class="btn btn-custom">Select Club</button>
     </form>
 
-    <!-- Event Form -->
     <?php if ($updateType == 'events') { ?>
-        <form id="event-form" method="post" class="mb-4">
+        <form method="post" class="mb-4">
             <div class="form-group">
                 <label for="event_title">Event Title:</label>
                 <input type="text" name="event_title" id="event_title" class="form-control">
@@ -274,14 +277,14 @@ $conn->close();
                 <label for="event_description">Event Description:</label>
                 <textarea name="event_description" id="event_description" class="form-control"></textarea>
             </div>
-            <input type="hidden" name="club_id" id="event_club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
+            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
             <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
         </form>
-    <?php } ?>
 
-    <!-- Recruitment Form -->
-    <?php if ($updateType == 'recruitments') { ?>
-        <form id="recruitment-form" method="post" class="mb-4">
+        
+
+    <?php } elseif ($updateType == 'recruitments') { ?>
+        <form method="post" class="mb-4">
             <div class="form-group">
                 <label for="role">Role:</label>
                 <input type="text" name="role" id="role" class="form-control">
@@ -294,9 +297,10 @@ $conn->close();
                 <label for="deadline">Deadline:</label>
                 <input type="date" name="deadline" id="deadline" class="form-control">
             </div>
-            <input type="hidden" name="club_id" id="recruitment_club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
+            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
             <button type="submit" name="add_recruitment" class="btn btn-custom">Add Recruitment</button>
         </form>
+        
     <?php } ?>
 </div>
 
@@ -570,82 +574,6 @@ $conn->close();
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
-<script>
-$(document).ready(function() {
-    // Handle branch form submission
-    $('#branch-form').on('submit', function(event) {
-        event.preventDefault(); // Prevent traditional form submission
-        fetchData();
-    });
-
-    // Handle club form submission
-    $('#club-form').on('submit', function(event) {
-        event.preventDefault(); // Prevent traditional form submission
-        fetchData();
-    });
-
-    // Handle event form submission
-    $('#event-form').on('submit', function(event) {
-        event.preventDefault(); // Prevent traditional form submission
-        $.ajax({
-            url: 'fetch_data.php',
-            type: 'POST',
-            data: $(this).serialize(), // Serialize form data
-            success: function(response) {
-                // Handle success - update the page with the response
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                // Handle error
-                console.error(error);
-            }
-        });
-    });
-
-    // Handle recruitment form submission
-    $('#recruitment-form').on('submit', function(event) {
-        event.preventDefault(); // Prevent traditional form submission
-        $.ajax({
-            url: 'fetch_data.php',
-            type: 'POST',
-            data: $(this).serialize(), // Serialize form data
-            success: function(response) {
-                // Handle success - update the page with the response
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                // Handle error
-                console.error(error);
-            }
-        });
-    });
-
-    function fetchData() {
-        var branch = $('#branch_id').val();
-        var club = $('#club_id').val();
-        var updateType = $('#update_type').val();
-
-        $.ajax({
-            url: 'fetch_data.php',
-            type: 'POST',
-            data: {
-                branch: branch,
-                club: club,
-                updateType: updateType
-            },
-            success: function(response) {
-                // Handle success - update the page with the response
-                // Example: Update a section of the page with new data
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                // Handle error
-                console.error(error);
-            }
-        });
-    }
-});
-</script>
 
 </body>
 
