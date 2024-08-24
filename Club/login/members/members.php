@@ -184,7 +184,32 @@ $conn->close();
       </nav>
   <!-- JavaScript -->
   <script>
-   document.querySelectorAll('.scroll-link').forEach(link => {
+   document.addEventListener('DOMContentLoaded', () => {
+  // Get URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const updateType = urlParams.get('update_type') || 'events'; // Default to 'events'
+  
+  // Set default section to "Home" if no section is specified
+  const sectionToScroll = urlParams.has('update_type') ? urlParams.get('update_type') : 'hero';
+  const targetSection = document.querySelector('#' + sectionToScroll);
+
+  // Scroll to the default or specified section
+  if (targetSection) {
+    targetSection.scrollIntoView({ behavior: 'smooth' });
+  }
+  
+  // Update active link
+  document.querySelectorAll('.scroll-link').forEach(link => {
+    if (link.getAttribute('data-scroll') === sectionToScroll) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+});
+
+// Handle link clicks
+document.querySelectorAll('.scroll-link').forEach(link => {
   link.addEventListener('click', function (event) {
     event.preventDefault();
     
@@ -204,7 +229,6 @@ $conn->close();
   });
 });
 
-
   </script>
     </div>
   </header>
@@ -219,7 +243,7 @@ $conn->close();
             <a href="#about" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
         </div>
     </section><!-- /Hero Section -->
-
+<div id="events">
     <?php if ($updateType == 'events') { ?>
         <!-- About Section -->
     <section id="about" class="about section">
@@ -229,8 +253,8 @@ $conn->close();
             <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
         </div><!-- End Section Title -->
     </section><!-- /About Section -->
-       
-
+    </div>
+<div id="recruitments">
     <?php } elseif ($updateType == 'recruitments') { ?>
         <!-- About Section -->
     <section id="about" class="about section">
@@ -240,7 +264,8 @@ $conn->close();
             <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
         </div><!-- End Section Title -->
     </section><!-- /About Section -->
-        
+    </div>
+  <div id="applications">
     <?php } elseif ($updateType == 'applications') { ?>
         <!-- About Section -->
     <section id="about" class="about section">
@@ -250,7 +275,7 @@ $conn->close();
             <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
         </div><!-- End Section Title -->
     </section><!-- /About Section -->
-    <?php } ?>
+    <?php } ?></div>
 
     <form method="post">
         <label for="branch_id">Select Branch:</label>
