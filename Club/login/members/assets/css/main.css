@@ -852,10 +852,9 @@ section,
   opacity:1;
 }
 .cont{
-  background-color: var(--background-color);
+  background-color:rgba(103, 176, 209,0.45);
   padding:20px;
   border-radius:20px;
-  opacity:0.45;
 }
 
 /*--------------------------------------------------------------
