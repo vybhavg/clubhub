@@ -136,22 +136,16 @@ $conn->close();
             <div class="navbar-logo">
                 <h1>Club Management System</h1>
             </div>
-            <nav class="navbar-menu">
-                <a href="?update_type=events">Events</a>
-                <a href="?update_type=recruitments">Recruitments</a>
-                <a href="?update_type=applications">Applications</a>
-            </nav>
-            <div class="navbar-mobile-menu">
-                <button class="navbar-toggle" id="navbar-toggle">
-                    <span class="navbar-toggle-icon">&#9776;</span>
-                </button>
-                <nav class="navbar-mobile-links" id="navbar-mobile-links">
-                    <a href="?update_type=events">Events</a>
-                    <a href="?update_type=recruitments">Recruitments</a>
-                    <a href="?update_type=applications">Applications</a>
-                </nav>
-            </div>
-        </div>
+          
+            <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link scrollto active" href="#">Home</a></li>
+          <li><a class="nav-link scrollto" href="?update_type=events">Events</a></li>
+          <li><a class="nav-link scrollto" href="?update_type=recruitments">Recruitments</a></li>
+          <li><a class="nav-link scrollto" href="?update_type=applications">Applications</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+          </div>
     </header>
 
     <form method="post">
