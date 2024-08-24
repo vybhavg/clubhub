@@ -848,6 +848,9 @@ section,
     transform: translateY(-5px);
   }
 }
+.cont{
+  background-color: var(--background-color);
+}
 
 /*--------------------------------------------------------------
 # About Section
