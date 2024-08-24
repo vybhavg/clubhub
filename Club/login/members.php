@@ -140,16 +140,10 @@ $conn->close();
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
-  <link href="Club/assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="Club/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="Club/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="Club/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="Club/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="Club/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
 
   <!-- Template Main CSS File -->
-  <link href="Club/login/members.css" rel="stylesheet">
+  <link href="members.css" rel="stylesheet">
 
   <!-- =======================================================
   * Template Name: Squadfree
@@ -175,37 +169,9 @@ $conn->close();
       <nav id="navbar" class="navbar">
         <ul>
           <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-          <li><a class="nav-link scrollto" href="Club/comm.html">About Us</a></li>
-          <li><a class="nav-link scrollto" href="#services">Campuses</a></li>
-                    
-          <li class="dropdown megamenu"><a href="#Clubs"><span>Clubs</span> <i class="bi bi-chevron-down"></i></a>
-            <ul>
-              <li>
-                <strong>Visakhapatnam</strong>
-                <a href="#portfolio">Cultural and Creative Clubssssss</a>
-                <a href="#portfolio">Academic and Professional Development Clubs</a>
-                <a href="#portfolio">Recreational and Hobby Clubs</a>
-                <a href="#portfolio">Community Service and Social Clubs</a>
-
-              </li>
-              <li>
-                <strong>Hyderabad</strong>
-                <a href="#portfolio">Cultural and Creative Clubs</a>
-                <a href="#portfolio">Academic and Professional Development Clubs</a>
-                <a href="#portfolio">Recreational and Hobby Clubs</a>
-                <a href="#portfolio">Community Service and Social Clubs</a>
-              </li>
-              <li>
-                <strong>Bangalore</strong>
-                <a href="#portfolio">Cultural and Creative Clubs</a>
-                <a href="#portfolio">Academic and Professional Development Clubs</a>
-                <a href="#portfolio">Recreational and Hobby Clubs</a>
-                <a href="#portfolio">Community Service and Social Clubs</a>
-              </li>
-              
-            </ul>
-          </li>
-          <li><a class="nav-link scrollto" href="Club/login/login.php">Members</a></li>
+          <li><a class="nav-link scrollto" href="Club/comm.html">Events</a></li>
+          <li><a class="nav-link scrollto" href="#services">Recruitments</a></li>
+          <li><a class="nav-link scrollto" href="Club/login/login.php">Applications</a></li>
           <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
