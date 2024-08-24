@@ -131,11 +131,16 @@ $conn->close();
     <link rel="stylesheet" type="text/css" href="members.css">
 </head>
 <body>
-    <header>
-        <div class="navbar">
-            <div class="navbar-logo">
-                <h1>Club Management System</h1>
-            </div>
+   <header id="header" class="fixed-top header-transparent">
+    <div class="container d-flex align-items-center justify-content-between position-relative">
+
+      <div class="logo">
+        <h1 class="text-light"><a href="index.html"><span>Clubhub Members Portal</span></a></h1>
+        <!-- Uncomment below if you prefer to use an image logo -->
+        <!-- <a href="index.html"><img src="Club/assets/img/logo.png" alt="" class="img-fluid"></a>-->
+      </div>
+
+        
           
             <nav id="navbar" class="navbar">
         <ul>
