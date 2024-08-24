@@ -198,36 +198,35 @@ $conn->close();
 <div id="events">
     <?php if ($updateType == 'events') { ?>
         <!-- About Section -->
-    <section id="about" class="about section">
+    <section id="events" class="about section">
         <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
             <h2>Events</h2> 
             <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
         </div><!-- End Section Title -->
     </section><!-- /About Section -->
-    </div>
-<div id="recruitments">
+
+
     <?php } elseif ($updateType == 'recruitments') { ?>
         <!-- About Section -->
-    <section id="about" class="about section">
+    <section id="recruitments" class="about section">
         <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
             <h2>Recruitments</h2> 
             <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
         </div><!-- End Section Title -->
     </section><!-- /About Section -->
-    </div>
-  <div id="applications">
+   
     <?php } elseif ($updateType == 'applications') { ?>
         <!-- About Section -->
-    <section id="about" class="about section">
+    <section id="applications" class="about section">
         <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
             <h2>Applications</h2> 
             <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
         </div><!-- End Section Title -->
     </section><!-- /About Section -->
-    <?php } ?></div>
+    <?php } ?>
 
     <form method="post">
         <label for="branch_id">Select Branch:</label>
