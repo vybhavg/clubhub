@@ -36,3 +36,4 @@ if ($updateType == 'events') {
 
 echo json_encode($response); // Return data as JSON
 ?>
+  
