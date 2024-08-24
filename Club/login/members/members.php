@@ -131,6 +131,7 @@ $conn->close();
   <title>Index - Squadfree Bootstrap Template</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
