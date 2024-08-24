@@ -171,17 +171,16 @@ $conn->close();
         <h1 class="sitename">CLUBHUB</h1>
       </a>
 
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="#hero" class="active">Home</a></li>
-          <li><a href="?update_type=events">Events</a></li>
-          <li><a href="?update_type=recruitments">Recruitments</a></li>
-          <li><a href="?update_type=applications">Applications</a></li>
-          
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
+     <nav id="navmenu" class="navmenu">
+  <ul>
+    <li><a href="?update_type=events#hero" class="scroll-link" data-scroll="hero">Home</a></li>
+    <li><a href="?update_type=events#events" class="scroll-link" data-scroll="events">Events</a></li>
+    <li><a href="?update_type=recruitments#recruitments" class="scroll-link" data-scroll="recruitments">Recruitments</a></li>
+    <li><a href="?update_type=applications#applications" class="scroll-link" data-scroll="applications">Applications</a></li>
+    <li><a href="#contact" class="scroll-link" data-scroll="contact">Contact</a></li>
+  </ul>
+  <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+</nav>
   <!-- JavaScript -->
   <script>
    document.addEventListener('DOMContentLoaded', () => {
