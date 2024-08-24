@@ -131,13 +131,29 @@ $conn->close();
     <link rel="stylesheet" type="text/css" href="members.css">
 </head>
 <body>
-    <div class="navbar">
-        <a href="?update_type=events">Events</a>
-        <a href="?update_type=recruitments">Recruitments</a>
-        <a href="?update_type=applications">Applications</a>
-    </div>
-    <h1>Club Management System</h1>
-    
+    <header>
+        <div class="navbar">
+            <div class="navbar-logo">
+                <h1>Club Management System</h1>
+            </div>
+            <nav class="navbar-menu">
+                <a href="?update_type=events">Events</a>
+                <a href="?update_type=recruitments">Recruitments</a>
+                <a href="?update_type=applications">Applications</a>
+            </nav>
+            <div class="navbar-mobile-menu">
+                <button class="navbar-toggle" id="navbar-toggle">
+                    <span class="navbar-toggle-icon">&#9776;</span>
+                </button>
+                <nav class="navbar-mobile-links" id="navbar-mobile-links">
+                    <a href="?update_type=events">Events</a>
+                    <a href="?update_type=recruitments">Recruitments</a>
+                    <a href="?update_type=applications">Applications</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
     <form method="post">
         <label for="branch_id">Select Branch:</label>
         <select name="branch_id" id="branch_id">
@@ -195,7 +211,7 @@ $conn->close();
             <label for="deadline">Deadline:</label>
             <input type="date" name="deadline" id="deadline"><br><br>
             <input type="hidden" name="club_id" value="<?php echo $selectedClub; ?>">
-                                                                <input type="submit" name="add_recruitment" value="Add Recruitment">
+            <input type="submit" name="add_recruitment" value="Add Recruitment">
         </form>
 
         <h2>Existing Recruitments</h2>
@@ -213,26 +229,15 @@ $conn->close();
 
     <?php } elseif ($updateType == 'applications') { ?>
         <h2>Applications</h2>
-        <ul class="applications-list">
+        <ul>
             <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
-                <li class="application-item">
-                    <div class="application-details">
-                        <strong><?php echo htmlspecialchars($application['student_name']); ?></strong>
-                        <span class="email">(Email: <?php echo htmlspecialchars($application['email']); ?>)</span>
-                    </div>
-                    <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" target="_blank" class="view-resume">View Resume</a>
+                <li>
+                    <?php echo $application['student_name']; ?> (<?php echo $application['email']; ?>)
+                    <a href="<?php echo $application['resume_path']; ?>" target="_blank">View Resume</a>
                 </li>
             <?php } ?>
         </ul>
-    <?php } ?>
 
-    <div class="messages">
-        <?php
-        if (isset($_SESSION['message'])) {
-            echo $_SESSION['message'];
-            unset($_SESSION['message']);
-        }
-        ?>
-    </div>
+    <?php } ?>
 </body>
 </html>
