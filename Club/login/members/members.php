@@ -118,6 +118,10 @@ if ($applicationsResult) {
     $applicationsResult = $applicationsResult->get_result();
 }
 
+// Close the database connection
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
