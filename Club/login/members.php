@@ -124,72 +124,35 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>ClubHub</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="Club/assets/img/favic.ico" rel="icon">
-  <link href="Club/assets/img/favic.ico" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-
-
-  <!-- Template Main CSS File -->
-  <link href="members.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: Squadfree
-  * Template URL: https://bootstrapmade.com/squadfree-free-bootstrap-template-creative/
-  * Updated: Mar 17 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Management System</title>
+    <link rel="stylesheet" type="text/css" href="members.css">
 </head>
-
 <body>
-
-  <!-- ======= Header ======= -->
-  <header id="header" class="fixed-top header-transparent">
-    <div class="container d-flex align-items-center justify-content-between position-relative">
-
-      <div class="logo">
-        <h1 class="text-light"><a href="index.html"><span>ClubHub</span></a></h1>
-        <!-- Uncomment below if you prefer to use an image logo -->
-        <!-- <a href="index.html"><img src="Club/assets/img/logo.png" alt="" class="img-fluid"></a>-->
-      </div>
-
-      <nav id="navbar" class="navbar">
-        <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-          <li><a class="nav-link scrollto" href="Club/comm.html">Events</a></li>
-          <li><a class="nav-link scrollto" href="#services">Recruitments</a></li>
-          <li><a class="nav-link scrollto" href="Club/login/login.php">Applications</a></li>
-          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
-        </ul>
-        <i class="bi bi-list mobile-nav-toggle"></i>
-      </nav><!-- .navbar -->
-
-    </div>
-  </header><!-- End Header -->
-
-  <!-- ======= Hero Section ======= -->
-  <section id="hero">
-    <div class="hero-container" data-aos="fade-up">
-      <h1>Welcome to ClubHub</h1>
-      <h2>The Students Club Interaction Platform</h2>
-      <a href="#about" class="btn-get-started scrollto"><i class="bx bx-chevrons-down"></i></a>
-    </div>
-  </section><!-- End Hero -->
-
-  <main id="main">
+    <header>
+        <div class="navbar">
+            <div class="navbar-logo">
+                <h1>Club Management System</h1>
+            </div>
+            <nav class="navbar-menu">
+                <a href="?update_type=events">Events</a>
+                <a href="?update_type=recruitments">Recruitments</a>
+                <a href="?update_type=applications">Applications</a>
+            </nav>
+            <div class="navbar-mobile-menu">
+                <button class="navbar-toggle" id="navbar-toggle">
+                    <span class="navbar-toggle-icon">&#9776;</span>
+                </button>
+                <nav class="navbar-mobile-links" id="navbar-mobile-links">
+                    <a href="?update_type=events">Events</a>
+                    <a href="?update_type=recruitments">Recruitments</a>
+                    <a href="?update_type=applications">Applications</a>
+                </nav>
+            </div>
+        </div>
+    </header>
 
     <form method="post">
         <label for="branch_id">Select Branch:</label>
@@ -276,20 +239,5 @@ $conn->close();
         </ul>
 
     <?php } ?>
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const toggleButton = document.getElementById('navbar-toggle');
-    const mobileMenu = document.getElementById('navbar-mobile-links');
-
-    toggleButton.addEventListener('click', function() {
-        if (mobileMenu.style.display === 'flex') {
-            mobileMenu.style.display = 'none';
-        } else {
-            mobileMenu.style.display = 'flex';
-        }
-    });
-});
-</script>
-
 </body>
 </html>
