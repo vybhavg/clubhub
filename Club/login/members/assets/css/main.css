@@ -848,6 +848,9 @@ section,
     transform: translateY(-5px);
   }
 }
+.inn{
+  opacity:1;
+}
 .cont{
   background-color: var(--background-color);
   padding:20px;
