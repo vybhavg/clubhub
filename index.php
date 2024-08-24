@@ -1,6 +1,5 @@
 <?php
 // index.php
-//hi
 
 include('db_connect.php'); // Ensure this path is correct
 
