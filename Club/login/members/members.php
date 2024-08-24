@@ -182,53 +182,7 @@ $conn->close();
   <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
 </nav>
   <!-- JavaScript -->
-  <script>
-   document.addEventListener('DOMContentLoaded', () => {
-  // Get URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const updateType = urlParams.get('update_type') || 'events'; // Default to 'events'
   
-  // Set default section to "Home" if no section is specified
-  const sectionToScroll = urlParams.has('update_type') ? urlParams.get('update_type') : 'hero';
-  const targetSection = document.querySelector('#' + sectionToScroll);
-
-  // Scroll to the default or specified section
-  if (targetSection) {
-    targetSection.scrollIntoView({ behavior: 'smooth' });
-  }
-  
-  // Update active link
-  document.querySelectorAll('.scroll-link').forEach(link => {
-    if (link.getAttribute('data-scroll') === sectionToScroll) {
-      link.classList.add('active');
-    } else {
-      link.classList.remove('active');
-    }
-  });
-});
-
-// Handle link clicks
-document.querySelectorAll('.scroll-link').forEach(link => {
-  link.addEventListener('click', function (event) {
-    event.preventDefault();
-    
-    const targetSectionId = this.getAttribute('data-scroll');
-    const targetSection = document.querySelector('#' + targetSectionId);
-    
-    // Update URL without reloading the page
-    const url = new URL(window.location.href);
-    const updateType = this.getAttribute('href').split('?update_type=')[1].split('#')[0];
-    url.searchParams.set('update_type', updateType);
-    history.pushState(null, null, url.toString());
-    
-    // Scroll to the target section
-    if (targetSection) {
-      targetSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-});
-
-  </script>
     </div>
   </header>
 <main class="main">
