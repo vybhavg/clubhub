@@ -184,15 +184,21 @@ $conn->close();
       </nav>
   <!-- JavaScript -->
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const eventsLink = document.querySelector('a[href="?update_type=events"]');
-      eventsLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.history.pushState({}, '', '?update_type=events');
-        const aboutSection = document.querySelector('#about');
-        aboutSection.scrollIntoView({ behavior: 'smooth' });
-      });
-    });
+   document.querySelectorAll('.scroll-link').forEach(link => {
+  link.addEventListener('click', function (event) {
+    event.preventDefault();
+    const targetSection = document.querySelector('#' + this.getAttribute('data-scroll'));
+
+    // Update URL without reloading the page
+    const url = new URL(window.location.href);
+    url.searchParams.set('update_type', this.getAttribute('href').split('?update_type=')[1].split('#')[0]);
+    history.pushState(null, null, url.toString());
+
+    // Scroll to the target section
+    targetSection.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
   </script>
     </div>
   </header>
