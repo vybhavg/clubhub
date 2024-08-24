@@ -852,7 +852,7 @@ section,
   opacity:1;
 }
 .cont{
-  background-color:rgba(103, 176, 209,0.65);
+  background-color:rgba(103, 176, 209,0.85);
   padding:20px;
   border-radius:20px;
    max-width: 800px; /* Set a max-width to limit the width of the container */
