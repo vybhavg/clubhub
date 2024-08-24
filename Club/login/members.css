@@ -28,7 +28,7 @@ body {
 }
 
 .navbar-menu a, .navbar-mobile-links a {
-    color: #2596be; /* Dark Blue */
+    color: #fff; /* Dark Blue */
     text-decoration: none;
     padding: 0.5rem 1rem;
     display: inline-block;
@@ -46,7 +46,7 @@ body {
 .navbar-toggle {
     background: none;
     border: none;
-    color:#2596be; /* Dark Blue */
+    color:#fff; /* Dark Blue */
     font-size: 1.5rem;
     cursor: pointer;
 }
