@@ -61,7 +61,7 @@ body {
 }
 
 .welcome-background {
-    background: url('path/to/your/background-image.jpg') no-repeat center center;
+    background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJxtLXGz45RTFuNn83RyJide2K6EXWh_xpHtUS-pZvG64KgXFY-hK8sbCxxPXioZLDpg&usqp=CAU') no-repeat center center;
     background-size: cover;
     padding: 4rem 2rem;
     text-align: center;
