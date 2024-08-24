@@ -137,6 +137,7 @@ $conn->close();
                 <h1>Club Management System</h1>
             </div>
             <nav class="navbar-menu">
+                <a href="index.php">Home</a>
                 <a href="?update_type=events">Events</a>
                 <a href="?update_type=recruitments">Recruitments</a>
                 <a href="?update_type=applications">Applications</a>
@@ -146,6 +147,7 @@ $conn->close();
                     <span class="navbar-toggle-icon">&#9776;</span>
                 </button>
                 <nav class="navbar-mobile-links" id="navbar-mobile-links">
+                    <a href="index.php">Home</a>
                     <a href="?update_type=events">Events</a>
                     <a href="?update_type=recruitments">Recruitments</a>
                     <a href="?update_type=applications">Applications</a>
@@ -153,6 +155,16 @@ $conn->close();
             </div>
         </div>
     </header>
+
+    <section class="welcome-section">
+        <div class="welcome-background">
+            <div class="welcome-text">
+                <h2>Welcome, Club Members!</h2>
+                <p>Manage your events, recruitments, and applications efficiently.</p>
+            </div>
+        </div>
+    </section>
+
 
     <form method="post">
         <label for="branch_id">Select Branch:</label>
