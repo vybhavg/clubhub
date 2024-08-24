@@ -312,13 +312,13 @@ $conn->close();
     <section id="faq" class="faq section light-background">
     <div class="container section-title" data-aos="fade-up">
         <?php if ($updateType == 'events') { ?>
-            <h2>Frequently Asked Questions: Events</h2>
+            <h2>Existing Events</h2>
             <p>Here are the existing events.</p>
         <?php } elseif ($updateType == 'recruitments') { ?>
-            <h2>Frequently Asked Questions: Recruitments</h2>
+            <h2>Current Recruitments</h2>
             <p>Here are the current recruitment opportunities.</p>
         <?php } elseif ($updateType == 'applications') { ?>
-            <h2>Frequently Asked Questions: Applications</h2>
+            <h2>Student Applications</h2>
             <p>Here are the applications received.</p>
         <?php } ?>
     </div><!-- End Section Title -->
