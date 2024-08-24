@@ -86,15 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Fetch branches and clubs based on selected branch
-$branchesResult = $conn->query("SELECT * FROM branches");
 
-$clubsResult = $selectedBranch ? $conn->prepare("SELECT * FROM clubs WHERE branch_id = ?") : null;
-if ($clubsResult) {
-    $clubsResult->bind_param("i", $selectedBranch);
-    $clubsResult->execute();
-    $clubsResult = $clubsResult->get_result();
-}
 
 // Fetch events and recruitments based on selected club
 $eventsResult = $selectedClub ? $conn->prepare("SELECT * FROM events WHERE club_id = ?") : null;
