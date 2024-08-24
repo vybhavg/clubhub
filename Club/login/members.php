@@ -1,145 +1,238 @@
+<?php
+// Start session and include the database connection file
+session_start();
+include('/var/www/html/db_connect.php'); // Include your database connection file here
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Set default values for the first visit after login
+if (!isset($_SESSION['selected_branch'])) {
+    $_SESSION['selected_branch'] = null;
+}
+if (!isset($_SESSION['selected_club'])) {
+    $_SESSION['selected_club'] = null;
+}
+if (!isset($_SESSION['update_type'])) {
+    $_SESSION['update_type'] = 'events'; // Default to 'events'
+}
+
+$selectedBranch = $_SESSION['selected_branch'];
+$selectedClub = $_SESSION['selected_club'];
+$updateType = isset($_GET['update_type']) ? $_GET['update_type'] : $_SESSION['update_type'];
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['add_event'])) {
+        // Handle adding events
+        $title = $_POST['event_title'];
+        $description = $_POST['event_description'];
+        $club_id = $_POST['club_id'];
+
+        $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssi", $title, $description, $club_id);
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Event added successfully.";
+        } else {
+            $_SESSION['message'] = "Error adding event.";
+        }
+        $stmt->close();
+    } elseif (isset($_POST['add_recruitment'])) {
+        // Handle adding recruitments
+        $role = $_POST['role'];
+        $description = $_POST['recruitment_description'];
+        $deadline = $_POST['deadline'];
+        $club_id = $_POST['club_id'];
+
+        $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Recruitment added successfully.";
+        } else {
+            $_SESSION['message'] = "Error adding recruitment.";
+        }
+        $stmt->close();
+    } elseif (isset($_POST['delete_event'])) {
+        // Handle deleting events
+        $event_id = $_POST['event_id'];
+        $sql = "DELETE FROM events WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $event_id);
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Event deleted successfully.";
+        } else {
+            $_SESSION['message'] = "Error deleting event.";
+        }
+        $stmt->close();
+    } elseif (isset($_POST['delete_recruitment'])) {
+        // Handle deleting recruitments
+        $recruitment_id = $_POST['recruitment_id'];
+        $sql = "DELETE FROM recruitments WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $recruitment_id);
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Recruitment deleted successfully.";
+        } else {
+            $_SESSION['message'] = "Error deleting recruitment.";
+        }
+        $stmt->close();
+    } elseif (isset($_POST['select_branch'])) {
+        $_SESSION['selected_branch'] = $_POST['branch_id'];
+        $selectedBranch = $_POST['branch_id'];
+    } elseif (isset($_POST['select_club'])) {
+        $_SESSION['selected_club'] = $_POST['club_id'];
+        $selectedClub = $_POST['club_id'];
+    }
+}
+
+// Fetch branches and clubs based on selected branch
+$branchesResult = $conn->query("SELECT * FROM branches");
+
+$clubsResult = $selectedBranch ? $conn->prepare("SELECT * FROM clubs WHERE branch_id = ?") : null;
+if ($clubsResult) {
+    $clubsResult->bind_param("i", $selectedBranch);
+    $clubsResult->execute();
+    $clubsResult = $clubsResult->get_result();
+}
+
+// Fetch events and recruitments based on selected club
+$eventsResult = $selectedClub ? $conn->prepare("SELECT * FROM events WHERE club_id = ?") : null;
+$recruitmentsResult = $selectedClub ? $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?") : null;
+if ($eventsResult) {
+    $eventsResult->bind_param("i", $selectedClub);
+    $eventsResult->execute();
+    $eventsResult = $eventsResult->get_result();
+}
+if ($recruitmentsResult) {
+    $recruitmentsResult->bind_param("i", $selectedClub);
+    $recruitmentsResult->execute();
+    $recruitmentsResult = $recruitmentsResult->get_result();
+}
+
+// Fetch applications based on selected club
+$applicationsResult = $selectedClub ? $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?") : null;
+if ($applicationsResult) {
+    $applicationsResult->bind_param("i", $selectedClub);
+    $applicationsResult->execute();
+    $applicationsResult = $applicationsResult->get_result();
+}
+
+// Close the database connection
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Club Management System</title>
-    <link rel="stylesheet" href="/var/www/html/Club/assets/css/style.css"> <!-- Link to Squadfree CSS -->
-    <script src="/var/www/html/Club/js/main.js" defer></script> <!-- Link to Squadfree JS -->
+    <link rel="stylesheet" type="text/css" href="members.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <header id="header" class="fixed-top d-flex align-items-center">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="logo">
-                <h1 class="text-light"><a href="index.html"><span>Club Management</span></a></h1>
-            </div>
-            <nav id="navbar" class="navbar">
-                <ul>
-                    <li><a class="nav-link scrollto active" href="?update_type=events">Events</a></li>
-                    <li><a class="nav-link scrollto" href="?update_type=recruitments">Recruitments</a></li>
-                    <li><a class="nav-link scrollto" href="?update_type=applications">Applications</a></li>
-                </ul>
-                <i class="bi bi-list mobile-nav-toggle"></i>
-            </nav><!-- .navbar -->
-        </div>
-    </header>
+    <div class="navbar">
+        <a href="?update_type=events">Events</a>
+        <a href="?update_type=recruitments">Recruitments</a>
+        <a href="?update_type=applications">Applications</a>
+    </div>
+    <h1>Club Management System</h1>
+    
+    <form method="post">
+        <label for="branch_id">Select Branch:</label>
+        <select name="branch_id" id="branch_id">
+            <option value="">Select Branch</option>
+            <?php while ($branch = $branchesResult->fetch_assoc()) { ?>
+                <option value="<?php echo $branch['id']; ?>" <?php if ($selectedBranch == $branch['id']) echo 'selected'; ?>><?php echo $branch['branch_name']; ?></option>
+            <?php } ?>
+        </select>
+        <input type="submit" name="select_branch" value="Select Branch">
+    </form>
 
-    <main id="main" class="main-page">
-        <section class="inner-page">
-            <div class="container">
-                <h2>Club Management System</h2>
-                <form method="post" class="form-inline">
-                    <div class="form-group">
-                        <label for="branch_id">Select Branch:</label>
-                        <select name="branch_id" id="branch_id" class="form-control">
-                            <option value="">Select Branch</option>
-                            <?php while ($branch = $branchesResult->fetch_assoc()) { ?>
-                                <option value="<?php echo $branch['id']; ?>" <?php if ($selectedBranch == $branch['id']) echo 'selected'; ?>><?php echo $branch['branch_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                    <input type="submit" name="select_branch" value="Select Branch" class="btn btn-primary">
-                </form>
+    <form method="post">
+        <label for="club_id">Select Club:</label>
+        <select name="club_id" id="club_id">
+            <option value="">Select Club</option>
+            <?php if ($clubsResult) { 
+                while ($club = $clubsResult->fetch_assoc()) { ?>
+                    <option value="<?php echo $club['id']; ?>" <?php if ($selectedClub == $club['id']) echo 'selected'; ?>><?php echo $club['club_name']; ?></option>
+            <?php } } ?>
+        </select>
+        <input type="submit" name="select_club" value="Select Club">
+    </form>
 
-                <form method="post" class="form-inline">
-                    <div class="form-group">
-                        <label for="club_id">Select Club:</label>
-                        <select name="club_id" id="club_id" class="form-control">
-                            <option value="">Select Club</option>
-                            <?php if ($clubsResult) { 
-                                while ($club = $clubsResult->fetch_assoc()) { ?>
-                                    <option value="<?php echo $club['id']; ?>" <?php if ($selectedClub == $club['id']) echo 'selected'; ?>><?php echo $club['club_name']; ?></option>
-                            <?php } } ?>
-                        </select>
-                    </div>
-                    <input type="submit" name="select_club" value="Select Club" class="btn btn-primary">
-                </form>
+    <?php if ($updateType == 'events') { ?>
+        <h2>Events</h2>
+        <form method="post">
+            <label for="event_title">Event Title:</label>
+            <input type="text" name="event_title" id="event_title"><br><br>
+            <label for="event_description">Event Description:</label>
+            <textarea name="event_description" id="event_description"></textarea><br><br>
+            <input type="hidden" name="club_id" value="<?php echo $selectedClub; ?>">
+            <input type="submit" name="add_event" value="Add Event">
+        </form>
 
-                <?php if ($updateType == 'events') { ?>
-                    <h3>Events</h3>
-                    <form method="post" class="form-group">
-                        <label for="event_title">Event Title:</label>
-                        <input type="text" name="event_title" id="event_title" class="form-control"><br>
-                        <label for="event_description">Event Description:</label>
-                        <textarea name="event_description" id="event_description" class="form-control"></textarea><br>
-                        <input type="hidden" name="club_id" value="<?php echo $selectedClub; ?>">
-                        <input type="submit" name="add_event" value="Add Event" class="btn btn-success">
+        <h2>Existing Events</h2>
+        <ul>
+            <?php while ($event = $eventsResult->fetch_assoc()) { ?>
+                <li>
+                    <?php echo $event['title']; ?> (<?php echo $event['description']; ?>)
+                    <form method="post" style="display:inline;">
+                        <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
+                        <input type="submit" name="delete_event" value="Delete">
                     </form>
+                </li>
+            <?php } ?>
+        </ul>
 
-                    <h3>Existing Events</h3>
-                    <ul class="list-group">
-                        <?php while ($event = $eventsResult->fetch_assoc()) { ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <?php echo $event['title']; ?> (<?php echo $event['description']; ?>)
-                                <form method="post" style="display:inline;">
-                                    <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
-                                    <input type="submit" name="delete_event" value="Delete" class="btn btn-danger">
-                                </form>
-                            </li>
-                        <?php } ?>
-                    </ul>
+    <?php } elseif ($updateType == 'recruitments') { ?>
+        <h2>Recruitments</h2>
+        <form method="post">
+            <label for="role">Role:</label>
+            <input type="text" name="role" id="role"><br><br>
+            <label for="recruitment_description">Description:</label>
+            <textarea name="recruitment_description" id="recruitment_description"></textarea><br><br>
+            <label for="deadline">Deadline:</label>
+            <input type="date" name="deadline" id="deadline"><br><br>
+            <input type="hidden" name="club_id" value="<?php echo $selectedClub; ?>">
+                                                                <input type="submit" name="add_recruitment" value="Add Recruitment">
+        </form>
 
-                <?php } elseif ($updateType == 'recruitments') { ?>
-                    <h3>Recruitments</h3>
-                    <form method="post" class="form-group">
-                        <label for="role">Role:</label>
-                        <input type="text" name="role" id="role" class="form-control"><br>
-                        <label for="recruitment_description">Description:</label>
-                        <textarea name="recruitment_description" id="recruitment_description" class="form-control"></textarea><br>
-                        <label for="deadline">Deadline:</label>
-                        <input type="date" name="deadline" id="deadline" class="form-control"><br>
-                        <input type="hidden" name="club_id" value="<?php echo $selectedClub; ?>">
-                        <input type="submit" name="add_recruitment" value="Add Recruitment" class="btn btn-success">
+        <h2>Existing Recruitments</h2>
+        <ul>
+            <?php while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
+                <li>
+                    <?php echo $recruitment['role']; ?> (<?php echo $recruitment['description']; ?>, Deadline: <?php echo $recruitment['deadline']; ?>)
+                    <form method="post" style="display:inline;">
+                        <input type="hidden" name="recruitment_id" value="<?php echo $recruitment['id']; ?>">
+                        <input type="submit" name="delete_recruitment" value="Delete">
                     </form>
+                </li>
+            <?php } ?>
+        </ul>
 
-                    <h3>Existing Recruitments</h3>
-                    <ul class="list-group">
-                        <?php while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <?php echo $recruitment['role']; ?> (<?php echo $recruitment['description']; ?>, Deadline: <?php echo $recruitment['deadline']; ?>)
-                                <form method="post" style="display:inline;">
-                                    <input type="hidden" name="recruitment_id" value="<?php echo $recruitment['id']; ?>">
-                                    <input type="submit" name="delete_recruitment" value="Delete" class="btn btn-danger">
-                                </form>
-                            </li>
-                        <?php } ?>
-                    </ul>
+    <?php } elseif ($updateType == 'applications') { ?>
+        <h2>Applications</h2>
+        <ul class="applications-list">
+            <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
+                <li class="application-item">
+                    <div class="application-details">
+                        <strong><?php echo htmlspecialchars($application['student_name']); ?></strong>
+                        <span class="email">(Email: <?php echo htmlspecialchars($application['email']); ?>)</span>
+                    </div>
+                    <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" target="_blank" class="view-resume">View Resume</a>
+                </li>
+            <?php } ?>
+        </ul>
+    <?php } ?>
 
-                <?php } elseif ($updateType == 'applications') { ?>
-                    <h3>Applications</h3>
-                    <ul class="list-group">
-                        <?php while ($application = $applicationsResult->fetch_assoc()) { ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="application-details">
-                                    <strong><?php echo htmlspecialchars($application['student_name']); ?></strong>
-                                    <span>(Email: <?php echo htmlspecialchars($application['email']); ?>)</span>
-                                </div>
-                                <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" target="_blank" class="btn btn-info">View Resume</a>
-                            </li>
-                        <?php } ?>
-                    </ul>
-                <?php } ?>
-
-                <div class="alert alert-info">
-                    <?php
-                    if (isset($_SESSION['message'])) {
-                        echo $_SESSION['message'];
-                        unset($_SESSION['message']);
-                    }
-                    ?>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer id="footer">
-        <div class="container">
-            <div class="copyright">
-                &copy; Copyright <strong><span>ClubHub</span></strong>. All Rights Reserved
-            </div>
-        </div>
-    </footer>
+    <div class="messages">
+        <?php
+        if (isset($_SESSION['message'])) {
+            echo $_SESSION['message'];
+            unset($_SESSION['message']);
+        }
+        ?>
+    </div>
 </body>
 </html>
