@@ -18,17 +18,17 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background-color: #f8fbfd; /* Light Blue */
+    background-color: #2596be; /* Light Blue */
     border-bottom: 1px solid #ddd;
 }
 
 .navbar-logo h1 {
-    color: #003366; /* Dark Blue */
+    color: #2596be; /* Dark Blue */
     margin: 0;
 }
 
 .navbar-menu a, .navbar-mobile-links a {
-    color: #003366; /* Dark Blue */
+    color: #2596be; /* Dark Blue */
     text-decoration: none;
     padding: 0.5rem 1rem;
     display: inline-block;
@@ -46,7 +46,7 @@ body {
 .navbar-toggle {
     background: none;
     border: none;
-    color: #003366; /* Dark Blue */
+    color:#2596be; /* Dark Blue */
     font-size: 1.5rem;
     cursor: pointer;
 }
@@ -109,7 +109,7 @@ form input[type="text"], form input[type="date"], form textarea, form select {
 }
 
 form input[type="submit"] {
-    background-color: #003366; /* Dark Blue */
+    background-color:#2596be; /* Dark Blue */
     color: #fff;
     border: none;
     padding: 0.5rem 1rem;
@@ -118,7 +118,7 @@ form input[type="submit"] {
 }
 
 form input[type="submit"]:hover {
-    background-color: #004080; /* Lighter Blue */
+    background-color: #2596be; /* Lighter Blue */
 }
 
 /* Lists */
