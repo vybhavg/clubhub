@@ -157,3 +157,70 @@ a:hover {
         display: flex;
     }
 }
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #333;
+}
+
+.navbar-logo h1 {
+    color: #fff;
+    margin: 0;
+}
+
+.navbar-menu a, .navbar-mobile-links a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+}
+
+.navbar-menu a:hover, .navbar-mobile-links a:hover {
+    background-color: #555;
+}
+
+.navbar-mobile-menu {
+    display: none;
+}
+
+.welcome-section {
+    margin-top: 2rem;
+}
+
+.welcome-background {
+    background: url('path/to/your/background-image.jpg') no-repeat center center;
+    background-size: cover;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.welcome-text {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.welcome-text h2 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.welcome-text p {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .navbar-mobile-menu {
+        display: block;
+    }
+    
+    .navbar-menu {
+        display: none;
+    }
+}
