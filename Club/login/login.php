@@ -37,7 +37,7 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
         // Verify the password (plain text comparison)
         if ($password === $user['password']) {
             // Login successful, redirect to dashboard page
-            header('Location: var/www/html/Club/members/members.php');
+            header('Location: members/members.php');
             exit;
         } else {
             $error_message = "Invalid username or password";
