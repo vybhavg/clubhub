@@ -197,7 +197,8 @@ $conn->close();
         </div>
     </section><!-- /Hero Section -->
 
-    <!-- About Section -->
+    <?php if ($updateType == 'events') { ?>
+        <!-- About Section -->
     <section id="about" class="about section">
         <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
@@ -205,6 +206,28 @@ $conn->close();
             <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
         </div><!-- End Section Title -->
     </section><!-- /About Section -->
+       
+
+    <?php } elseif ($updateType == 'recruitments') { ?>
+        <!-- About Section -->
+    <section id="about" class="about section">
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Recruitments</h2> 
+            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        </div><!-- End Section Title -->
+    </section><!-- /About Section -->
+        
+    <?php } elseif ($updateType == 'applications') { ?>
+        <!-- About Section -->
+    <section id="about" class="about section">
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Applications</h2> 
+            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        </div><!-- End Section Title -->
+    </section><!-- /About Section -->
+    <?php } ?>
 
     <form method="post">
         <label for="branch_id">Select Branch:</label>
