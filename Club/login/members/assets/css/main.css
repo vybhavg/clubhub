@@ -987,71 +987,56 @@ section,
 /*--------------------------------------------------------------
 # form Section
 --------------------------------------------------------------*/
-.form-container {
-    background: linear-gradient(135deg, rgba(103, 176, 209, 0.9), rgba(30, 58, 138, 0.7));
-    padding: 30px;
-    border-radius: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    color: white;
-}
+    .form-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-.form-container label {
-    font-weight: bold;
-}
+    .form-container h2 {
+        margin-top: 20px;
+    }
 
-.form-container input[type="submit"] {
-    background-color: #1e3a8a;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+    .form-container ul {
+        list-style-type: none;
+        padding: 0;
+    }
 
-.form-container input[type="submit"]:hover {
-    background-color: #0f3460;
-}
+    .form-container ul li {
+        margin-bottom: 10px;
+        background-color: #fff;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.form-container select {
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-    padding: 5px;
-    border-radius: 5px;
-    width: 100%;
-}
+    .form-container ul li form {
+        margin: 0;
+    }
 
-.form-container h2 {
-    margin-top: 30px;
-    color: #e3f2fd;
-}
+    .btn-custom {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-ul {
-    list-style: none;
-    padding: 0;
-}
+    .btn-custom:hover {
+        background-color: #0056b3;
+    }
 
-ul li {
-    background-color: #1e3a8a;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    color: white;
-}
-
-ul li form {
-    display: inline-block;
-}
-
-ul li a {
-    color: #e3f2fd;
-    text-decoration: underline;
-}
-
-ul li a:hover {
-    text-decoration: none;
-}
+    .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+    }
 
 
 
