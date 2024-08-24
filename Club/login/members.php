@@ -149,7 +149,7 @@ $conn->close();
   <link href="Club/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <!-- Template Main CSS File -->
-  <link href="Club/assets/css/style.css" rel="stylesheet">
+  <link href="Club/login/members.css" rel="stylesheet">
 
   <!-- =======================================================
   * Template Name: Squadfree
