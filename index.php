@@ -93,7 +93,7 @@ $conn->close();
 
       <nav id="navbar" class="navbar">
         <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
+          <li><a class="nav-link scrollto active" href="#hero">Homeeee</a></li>
           <li><a class="nav-link scrollto" href="Club/comm.html">About Us</a></li>
           <li><a class="nav-link scrollto" href="#services">Campuses</a></li>
                     
