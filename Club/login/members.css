@@ -18,23 +18,24 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background-color: #003366; /* Dark Blue */
+    background-color: #f8fbfd; /* Light Blue */
+    border-bottom: 1px solid #ddd;
 }
 
 .navbar-logo h1 {
-    color: #fff;
+    color: #003366; /* Dark Blue */
     margin: 0;
 }
 
 .navbar-menu a, .navbar-mobile-links a {
-    color: #fff;
+    color: #003366; /* Dark Blue */
     text-decoration: none;
     padding: 0.5rem 1rem;
     display: inline-block;
 }
 
 .navbar-menu a:hover, .navbar-mobile-links a:hover {
-    background-color: #004080; /* Lighter Blue */
+    background-color: #e0e0e0; /* Light Gray */
     border-radius: 4px;
 }
 
@@ -45,7 +46,7 @@ body {
 .navbar-toggle {
     background: none;
     border: none;
-    color: #fff;
+    color: #003366; /* Dark Blue */
     font-size: 1.5rem;
     cursor: pointer;
 }
