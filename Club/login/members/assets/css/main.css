@@ -850,6 +850,9 @@ section,
 }
 .cont{
   background-color: var(--background-color);
+  padding:20px;
+  border-radius:20px;
+  opacity:0.45;
 }
 
 /*--------------------------------------------------------------
