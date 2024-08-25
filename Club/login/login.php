@@ -20,31 +20,37 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name'])) {
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
     $club_name = $_POST['club_name'];
 
     // Prepare the SQL statement to prevent SQL injection
     $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password) VALUES (?, ?, ?)");
+    if ($stmt === false) {
+        die("Prepare failed: " . $conn->error);
+    }
     $stmt->bind_param("sss", $club_name, $register_username, $register_password);
-    
+
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
     } else {
         $error_message = "Registration failed: " . $stmt->error;
     }
-    
+
     $stmt->close();
 }
 
 // Handle login
-if (isset($_POST['username']) && isset($_POST['pass'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($_POST['pass'])) {
     $username = $_POST['username'];
     $password = $_POST['pass'];
 
     // Prepare the SQL statement to prevent SQL injection
     $stmt = $conn->prepare("SELECT * FROM clubs WHERE username = ?");
+    if ($stmt === false) {
+        die("Prepare failed: " . $conn->error);
+    }
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -72,6 +78,7 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
