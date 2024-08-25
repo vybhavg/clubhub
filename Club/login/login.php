@@ -20,15 +20,14 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if (isset($_POST['club_name']) && isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['branch_id'])) {
-    $club_name = $_POST['club_name'];
+if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name'])) {
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
-    $branch_id = $_POST['branch_id'];
+    $club_name = $_POST['club_name'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
+    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $club_name, $register_username, $register_password);
     
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
@@ -58,8 +57,7 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
             // Login successful, redirect to members.php
             session_start();
             $_SESSION['club_id'] = $club['id'];
-            $_SESSION['club_name'] = $club['club_name'];
-            $_SESSION['branch_id'] = $club['branch_id'];
+            $_SESSION['club_name'] = $club['club_name']; // Assuming 'club_name' is the correct column name
             header('Location: members.php');
             exit;
         } else {
@@ -129,19 +127,6 @@ $conn->close();
             <input class="input100" type="text" name="club_name" placeholder="Club Name">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
           </div>
-          <div class="wrap-input100 validate-input" data-validate="Select branch">
-            <select class="input100" name="branch_id">
-              <option value="">Select Branch</option>
-              <?php
-              // Populate branch options
-              $branch_result = $conn->query("SELECT * FROM branches");
-              while ($branch = $branch_result->fetch_assoc()) {
-                  echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
-              }
-              ?>
-            </select>
-            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-          </div>
           <div class="wrap-input100 validate-input" data-validate="Enter username">
             <input class="input100" type="text" name="register_username" placeholder="Username">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
@@ -174,7 +159,15 @@ $conn->close();
   <script src="vendor/daterangepicker/moment.min.js"></script>
   <script src="vendor/daterangepicker/daterangepicker.js"></script>
   <script src="vendor/countdowntime/countdowntime.js"></script>
-
+  <script src="login.js"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-23581568-13');
+  </script>
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"8aad5a555d9e3fe1","serverTiming":{"name":{"cfL4":true}},"version":"2024.7.0","token":"cd0b4b3a733644fc843ef0b185f98241"}' crossorigin="anonymous"></script>
   <script>
     function showRegister() {
       document.getElementById('login-form').style.display = 'none';
@@ -182,8 +175,8 @@ $conn->close();
     }
 
     function showLogin() {
-      document.getElementById('register-form').style.display = 'none';
       document.getElementById('login-form').style.display = 'block';
+      document.getElementById('register-form').style.display = 'none';
     }
   </script>
 </body>
