@@ -121,10 +121,23 @@ $conn->close();
           </div>
         </form>
 
-        <!-- Registration Form -->
+      <!-- Registration Form -->
         <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
           <div class="wrap-input100 validate-input" data-validate="Enter club name">
             <input class="input100" type="text" name="club_name" placeholder="Club Name">
+            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+          </div>
+          <div class="wrap-input100 validate-input" data-validate="Select branch">
+            <select class="input100" name="branch_id">
+              <option value="">Select Branch</option>
+              <?php
+              // Populate branch options
+              $branch_result = $conn->query("SELECT * FROM branches");
+              while ($branch = $branch_result->fetch_assoc()) {
+                  echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
+              }
+              ?>
+            </select>
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
           </div>
           <div class="wrap-input100 validate-input" data-validate="Enter username">
