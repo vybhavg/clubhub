@@ -23,44 +23,46 @@ $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : $_SESSION['up
 
 // Ensure that the club_id from the session is used
 $club_id = $selectedClub;
-
-if (!$club_id) {
-    $_SESSION['message'] = "Invalid club ID.";
-    // Redirect or handle the error appropriately
-    header("Location: /path/to/error_page.php"); // Redirect to an error page
-    exit();
-}
+$branch_id = $selectedBranch;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         // Handle adding events
-        $title = $_POST['event_title'];
-        $description = $_POST['event_description'];
-
-        $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssi", $title, $description, $club_id);
-        if ($stmt->execute()) {
-            $_SESSION['message'] = "Event added successfully.";
+        if (!$club_id || !$branch_id) {
+            $_SESSION['message'] = "Invalid club or branch ID.";
         } else {
-            $_SESSION['message'] = "Error adding event: " . $stmt->error;
+            $title = $_POST['event_title'];
+            $description = $_POST['event_description'];
+
+            $sql = "INSERT INTO events (title, description, club_id, branch_id) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssii", $title, $description, $club_id, $branch_id);
+            if ($stmt->execute()) {
+                $_SESSION['message'] = "Event added successfully.";
+            } else {
+                $_SESSION['message'] = "Error adding event: " . $stmt->error;
+            }
+            $stmt->close();
         }
-        $stmt->close();
     } elseif (isset($_POST['add_recruitment'])) {
         // Handle adding recruitments
-        $role = $_POST['role'];
-        $description = $_POST['recruitment_description'];
-        $deadline = $_POST['deadline'];
-
-        $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
-        if ($stmt->execute()) {
-            $_SESSION['message'] = "Recruitment added successfully.";
+        if (!$club_id || !$branch_id) {
+            $_SESSION['message'] = "Invalid club or branch ID.";
         } else {
-            $_SESSION['message'] = "Error adding recruitment: " . $stmt->error;
+            $role = $_POST['role'];
+            $description = $_POST['recruitment_description'];
+            $deadline = $_POST['deadline'];
+
+            $sql = "INSERT INTO recruitments (role, description, deadline, club_id, branch_id) VALUES (?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssiii", $role, $description, $deadline, $club_id, $branch_id);
+            if ($stmt->execute()) {
+                $_SESSION['message'] = "Recruitment added successfully.";
+            } else {
+                $_SESSION['message'] = "Error adding recruitment: " . $stmt->error;
+            }
+            $stmt->close();
         }
-        $stmt->close();
     } elseif (isset($_POST['delete_event'])) {
         // Handle deleting events
         $event_id = $_POST['event_id'];
@@ -92,6 +94,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['selected_club'] = $_POST['club_id'];
         $selectedClub = $_POST['club_id'];
         $club_id = $selectedClub; // Update club_id when the club is selected
+        // Ensure branch_id is set
+        $branchResult = $conn->prepare("SELECT branch_id FROM clubs WHERE id = ?");
+        $branchResult->bind_param("i", $club_id);
+        $branchResult->execute();
+        $branchResult = $branchResult->get_result();
+        if ($branchResult->num_rows > 0) {
+            $branchRow = $branchResult->fetch_assoc();
+            $branch_id = $branchRow['branch_id'];
+        } else {
+            $_SESSION['message'] = "Invalid club ID.";
+            $branch_id = null;
+        }
+        $branchResult->close();
     }
 }
 
