@@ -3,10 +3,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Database connection settings
-$db_host = '127.0.0.1'; // Localhost for the same EC2 instance
-$db_username = 'root'; // Replace with your database username
-$db_password = 'Vybhav@123ABC!'; // Replace with your database password
-$db_name = 'mydatabase'; // Replace with your database name
+$db_host = '127.0.0.1';
+$db_username = 'root';
+$db_password = 'Vybhav@123ABC!';
+$db_name = 'mydatabase';
 
 // Create a connection to the database
 $conn = new mysqli($db_host, $db_username, $db_password, $db_name);
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
             // Login successful, redirect to members.php
             session_start();
             $_SESSION['club_id'] = $club['id'];
-            $_SESSION['club_name'] = $club['club_name']; // Assuming 'club_name' is the correct column name
+            $_SESSION['club_name'] = $club['club_name'];
             header('Location: members.php');
             exit;
         } else {
@@ -78,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -117,7 +116,7 @@ $conn->close();
             <input class="input100" type="password" name="pass" placeholder="Password">
             <span class="focus-input100" data-placeholder="&#xe80f;"></span>
           </div>
-          <div id="error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+          <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
           <div class="container-login100-form-btn m-t-32">
             <button class="login100-form-btn">
               Login
@@ -128,7 +127,7 @@ $conn->close();
           </div>
         </form>
 
-      <!-- Registration Form -->
+        <!-- Registration Form -->
         <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
           <div class="wrap-input100 validate-input" data-validate="Enter club name">
             <input class="input100" type="text" name="club_name" placeholder="Club Name">
@@ -137,22 +136,20 @@ $conn->close();
           <div class="wrap-input100 validate-input" data-validate="Select branch">
             <select class="input100" name="branch_id">
               <option value="">Select Branch</option>
+              <?php
               // Populate branch options
-<?php $branch_result = $conn->query("SELECT * FROM branches");
-
-// Check for query errors
-if (!$branch_result) {
-    die("Query failed: " . $conn->error);
-}
-
-// Check if any rows are returned
-if ($branch_result->num_rows > 0) {
-    while ($branch = $branch_result->fetch_assoc()) {
-        echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
-    }
-} else {
-    echo '<option>No branches available</option>';
-}?>
+              $branch_result = $conn->query("SELECT * FROM branches");
+              if ($branch_result === false) {
+                  die("Query failed: " . $conn->error);
+              }
+              if ($branch_result->num_rows > 0) {
+                  while ($branch = $branch_result->fetch_assoc()) {
+                      echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
+                  }
+              } else {
+                  echo '<option>No branches available</option>';
+              }
+              ?>
             </select>
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
           </div>
@@ -164,8 +161,8 @@ if ($branch_result->num_rows > 0) {
             <input class="input100" type="password" name="register_pass" placeholder="Password">
             <span class="focus-input100" data-placeholder="&#xe80f;"></span>
           </div>
-          <div id="register-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
-          <div id="error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+          <div id="register-success-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
+          <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
           <div class="container-login100-form-btn m-t-32">
             <button class="login100-form-btn">
               Register
@@ -192,17 +189,18 @@ if ($branch_result->num_rows > 0) {
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() {
+      dataLayer.push(arguments);
+    }
     gtag('js', new Date());
     gtag('config', 'UA-23581568-13');
   </script>
-  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"8aad5a555d9e3fe1","serverTiming":{"name":{"cfL4":true}},"version":"2024.7.0","token":"cd0b4b3a733644fc843ef0b185f98241"}' crossorigin="anonymous"></script>
   <script>
     function showRegister() {
       document.getElementById('login-form').style.display = 'none';
       document.getElementById('register-form').style.display = 'block';
     }
-
+    
     function showLogin() {
       document.getElementById('login-form').style.display = 'block';
       document.getElementById('register-form').style.display = 'none';
