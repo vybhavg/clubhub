@@ -199,13 +199,6 @@ $conn->close();
         </div>
     </section><!-- /Hero Section -->
 
-    <!-- Navigation Links -->
-    <nav>
-        <a href="?update_type=events" class="<?php echo $updateType == 'events' ? 'active' : ''; ?>">Events</a>
-        <a href="?update_type=recruitments" class="<?php echo $updateType == 'recruitments' ? 'active' : ''; ?>">Recruitments</a>
-        <a href="?update_type=applications" class="<?php echo $updateType == 'applications' ? 'active' : ''; ?>">Applications</a>
-    </nav>
-
     <!-- Dynamic Content Sections -->
     <?php if ($updateType == 'events') { ?>
         <!-- Events Section -->
@@ -362,7 +355,6 @@ $conn->close();
             </div>
         </div>
     <?php } ?>
-
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
