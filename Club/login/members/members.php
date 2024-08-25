@@ -88,9 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Fetch branches and clubs based on selected branch
+// Fetch branches
 $branchesResult = $conn->query("SELECT * FROM branches");
 
+// Fetch clubs based on selected branch
 $clubsResult = $selectedBranch ? $conn->prepare("SELECT * FROM clubs WHERE branch_id = ?") : null;
 if ($clubsResult) {
     $clubsResult->bind_param("i", $selectedBranch);
@@ -123,6 +124,7 @@ if ($applicationsResult) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 <!DOCTYPE html>
