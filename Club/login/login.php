@@ -20,17 +20,18 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name']) && isset($_POST['branch_id'])) {
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
     $club_name = $_POST['club_name'];
+    $branch_id = $_POST['branch_id'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password) VALUES (?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
     if ($stmt === false) {
         die("Prepare failed: " . $conn->error);
     }
-    $stmt->bind_param("sss", $club_name, $register_username, $register_password);
+    $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
 
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
@@ -64,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
             session_start();
             $_SESSION['club_id'] = $club['id'];
             $_SESSION['club_name'] = $club['club_name'];
+            $_SESSION['branch_id'] = $club['branch_id'];
             header('Location: members.php');
             exit;
         } else {
@@ -74,6 +76,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
     }
 
     $stmt->close();
+}
+
+// Fetch branch options
+$branch_options = '';
+$branches = ['Visakhapatnam', 'Hyderabad', 'Bangalore'];
+foreach ($branches as $key => $branch) {
+    $branch_id = $key + 1; // Assuming IDs start from 1
+    $branch_options .= "<option value=\"$branch_id\">$branch</option>";
 }
 
 $conn->close();
@@ -136,7 +146,7 @@ $conn->close();
           <div class="wrap-input100 validate-input" data-validate="Select branch">
             <select class="input100" name="branch_id">
               <option value="">Select Branch</option>
-              
+              <?php echo $branch_options; ?>
             </select>
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
           </div>
@@ -195,3 +205,4 @@ $conn->close();
   </script>
 </body>
 </html>
+
