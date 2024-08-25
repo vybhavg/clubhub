@@ -163,13 +163,23 @@ $conn->close();
 <section id="hero" class="hero section accent-background">
     <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
     <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
-       <div class="cont">
-           <h2>Welcome, <?php echo htmlspecialchars($club_name); ?> Members!</h2>
-           <p>Manage your events, recruitments, and applications efficiently.</p>
-       </div>
-       <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
+        <?php
+        // Fetch the club name based on the logged-in user's club_id
+        $clubQuery = $conn->prepare("SELECT club_name FROM clubs WHERE id = ?");
+        $clubQuery->bind_param("i", $club_id);
+        $clubQuery->execute();
+        $clubQuery->bind_result($club_name);
+        $clubQuery->fetch();
+        $clubQuery->close();
+        ?>
+        <div class="cont">
+            <h2>Welcome, <?php echo htmlspecialchars($club_name); ?> Club Members!</h2>
+            <p>Manage your events, recruitments, and applications efficiently.</p>
+        </div>
+        <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
     </div>
 </section><!-- /Hero Section -->
+
     
     <?php if ($updateType == 'events') { ?>
         <!-- About Section -->
