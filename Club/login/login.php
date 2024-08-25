@@ -174,7 +174,6 @@ $conn->close();
   <script src="vendor/daterangepicker/moment.min.js"></script>
   <script src="vendor/daterangepicker/daterangepicker.js"></script>
   <script src="vendor/countdowntime/countdowntime.js"></script>
-  <script src="login.js"></script>
 
   <script>
     function showRegister() {
@@ -183,8 +182,8 @@ $conn->close();
     }
 
     function showLogin() {
-      document.getElementById('login-form').style.display = 'block';
       document.getElementById('register-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
     }
   </script>
 </body>
