@@ -20,14 +20,14 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name'])) {
+if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['register_branch_id'])) {
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
-    $club_name = $_POST['club_name'];
+    $register_branch_id = $_POST['register_branch_id'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $club_name, $register_username, $register_password);
+    $stmt = $conn->prepare("INSERT INTO clubs (username, password, branch_id) VALUES (?, ?, ?)");
+    $stmt->bind_param("ssi", $register_username, $register_password, $register_branch_id);
     
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
@@ -37,6 +37,7 @@ if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isse
     
     $stmt->close();
 }
+
 
 // Handle login
 if (isset($_POST['username']) && isset($_POST['pass'])) {
@@ -121,31 +122,47 @@ $conn->close();
           </div>
         </form>
 
-        <!-- Registration Form -->
-        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
-          <div class="wrap-input100 validate-input" data-validate="Enter club name">
-            <input class="input100" type="text" name="club_name" placeholder="Club Name">
-            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-          </div>
-          <div class="wrap-input100 validate-input" data-validate="Enter username">
-            <input class="input100" type="text" name="register_username" placeholder="Username">
-            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-          </div>
-          <div class="wrap-input100 validate-input" data-validate="Enter password">
-            <input class="input100" type="password" name="register_pass" placeholder="Password">
-            <span class="focus-input100" data-placeholder="&#xe80f;"></span>
-          </div>
-          <div id="register-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
-          <div id="error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
-          <div class="container-login100-form-btn m-t-32">
-            <button class="login100-form-btn">
-              Register
-            </button>
-          </div>
-          <div class="text-center p-t-136">
-            <a class="txt2" href="#" onclick="showLogin()">Already have an account? Login here</a>
-          </div>
-        </form>
+    <!-- Registration Form -->
+<form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
+  <div class="wrap-input100 validate-input" data-validate="Enter club name">
+    <input class="input100" type="text" name="club_name" placeholder="Club Name">
+    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+  </div>
+  <div class="wrap-input100 validate-input" data-validate="Enter username">
+    <input class="input100" type="text" name="register_username" placeholder="Username">
+    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+  </div>
+  <div class="wrap-input100 validate-input" data-validate="Enter password">
+    <input class="input100" type="password" name="register_pass" placeholder="Password">
+    <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+  </div>
+  <div class="wrap-input100 validate-input" data-validate="Select branch">
+    <select class="input100" name="register_branch_id">
+      <option value="">Select Branch</option>
+      <?php
+      // Fetch branches from the database
+      $conn = new mysqli($db_host, $db_username, $db_password, $db_name);
+      $result = $conn->query("SELECT id, branch_name FROM branches"); // Adjust table/column names as needed
+      while ($row = $result->fetch_assoc()) {
+        echo "<option value=\"{$row['id']}\">{$row['branch_name']}</option>";
+      }
+      $conn->close();
+      ?>
+    </select>
+    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+  </div>
+  <div id="register-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
+  <div id="error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+  <div class="container-login100-form-btn m-t-32">
+    <button class="login100-form-btn">
+      Register
+    </button>
+  </div>
+  <div class="text-center p-t-136">
+    <a class="txt2" href="#" onclick="showLogin()">Already have an account? Login here</a>
+  </div>
+</form>
+
       </div>
     </div>
   </div>
