@@ -127,21 +127,6 @@ $conn->close();
             <input class="input100" type="text" name="club_name" placeholder="Club Name">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
           </div>
-
-            <div class="wrap-input100 validate-input" data-validate="Select branch">
-            <select class="input100" name="branch_id">
-              <option value="">Select Branch</option>
-              <?php
-              // Populate branch options
-              $branch_result = $conn->query("SELECT * FROM branches");
-              while ($branch = $branch_result->fetch_assoc()) {
-                  echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
-              }
-              ?>
-            </select>
-            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-          </div>
-            
           <div class="wrap-input100 validate-input" data-validate="Enter username">
             <input class="input100" type="text" name="register_username" placeholder="Username">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
