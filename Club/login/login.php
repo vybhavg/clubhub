@@ -20,26 +20,24 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['branch_id']) && isset($_POST['club_name'])) {
+if (isset($_POST['club_name']) && isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['branch_id'])) {
+    $club_name = $_POST['club_name'];
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
     $branch_id = $_POST['branch_id'];
-    $club_name = $_POST['club_name'];
 
     // Prepare the SQL statement to prevent SQL injection
     $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
-
+    
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
     } else {
         $error_message = "Registration failed: " . $stmt->error;
     }
-
+    
     $stmt->close();
 }
-
-
 
 // Handle login
 if (isset($_POST['username']) && isset($_POST['pass'])) {
@@ -60,7 +58,8 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
             // Login successful, redirect to members.php
             session_start();
             $_SESSION['club_id'] = $club['id'];
-            $_SESSION['club_name'] = $club['club_name']; // Assuming 'club_name' is the correct column name
+            $_SESSION['club_name'] = $club['club_name'];
+            $_SESSION['branch_id'] = $club['branch_id'];
             header('Location: members.php');
             exit;
         } else {
@@ -124,48 +123,44 @@ $conn->close();
           </div>
         </form>
 
-<!-- Registration Form -->
-<form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
-  <div class="wrap-input100 validate-input" data-validate="Enter club name">
-    <input class="input100" type="text" name="club_name" placeholder="Club Name">
-    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-  </div>
-  <div class="wrap-input100 validate-input" data-validate="Enter username">
-    <input class="input100" type="text" name="register_username" placeholder="Username">
-    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-  </div>
-  <div class="wrap-input100 validate-input" data-validate="Enter password">
-    <input class="input100" type="password" name="register_pass" placeholder="Password">
-    <span class="focus-input100" data-placeholder="&#xe80f;"></span>
-  </div>
-  <div class="wrap-input100 validate-input" data-validate="Select branch">
-    <select class="input100" name="branch_id">
-      <?php
-      // Fetch branches from the database
-      $branch_query = "SELECT id, branch_name FROM branches";
-      $branch_result = $conn->query($branch_query);
-
-      if ($branch_result->num_rows > 0) {
-          while ($branch = $branch_result->fetch_assoc()) {
-              echo '<option value="' . $branch['id'] . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
-          }
-      }
-      ?>
-    </select>
-    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-  </div>
-  <div id="register-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
-  <div id="error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
-  <div class="container-login100-form-btn m-t-32">
-    <button class="login100-form-btn">
-      Register
-    </button>
-  </div>
-  <div class="text-center p-t-136">
-    <a class="txt2" href="#" onclick="showLogin()">Already have an account? Login here</a>
-  </div>
-</form>
-
+        <!-- Registration Form -->
+        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
+          <div class="wrap-input100 validate-input" data-validate="Enter club name">
+            <input class="input100" type="text" name="club_name" placeholder="Club Name">
+            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+          </div>
+          <div class="wrap-input100 validate-input" data-validate="Select branch">
+            <select class="input100" name="branch_id">
+              <option value="">Select Branch</option>
+              <?php
+              // Populate branch options
+              $branch_result = $conn->query("SELECT * FROM branches");
+              while ($branch = $branch_result->fetch_assoc()) {
+                  echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
+              }
+              ?>
+            </select>
+            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+          </div>
+          <div class="wrap-input100 validate-input" data-validate="Enter username">
+            <input class="input100" type="text" name="register_username" placeholder="Username">
+            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+          </div>
+          <div class="wrap-input100 validate-input" data-validate="Enter password">
+            <input class="input100" type="password" name="register_pass" placeholder="Password">
+            <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+          </div>
+          <div id="register-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
+          <div id="error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+          <div class="container-login100-form-btn m-t-32">
+            <button class="login100-form-btn">
+              Register
+            </button>
+          </div>
+          <div class="text-center p-t-136">
+            <a class="txt2" href="#" onclick="showLogin()">Already have an account? Login here</a>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -180,14 +175,7 @@ $conn->close();
   <script src="vendor/daterangepicker/daterangepicker.js"></script>
   <script src="vendor/countdowntime/countdowntime.js"></script>
   <script src="login.js"></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-23581568-13');
-  </script>
-  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"8aad5a555d9e3fe1","serverTiming":{"name":{"cfL4":true}},"version":"2024.7.0","token":"cd0b4b3a733644fc843ef0b185f98241"}' crossorigin="anonymous"></script>
+
   <script>
     function showRegister() {
       document.getElementById('login-form').style.display = 'none';
