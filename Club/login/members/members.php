@@ -1,7 +1,9 @@
 <?php
 // Start session and include the database connection file
 session_start();
-include('/var/www/html/db_connect.php'); // Include your database connection file here
+include('/var/www/html/db_connect.php'); // Adjust the path if necessary
+
+// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -13,6 +15,7 @@ if (!isset($_SESSION['selected_club']) || empty($_SESSION['selected_club'])) {
 
 $club_id = $_SESSION['selected_club']; // Get the club ID from the session
 
+// Handle form submissions for adding and deleting events and recruitments
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         // Handle adding events
@@ -90,6 +93,7 @@ $applicationsResult = $applicationsResult->get_result();
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 
