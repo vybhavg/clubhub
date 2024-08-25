@@ -24,18 +24,18 @@ $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : $_SESSION['up
 // Ensure that the club_id from the session is used
 $club_id = $selectedClub;
 
+if (!$club_id) {
+    $_SESSION['message'] = "Invalid club ID.";
+    // Redirect or handle the error appropriately
+    header("Location: /path/to/error_page.php"); // Redirect to an error page
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         // Handle adding events
         $title = $_POST['event_title'];
         $description = $_POST['event_description'];
-
-        // Ensure club_id is valid before proceeding
-        if (!$club_id) {
-            $_SESSION['message'] = "Invalid club ID.";
-            header("Location: members.php");
-            exit;
-        }
 
         $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt->execute()) {
             $_SESSION['message'] = "Event added successfully.";
         } else {
-            $_SESSION['message'] = "Error adding event.";
+            $_SESSION['message'] = "Error adding event: " . $stmt->error;
         }
         $stmt->close();
     } elseif (isset($_POST['add_recruitment'])) {
@@ -52,60 +52,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $description = $_POST['recruitment_description'];
         $deadline = $_POST['deadline'];
 
-        // Ensure club_id is valid before proceeding
-        if (!$club_id) {
-            $_SESSION['message'] = "Invalid club ID.";
-            header("Location: members.php");
-            exit;
-        }
-
         $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
         if ($stmt->execute()) {
             $_SESSION['message'] = "Recruitment added successfully.";
         } else {
-            $_SESSION['message'] = "Error adding recruitment.";
+            $_SESSION['message'] = "Error adding recruitment: " . $stmt->error;
         }
         $stmt->close();
     } elseif (isset($_POST['delete_event'])) {
         // Handle deleting events
         $event_id = $_POST['event_id'];
-        
-        // Ensure club_id is valid before proceeding
-        if (!$club_id) {
-            $_SESSION['message'] = "Invalid club ID.";
-            header("Location: members.php");
-            exit;
-        }
-
         $sql = "DELETE FROM events WHERE id = ? AND club_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $event_id, $club_id);
         if ($stmt->execute()) {
             $_SESSION['message'] = "Event deleted successfully.";
         } else {
-            $_SESSION['message'] = "Error deleting event.";
+            $_SESSION['message'] = "Error deleting event: " . $stmt->error;
         }
         $stmt->close();
     } elseif (isset($_POST['delete_recruitment'])) {
         // Handle deleting recruitments
         $recruitment_id = $_POST['recruitment_id'];
-        
-        // Ensure club_id is valid before proceeding
-        if (!$club_id) {
-            $_SESSION['message'] = "Invalid club ID.";
-            header("Location: members.php");
-            exit;
-        }
-
         $sql = "DELETE FROM recruitments WHERE id = ? AND club_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $recruitment_id, $club_id);
         if ($stmt->execute()) {
             $_SESSION['message'] = "Recruitment deleted successfully.";
         } else {
-            $_SESSION['message'] = "Error deleting recruitment.";
+            $_SESSION['message'] = "Error deleting recruitment: " . $stmt->error;
         }
         $stmt->close();
     } elseif (isset($_POST['select_branch'])) {
