@@ -1,5 +1,3 @@
-
-
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -20,24 +18,45 @@ if ($conn->connect_error) {
 
 $error_message = "";
 
-// Check if username and password are entered
+// Handle registration
+if (isset($_POST['register_username']) && isset($_POST['register_pass'])) {
+    $register_username = $_POST['register_username'];
+    $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
+
+    // Prepare the SQL statement to prevent SQL injection
+    $stmt = $conn->prepare("INSERT INTO clubs (username, password) VALUES (?, ?)");
+    $stmt->bind_param("ss", $register_username, $register_password);
+    
+    if ($stmt->execute()) {
+        $success_message = "Registration successful!";
+    } else {
+        $error_message = "Registration failed: " . $stmt->error;
+    }
+    
+    $stmt->close();
+}
+
+// Handle login
 if (isset($_POST['username']) && isset($_POST['pass'])) {
     $username = $_POST['username'];
     $password = $_POST['pass'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT * FROM clubs WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+        $club = $result->fetch_assoc();
 
-        // Verify the password (plain text comparison)
-        if ($password === $user['password']) {
-            // Login successful, redirect to dashboard page
-            header('Location: members/members.php');
+        // Verify the password
+        if (password_verify($password, $club['password'])) {
+            // Login successful, redirect to members.php
+            session_start();
+            $_SESSION['club_id'] = $club['id'];
+            $_SESSION['club_name'] = $club['name'];
+            header('Location: members.php');
             exit;
         } else {
             $error_message = "Invalid username or password";
@@ -52,11 +71,10 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
 $conn->close();
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Login V16</title>
+  <title>Login and Register</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
@@ -77,11 +95,13 @@ $conn->close();
     <div class="container-login100" style="background-image: url('loginbck.jpg');">
       <div class="wrap-login100 p-t-30 p-b-50">
         <span class="login100-form-title p-b-41">
-          Member Login
+          Member Login & Register
         </span>
+
+        <!-- Login Form -->
         <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
           <div class="wrap-input100 validate-input" data-validate="Enter username">
-            <input class="input100" type="text" name="username" placeholder="User name">
+            <input class="input100" type="text" name="username" placeholder="Username">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
           </div>
           <div class="wrap-input100 validate-input" data-validate="Enter password">
@@ -92,6 +112,27 @@ $conn->close();
           <div class="container-login100-form-btn m-t-32">
             <button class="login100-form-btn">
               Login
+            </button>
+          </div>
+        </form>
+
+        <hr>
+
+        <!-- Registration Form -->
+        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+          <div class="wrap-input100 validate-input" data-validate="Enter username">
+            <input class="input100" type="text" name="register_username" placeholder="Username">
+            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+          </div>
+          <div class="wrap-input100 validate-input" data-validate="Enter password">
+            <input class="input100" type="password" name="register_pass" placeholder="Password">
+            <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+          </div>
+          <div id="register-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
+          <div id="error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+          <div class="container-login100-form-btn m-t-32">
+            <button class="login100-form-btn">
+              Register
             </button>
           </div>
         </form>
