@@ -21,12 +21,14 @@ $selectedBranch = $_SESSION['selected_branch'];
 $selectedClub = $_SESSION['selected_club'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : $_SESSION['update_type'];
 
+// Ensure that the club_id from the session is used
+$club_id = $selectedClub;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         // Handle adding events
         $title = $_POST['event_title'];
         $description = $_POST['event_description'];
-        $club_id = $_POST['club_id'];
 
         $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -42,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $role = $_POST['role'];
         $description = $_POST['recruitment_description'];
         $deadline = $_POST['deadline'];
-        $club_id = $_POST['club_id'];
 
         $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -56,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['delete_event'])) {
         // Handle deleting events
         $event_id = $_POST['event_id'];
-        $sql = "DELETE FROM events WHERE id = ?";
+        $sql = "DELETE FROM events WHERE id = ? AND club_id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $event_id);
+        $stmt->bind_param("ii", $event_id, $club_id);
         if ($stmt->execute()) {
             $_SESSION['message'] = "Event deleted successfully.";
         } else {
@@ -68,9 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['delete_recruitment'])) {
         // Handle deleting recruitments
         $recruitment_id = $_POST['recruitment_id'];
-        $sql = "DELETE FROM recruitments WHERE id = ?";
+        $sql = "DELETE FROM recruitments WHERE id = ? AND club_id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $recruitment_id);
+        $stmt->bind_param("ii", $recruitment_id, $club_id);
         if ($stmt->execute()) {
             $_SESSION['message'] = "Recruitment deleted successfully.";
         } else {
@@ -83,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['select_club'])) {
         $_SESSION['selected_club'] = $_POST['club_id'];
         $selectedClub = $_POST['club_id'];
+        $club_id = $selectedClub; // Update club_id when the club is selected
     }
 }
 
@@ -97,23 +99,23 @@ if ($clubsResult) {
 }
 
 // Fetch events and recruitments based on selected club
-$eventsResult = $selectedClub ? $conn->prepare("SELECT * FROM events WHERE club_id = ?") : null;
-$recruitmentsResult = $selectedClub ? $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?") : null;
+$eventsResult = $club_id ? $conn->prepare("SELECT * FROM events WHERE club_id = ?") : null;
+$recruitmentsResult = $club_id ? $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?") : null;
 if ($eventsResult) {
-    $eventsResult->bind_param("i", $selectedClub);
+    $eventsResult->bind_param("i", $club_id);
     $eventsResult->execute();
     $eventsResult = $eventsResult->get_result();
 }
 if ($recruitmentsResult) {
-    $recruitmentsResult->bind_param("i", $selectedClub);
+    $recruitmentsResult->bind_param("i", $club_id);
     $recruitmentsResult->execute();
     $recruitmentsResult = $recruitmentsResult->get_result();
 }
 
 // Fetch applications based on selected club
-$applicationsResult = $selectedClub ? $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?") : null;
+$applicationsResult = $club_id ? $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?") : null;
 if ($applicationsResult) {
-    $applicationsResult->bind_param("i", $selectedClub);
+    $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
     $applicationsResult = $applicationsResult->get_result();
 }
@@ -121,6 +123,7 @@ if ($applicationsResult) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -228,44 +231,7 @@ $conn->close();
     </section><!-- /About Section -->
     <?php } ?>
 
-  <div class="form-container">
-    <form method="post" class="mb-4">
-        <div class="form-group">
-            <label for="branch_id">Select Branch:</label>
-            <select name="branch_id" id="branch_id" class="form-control">
-                <option value="">Select Branch</option>
-                <?php 
-                if ($branchesResult && $branchesResult->num_rows > 0) {
-                    while ($branch = $branchesResult->fetch_assoc()) { ?>
-                        <option value="<?php echo htmlspecialchars($branch['id']); ?>" <?php if ($selectedBranch == $branch['id']) echo 'selected'; ?>><?php echo htmlspecialchars($branch['branch_name']); ?></option>
-                    <?php } 
-                } else {
-                    echo "<option value=''>No branches available</option>";
-                }
-                ?>
-            </select>
-        </div>
-        <button type="submit" name="select_branch" class="btn btn-custom">Select Branch</button>
-    </form>
-
-    <form method="post" class="mb-4">
-        <div class="form-group">
-            <label for="club_id">Select Club:</label>
-            <select name="club_id" id="club_id" class="form-control">
-                <option value="">Select Club</option>
-                <?php 
-                if ($clubsResult && $clubsResult->num_rows > 0) {
-                    while ($club = $clubsResult->fetch_assoc()) { ?>
-                        <option value="<?php echo htmlspecialchars($club['id']); ?>" <?php if ($selectedClub == $club['id']) echo 'selected'; ?>><?php echo htmlspecialchars($club['club_name']); ?></option>
-                    <?php } 
-                } else {
-                    echo "<option value=''>No clubs available</option>";
-                }
-                ?>
-            </select>
-        </div>
-        <button type="submit" name="select_club" class="btn btn-custom">Select Club</button>
-    </form>
+<div class="form-container">
 
     <?php if ($updateType == 'events') { ?>
         <form method="post" class="mb-4">
@@ -277,11 +243,9 @@ $conn->close();
                 <label for="event_description">Event Description:</label>
                 <textarea name="event_description" id="event_description" class="form-control"></textarea>
             </div>
-            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
+            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($loggedInClubId); ?>">
             <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
         </form>
-
-        
 
     <?php } elseif ($updateType == 'recruitments') { ?>
         <form method="post" class="mb-4">
@@ -297,7 +261,7 @@ $conn->close();
                 <label for="deadline">Deadline:</label>
                 <input type="date" name="deadline" id="deadline" class="form-control">
             </div>
-            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($selectedClub); ?>">
+            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($loggedInClubId); ?>">
             <button type="submit" name="add_recruitment" class="btn btn-custom">Add Recruitment</button>
         </form>
         
