@@ -17,15 +17,17 @@ if ($conn->connect_error) {
 }
 
 $error_message = "";
+$success_message = "";
 
 // Handle registration
-if (isset($_POST['register_username']) && isset($_POST['register_pass'])) {
+if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name'])) {
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
+    $club_name = $_POST['club_name'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO clubs (username, password) VALUES (?, ?)");
-    $stmt->bind_param("ss", $register_username, $register_password);
+    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $club_name, $register_username, $register_password);
     
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
@@ -55,7 +57,7 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
             // Login successful, redirect to members.php
             session_start();
             $_SESSION['club_id'] = $club['id'];
-            $_SESSION['club_name'] = $club['name'];
+            $_SESSION['club_name'] = $club['club_name']; // Assuming 'club_name' is the correct column name
             header('Location: members.php');
             exit;
         } else {
@@ -99,7 +101,7 @@ $conn->close();
         </span>
 
         <!-- Login Form -->
-        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="login-form">
           <div class="wrap-input100 validate-input" data-validate="Enter username">
             <input class="input100" type="text" name="username" placeholder="Username">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
@@ -114,12 +116,17 @@ $conn->close();
               Login
             </button>
           </div>
+          <div class="text-center p-t-136">
+            <a class="txt2" href="#" onclick="showRegister()">Don't have an account? Register here</a>
+          </div>
         </form>
 
-        <hr>
-
         <!-- Registration Form -->
-        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
+          <div class="wrap-input100 validate-input" data-validate="Enter club name">
+            <input class="input100" type="text" name="club_name" placeholder="Club Name">
+            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+          </div>
           <div class="wrap-input100 validate-input" data-validate="Enter username">
             <input class="input100" type="text" name="register_username" placeholder="Username">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
@@ -134,6 +141,9 @@ $conn->close();
             <button class="login100-form-btn">
               Register
             </button>
+          </div>
+          <div class="text-center p-t-136">
+            <a class="txt2" href="#" onclick="showLogin()">Already have an account? Login here</a>
           </div>
         </form>
       </div>
@@ -158,5 +168,16 @@ $conn->close();
     gtag('config', 'UA-23581568-13');
   </script>
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"8aad5a555d9e3fe1","serverTiming":{"name":{"cfL4":true}},"version":"2024.7.0","token":"cd0b4b3a733644fc843ef0b185f98241"}' crossorigin="anonymous"></script>
- </body>
+  <script>
+    function showRegister() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'block';
+    }
+
+    function showLogin() {
+      document.getElementById('login-form').style.display = 'block';
+      document.getElementById('register-form').style.display = 'none';
+    }
+  </script>
+</body>
 </html>
