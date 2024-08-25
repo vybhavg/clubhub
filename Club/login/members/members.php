@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $title, $description, $club_id);
+        echo "Club ID: " . $club_id;
         if ($stmt->execute()) {
             $_SESSION['message'] = "Event added successfully.";
         } else {
