@@ -25,6 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $description = $_POST['event_description'];
         $club_id = $_POST['club_id'];
 
+        // Debug: print club_id to check its value
+        echo "Received club_id: " . htmlspecialchars($club_id) . "<br>";
+
         $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if ($stmt === false) {
