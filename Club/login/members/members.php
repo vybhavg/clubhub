@@ -131,217 +131,199 @@ $conn->close();
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
 </head>
-
 <body class="index-page">
 
-  <header id="header" class="header d-flex align-items-center fixed-top">
+<header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-
-      <a href="index.html" class="logo d-flex align-items-center">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="assets/img/logo.png" alt=""> -->
-        <h1 class="sitename">CLUBHUB</h1>
-      </a>
-
-      <nav id="navmenu" class="navmenu">
-  <ul>
-    <li><a href="?update_type=events#hero" class="scroll-link" data-scroll="hero">Home</a></li>
-    <li><a href="?update_type=events#events" class="scroll-link" data-scroll="events">Events</a></li>
-    <li><a href="?update_type=recruitments#recruitments" class="scroll-link" data-scroll="recruitments">Recruitments</a></li>
-    <li><a href="?update_type=applications#applications" class="scroll-link" data-scroll="applications">Applications</a></li>
-    <li><a href="#contact" class="scroll-link" data-scroll="contact">Contact</a></li>
-  </ul>
-  <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-</nav>
-
+        <a href="index.html" class="logo d-flex align-items-center">
+            <!-- Uncomment the line below if you also wish to use an image logo -->
+            <!-- <img src="assets/img/logo.png" alt=""> -->
+            <h1 class="sitename">CLUBHUB</h1>
+        </a>
+        <nav id="navmenu" class="navmenu">
+            <ul>
+                <li><a href="?update_type=events#hero" class="scroll-link" data-scroll="hero">Home</a></li>
+                <li><a href="?update_type=events#events" class="scroll-link" data-scroll="events">Events</a></li>
+                <li><a href="?update_type=recruitments#recruitments" class="scroll-link" data-scroll="recruitments">Recruitments</a></li>
+                <li><a href="?update_type=applications#applications" class="scroll-link" data-scroll="applications">Applications</a></li>
+                <li><a href="#contact" class="scroll-link" data-scroll="contact">Contact</a></li>
+            </ul>
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
     </div>
-  </header>
+</header>
+
 <main class="main">
 
-
-<!-- Hero Section -->
-<section id="hero" class="hero section accent-background">
-    <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
-    <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
-        <?php
-        // Fetch the club name based on the logged-in user's club_id
-        $clubQuery = $conn->prepare("SELECT club_name FROM clubs WHERE id = ?");
-        $clubQuery->bind_param("i", $club_id);
-        $clubQuery->execute();
-        $clubQuery->bind_result($club_name);
-        $clubQuery->fetch();
-        $clubQuery->close();
-        ?>
-        <div class="cont">
-            <h2>Welcome, <?php echo htmlspecialchars($club_name); ?> Club Members!</h2>
-            <p>Manage your events, recruitments, and applications efficiently.</p>
+    <!-- Hero Section -->
+    <section id="hero" class="hero section accent-background">
+        <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+        <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
+            <div class="cont">
+                <h2>Welcome, <?php echo htmlspecialchars($club_name ?: 'Club'); ?> Club Members!</h2>
+                <p>Manage your events, recruitments, and applications efficiently.</p>
+            </div>
+            <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
         </div>
-        <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
-    </div>
-</section><!-- /Hero Section -->
+    </section><!-- /Hero Section -->
 
-    
+    <!-- Dynamic Content Sections -->
     <?php if ($updateType == 'events') { ?>
-        <!-- About Section -->
-    <section id="events" class="about section">
-        <!-- Section Title -->
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Events</h2> 
-            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-        </div><!-- End Section Title -->
-    </section><!-- /About Section -->
+        <!-- Events Section -->
+        <section id="events" class="about section">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Events</h2>
+                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+            </div>
+        </section><!-- /Events Section -->
 
+        <div class="form-container">
+            <form method="post" class="mb-4">
+                <div class="form-group">
+                    <label for="event_title">Event Title:</label>
+                    <input type="text" name="event_title" id="event_title" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="event_description">Event Description:</label>
+                    <textarea name="event_description" id="event_description" class="form-control"></textarea>
+                </div>
+                <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
+                <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
+            </form>
+
+            <!-- Existing Events List -->
+            <section id="faq" class="faq section light-background">
+                <div class="container section-title" data-aos="fade-up">
+                    <h2>Existing Events</h2>
+                    <p>Here are the existing events.</p>
+                </div>
+                <div class="container">
+                    <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="col-lg-12">
+                            <ul class="list-group">
+                                <?php 
+                                if ($eventsResult && $eventsResult->num_rows > 0) {
+                                    while ($event = $eventsResult->fetch_assoc()) { ?>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
+                                            <form method="post" class="d-inline-block">
+                                                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
+                                                <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        </li>
+                                    <?php }
+                                } else {
+                                    echo "<li class='list-group-item'>No events available</li>";
+                                }
+                                ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section><!-- /Faq Section -->
+        </div>
 
     <?php } elseif ($updateType == 'recruitments') { ?>
-        <!-- About Section -->
-    <section id="recruitments" class="about section">
-        <!-- Section Title -->
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Recruitments</h2> 
-            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-        </div><!-- End Section Title -->
-    </section><!-- /About Section -->
-   
+        <!-- Recruitments Section -->
+        <section id="recruitments" class="about section">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Recruitments</h2>
+                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+            </div>
+        </section><!-- /Recruitments Section -->
+
+        <div class="form-container">
+            <form method="post" class="mb-4">
+                <div class="form-group">
+                    <label for="role">Role:</label>
+                    <input type="text" name="role" id="role" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="recruitment_description">Description:</label>
+                    <textarea name="recruitment_description" id="recruitment_description" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="deadline">Deadline:</label>
+                    <input type="date" name="deadline" id="deadline" class="form-control">
+                </div>
+                <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
+                <button type="submit" name="add_recruitment" class="btn btn-custom">Add Recruitment</button>
+            </form>
+
+            <!-- Existing Recruitments List -->
+            <section id="faq" class="faq section light-background">
+                <div class="container section-title" data-aos="fade-up">
+                    <h2>Current Recruitments</h2>
+                    <p>Here are the current recruitment opportunities.</p>
+                </div>
+                <div class="container">
+                    <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="col-lg-12">
+                            <ul class="list-group">
+                                <?php 
+                                if ($recruitmentsResult && $recruitmentsResult->num_rows > 0) {
+                                    while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <?php echo htmlspecialchars($recruitment['role']); ?>: <?php echo htmlspecialchars($recruitment['description']); ?>
+                                            <form method="post" class="d-inline-block">
+                                                <input type="hidden" name="recruitment_id" value="<?php echo htmlspecialchars($recruitment['id']); ?>">
+                                                <button type="submit" name="delete_recruitment" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        </li>
+                                    <?php }
+                                } else {
+                                    echo "<li class='list-group-item'>No recruitments available</li>";
+                                }
+                                ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section><!-- /Faq Section -->
+        </div>
+
     <?php } elseif ($updateType == 'applications') { ?>
-        <!-- About Section -->
-    <section id="applications" class="about section">
-        <!-- Section Title -->
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Applications</h2> 
-            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-        </div><!-- End Section Title -->
-    </section><!-- /About Section -->
+        <!-- Applications Section -->
+        <section id="applications" class="about section">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Applications</h2>
+                <p>View and manage student applications here.</p>
+            </div>
+        </section><!-- /Applications Section -->
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>Applications for Your Club</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Email</th>
+                                <th>Resume</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                                while ($application = $applicationsResult->fetch_assoc()) { ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($application['student_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($application['email']); ?></td>
+                                        <td><a href="<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                    </tr>
+                                <?php }
+                            } else {
+                                echo "<tr><td colspan='3'>No applications available</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     <?php } ?>
 
-<div class="form-container">
-
-    <?php if ($updateType == 'events') { ?>
-        <form method="post" class="mb-4">
-            <div class="form-group">
-                <label for="event_title">Event Title:</label>
-                <input type="text" name="event_title" id="event_title" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="event_description">Event Description:</label>
-                <textarea name="event_description" id="event_description" class="form-control"></textarea>
-            </div>
-            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($loggedInClubId); ?>">
-            <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
-        </form>
-
-    <?php } elseif ($updateType == 'recruitments') { ?>
-        <form method="post" class="mb-4">
-            <div class="form-group">
-                <label for="role">Role:</label>
-                <input type="text" name="role" id="role" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="recruitment_description">Description:</label>
-                <textarea name="recruitment_description" id="recruitment_description" class="form-control"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="deadline">Deadline:</label>
-                <input type="date" name="deadline" id="deadline" class="form-control">
-            </div>
-            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($loggedInClubId); ?>">
-            <button type="submit" name="add_recruitment" class="btn btn-custom">Add Recruitment</button>
-        </form>
-        
-    <?php } ?>
-</div>
-
-</main>
-
-
-
-    <!-- Faq Section -->
-    <section id="faq" class="faq section light-background">
-    <div class="container section-title" data-aos="fade-up">
-        <?php if ($updateType == 'events') { ?>
-            <h2>Existing Events</h2>
-            <p>Here are the existing events.</p>
-        <?php } elseif ($updateType == 'recruitments') { ?>
-            <h2>Current Recruitments</h2>
-            <p>Here are the current recruitment opportunities.</p>
-        <?php } elseif ($updateType == 'applications') { ?>
-            <h2>Student Applications</h2>
-            <p>Here are the applications received.</p>
-        <?php } ?>
-    </div><!-- End Section Title -->
-
-    <div class="container">
-        <?php if ($updateType == 'events') { ?>
-            <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
-                <div class="col-lg-12">
-                    <h4>Existing Events</h4>
-                    <ul class="list-group">
-                        <?php 
-                        if ($eventsResult && $eventsResult->num_rows > 0) {
-                            while ($event = $eventsResult->fetch_assoc()) { ?>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
-                                    <form method="post" class="d-inline-block">
-                                        <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
-                                        <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
-                                    </form>
-                                </li>
-                            <?php }
-                        } else {
-                            echo "<li class='list-group-item'>No events available</li>";
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-
-        <?php } elseif ($updateType == 'recruitments') { ?>
-            <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
-                <div class="col-lg-12">
-                    <h4>Existing Recruitments</h4>
-                    <ul class="list-group">
-                        <?php 
-                        if ($recruitmentsResult && $recruitmentsResult->num_rows > 0) {
-                            while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <?php echo htmlspecialchars($recruitment['role']); ?>: <?php echo htmlspecialchars($recruitment['description']); ?> (Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?>)
-                                    <form method="post" class="d-inline-block">
-                                        <input type="hidden" name="recruitment_id" value="<?php echo htmlspecialchars($recruitment['id']); ?>">
-                                        <button type="submit" name="delete_recruitment" class="btn btn-danger btn-sm">Delete</button>
-                                    </form>
-                                </li>
-                            <?php }
-                        } else {
-                            echo "<li class='list-group-item'>No recruitments available</li>";
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-
-        <?php } elseif ($updateType == 'applications') { ?>
-            <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
-                <div class="col-lg-12">
-                    <h4>Existing Applications</h4>
-                    <ul class="list-group">
-                        <?php 
-                        if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                            while ($application = $applicationsResult->fetch_assoc()) { ?>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <?php echo htmlspecialchars($application['student_name']); ?>: <?php echo htmlspecialchars($application['email']); ?>
-                                    <a href="<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-primary btn-sm" target="_blank">View Resume</a>
-                                </li>
-                            <?php }
-                        } else {
-                            echo "<li class='list-group-item'>No applications available</li>";
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        <?php } ?>
-    </div>
-</section>
-<!-- /Faq Section -->
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
