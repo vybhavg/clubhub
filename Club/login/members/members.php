@@ -6,23 +6,12 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Set default values for the first visit after login
-if (!isset($_SESSION['selected_branch'])) {
-    $_SESSION['selected_branch'] = null;
-}
-if (!isset($_SESSION['selected_club'])) {
-    $_SESSION['selected_club'] = null;
-}
-if (!isset($_SESSION['update_type'])) {
-    $_SESSION['update_type'] = 'events'; // Default to 'events'
+// Check if the user is logged in and has a club assigned
+if (!isset($_SESSION['selected_club']) || empty($_SESSION['selected_club'])) {
+    die('No club selected. Please log in again.');
 }
 
-$selectedBranch = $_SESSION['selected_branch'];
-$selectedClub = $_SESSION['selected_club'];
-$updateType = isset($_GET['update_type']) ? $_GET['update_type'] : $_SESSION['update_type'];
-
-// Ensure that the club_id from the session is used
-$club_id = $selectedClub;
+$club_id = $_SESSION['selected_club']; // Get the club ID from the session
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
@@ -78,52 +67,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['message'] = "Error deleting recruitment.";
         }
         $stmt->close();
-    } elseif (isset($_POST['select_branch'])) {
-        $_SESSION['selected_branch'] = $_POST['branch_id'];
-        $selectedBranch = $_POST['branch_id'];
-    } elseif (isset($_POST['select_club'])) {
-        $_SESSION['selected_club'] = $_POST['club_id'];
-        $selectedClub = $_POST['club_id'];
-        $club_id = $selectedClub; // Update club_id when the club is selected
     }
 }
 
-// Fetch branches
-$branchesResult = $conn->query("SELECT * FROM branches");
+// Fetch events and recruitments based on the logged-in club
+$eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
+$eventsResult->bind_param("i", $club_id);
+$eventsResult->execute();
+$eventsResult = $eventsResult->get_result();
 
-// Fetch clubs based on selected branch
-$clubsResult = $selectedBranch ? $conn->prepare("SELECT * FROM clubs WHERE branch_id = ?") : null;
-if ($clubsResult) {
-    $clubsResult->bind_param("i", $selectedBranch);
-    $clubsResult->execute();
-    $clubsResult = $clubsResult->get_result();
-}
+$recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
+$recruitmentsResult->bind_param("i", $club_id);
+$recruitmentsResult->execute();
+$recruitmentsResult = $recruitmentsResult->get_result();
 
-// Fetch events and recruitments based on selected club
-$eventsResult = $club_id ? $conn->prepare("SELECT * FROM events WHERE club_id = ?") : null;
-$recruitmentsResult = $club_id ? $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?") : null;
-if ($eventsResult) {
-    $eventsResult->bind_param("i", $club_id);
-    $eventsResult->execute();
-    $eventsResult = $eventsResult->get_result();
-}
-if ($recruitmentsResult) {
-    $recruitmentsResult->bind_param("i", $club_id);
-    $recruitmentsResult->execute();
-    $recruitmentsResult = $recruitmentsResult->get_result();
-}
-
-// Fetch applications based on selected club
-$applicationsResult = $club_id ? $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?") : null;
-if ($applicationsResult) {
-    $applicationsResult->bind_param("i", $club_id);
-    $applicationsResult->execute();
-    $applicationsResult = $applicationsResult->get_result();
-}
+// Fetch applications based on the logged-in club
+$applicationsResult = $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+$applicationsResult->bind_param("i", $club_id);
+$applicationsResult->execute();
+$applicationsResult = $applicationsResult->get_result();
 
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 
@@ -191,15 +158,18 @@ $conn->close();
   </header>
 <main class="main">
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero section accent-background">
-        <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
-        <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
-           <div class="cont" ><h2>Welcome, Club Members!</h2>
-            <p>Manage your events, recruitments, and applications efficiently.</p></div>
-            <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
-        </div>
-    </section><!-- /Hero Section -->
+
+<!-- Hero Section -->
+<section id="hero" class="hero section accent-background">
+    <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+    <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
+       <div class="cont">
+           <h2>Welcome, <?php echo htmlspecialchars($club_name); ?> Members!</h2>
+           <p>Manage your events, recruitments, and applications efficiently.</p>
+       </div>
+       <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
+    </div>
+</section><!-- /Hero Section -->
     
     <?php if ($updateType == 'events') { ?>
         <!-- About Section -->
