@@ -15,7 +15,25 @@ if (!isset($_SESSION['club_id'])) {
 $club_id = $_SESSION['club_id'];
 $branch_id = $_SESSION['branch_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
+$club_name = '';
 
+// Fetch club_name based on club_id
+$stmt = $conn->prepare("SELECT club_name FROM clubs WHERE id = ?");
+if ($stmt) {
+    $stmt->bind_param("i", $club_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $club = $result->fetch_assoc();
+        $club_name = $club['club_name'];
+    } else {
+        $club_name = 'Club'; // Default value if not found
+    }
+    $stmt->close();
+} else {
+    // Handle error if prepare fails
+    error_log("Prepare failed: " . $conn->error);
+}
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
