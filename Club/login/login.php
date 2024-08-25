@@ -130,13 +130,22 @@ $conn->close();
           <div class="wrap-input100 validate-input" data-validate="Select branch">
             <select class="input100" name="branch_id">
               <option value="">Select Branch</option>
-              <?php
               // Populate branch options
-              $branch_result = $conn->query("SELECT * FROM branches");
-              while ($branch = $branch_result->fetch_assoc()) {
-                  echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
-              }
-              ?>
+<?php $branch_result = $conn->query("SELECT * FROM branches");
+
+// Check for query errors
+if (!$branch_result) {
+    die("Query failed: " . $conn->error);
+}
+
+// Check if any rows are returned
+if ($branch_result->num_rows > 0) {
+    while ($branch = $branch_result->fetch_assoc()) {
+        echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
+    }
+} else {
+    echo '<option>No branches available</option>';
+}?>
             </select>
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
           </div>
