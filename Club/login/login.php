@@ -20,7 +20,7 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name']) && isset($_POST['branch_id'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $_POST['register_pass'], $_POST['club_name'], $_POST['branch_id'])) {
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
     $club_name = $_POST['club_name'];
@@ -43,12 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username']) &
 }
 
 // Handle login
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($_POST['pass'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'], $_POST['pass'])) {
     $username = $_POST['username'];
     $password = $_POST['pass'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("SELECT * FROM clubs WHERE username = ?");
+    $stmt = $conn->prepare("SELECT id, club_name, password, branch_id FROM clubs WHERE username = ?");
     if ($stmt === false) {
         die("Prepare failed: " . $conn->error);
     }
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
 
         // Verify the password
         if (password_verify($password, $club['password'])) {
-            // Login successful, redirect to members.php
+            // Login successful, start session and set session variables
             session_start();
             $_SESSION['club_id'] = $club['id'];
             $_SESSION['club_name'] = $club['club_name'];
@@ -88,6 +88,7 @@ foreach ($branches as $key => $branch) {
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
