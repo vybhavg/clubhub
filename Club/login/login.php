@@ -20,14 +20,15 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name'])) {
+if (isset($_POST['club_name']) && isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['branch_id'])) {
+    $club_name = $_POST['club_name'];
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
-    $club_name = $_POST['club_name'];
+    $branch_id = $_POST['branch_id'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $club_name, $register_username, $register_password);
+    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
     
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
@@ -57,7 +58,8 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
             // Login successful, redirect to members.php
             session_start();
             $_SESSION['club_id'] = $club['id'];
-            $_SESSION['club_name'] = $club['club_name']; // Assuming 'club_name' is the correct column name
+            $_SESSION['club_name'] = $club['club_name'];
+            $_SESSION['branch_id'] = $club['branch_id'];
             header('Location: members.php');
             exit;
         } else {
@@ -127,6 +129,21 @@ $conn->close();
             <input class="input100" type="text" name="club_name" placeholder="Club Name">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
           </div>
+
+            <div class="wrap-input100 validate-input" data-validate="Select branch">
+            <select class="input100" name="branch_id">
+              <option value="">Select Branch</option>
+              <?php
+              // Populate branch options
+              $branch_result = $conn->query("SELECT * FROM branches");
+              while ($branch = $branch_result->fetch_assoc()) {
+                  echo '<option value="' . htmlspecialchars($branch['id']) . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
+              }
+              ?>
+            </select>
+            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+          </div>
+            
           <div class="wrap-input100 validate-input" data-validate="Enter username">
             <input class="input100" type="text" name="register_username" placeholder="Username">
             <span class="focus-input100" data-placeholder="&#xe82a;"></span>
