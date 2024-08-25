@@ -20,23 +20,25 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['register_branch_id'])) {
+if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['branch_id']) && isset($_POST['club_name'])) {
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
-    $register_branch_id = $_POST['register_branch_id'];
+    $branch_id = $_POST['branch_id'];
+    $club_name = $_POST['club_name'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO clubs (username, password, branch_id) VALUES (?, ?, ?)");
-    $stmt->bind_param("ssi", $register_username, $register_password, $register_branch_id);
-    
+    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
+
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
     } else {
         $error_message = "Registration failed: " . $stmt->error;
     }
-    
+
     $stmt->close();
 }
+
 
 
 // Handle login
@@ -122,7 +124,7 @@ $conn->close();
           </div>
         </form>
 
-    <!-- Registration Form -->
+<!-- Registration Form -->
 <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
   <div class="wrap-input100 validate-input" data-validate="Enter club name">
     <input class="input100" type="text" name="club_name" placeholder="Club Name">
@@ -137,16 +139,17 @@ $conn->close();
     <span class="focus-input100" data-placeholder="&#xe80f;"></span>
   </div>
   <div class="wrap-input100 validate-input" data-validate="Select branch">
-    <select class="input100" name="register_branch_id">
-      <option value="">Select Branch</option>
+    <select class="input100" name="branch_id">
       <?php
       // Fetch branches from the database
-      $conn = new mysqli($db_host, $db_username, $db_password, $db_name);
-      $result = $conn->query("SELECT id, branch_name FROM branches"); // Adjust table/column names as needed
-      while ($row = $result->fetch_assoc()) {
-        echo "<option value=\"{$row['id']}\">{$row['branch_name']}</option>";
+      $branch_query = "SELECT id, branch_name FROM branches";
+      $branch_result = $conn->query($branch_query);
+
+      if ($branch_result->num_rows > 0) {
+          while ($branch = $branch_result->fetch_assoc()) {
+              echo '<option value="' . $branch['id'] . '">' . htmlspecialchars($branch['branch_name']) . '</option>';
+          }
       }
-      $conn->close();
       ?>
     </select>
     <span class="focus-input100" data-placeholder="&#xe82a;"></span>
