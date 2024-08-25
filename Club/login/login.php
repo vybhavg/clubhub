@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) && isset($
             $_SESSION['club_id'] = $club['id'];
             $_SESSION['club_name'] = $club['club_name'];
             $_SESSION['branch_id'] = $club['branch_id'];
-            header('Location: /var/www/html/Club/login/members/members.php');
+            header('Location: members/members.php');
             exit;
         } else {
             $error_message = "Invalid username or password";
