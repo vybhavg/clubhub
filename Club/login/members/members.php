@@ -30,10 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $title = $_POST['event_title'];
         $description = $_POST['event_description'];
 
+        // Ensure club_id is valid before proceeding
+        if (!$club_id) {
+            $_SESSION['message'] = "Invalid club ID.";
+            header("Location: members.php");
+            exit;
+        }
+
         $sql = "INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $title, $description, $club_id);
-        echo "Club ID: " . $club_id;
         if ($stmt->execute()) {
             $_SESSION['message'] = "Event added successfully.";
         } else {
@@ -45,6 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $role = $_POST['role'];
         $description = $_POST['recruitment_description'];
         $deadline = $_POST['deadline'];
+
+        // Ensure club_id is valid before proceeding
+        if (!$club_id) {
+            $_SESSION['message'] = "Invalid club ID.";
+            header("Location: members.php");
+            exit;
+        }
 
         $sql = "INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -58,6 +71,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['delete_event'])) {
         // Handle deleting events
         $event_id = $_POST['event_id'];
+        
+        // Ensure club_id is valid before proceeding
+        if (!$club_id) {
+            $_SESSION['message'] = "Invalid club ID.";
+            header("Location: members.php");
+            exit;
+        }
+
         $sql = "DELETE FROM events WHERE id = ? AND club_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $event_id, $club_id);
@@ -70,6 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['delete_recruitment'])) {
         // Handle deleting recruitments
         $recruitment_id = $_POST['recruitment_id'];
+        
+        // Ensure club_id is valid before proceeding
+        if (!$club_id) {
+            $_SESSION['message'] = "Invalid club ID.";
+            header("Location: members.php");
+            exit;
+        }
+
         $sql = "DELETE FROM recruitments WHERE id = ? AND club_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $recruitment_id, $club_id);
@@ -125,6 +154,7 @@ if ($applicationsResult) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 
