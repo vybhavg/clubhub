@@ -20,15 +20,14 @@ $error_message = "";
 $success_message = "";
 
 // Handle registration
-if (isset($_POST['club_name']) && isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['branch_id'])) {
-    $club_name = $_POST['club_name'];
+if (isset($_POST['register_username']) && isset($_POST['register_pass']) && isset($_POST['club_name'])) {
     $register_username = $_POST['register_username'];
     $register_password = password_hash($_POST['register_pass'], PASSWORD_DEFAULT); // Hash the password
-    $branch_id = $_POST['branch_id'];
+    $club_name = $_POST['club_name'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
+    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $club_name, $register_username, $register_password);
     
     if ($stmt->execute()) {
         $success_message = "Registration successful!";
@@ -58,8 +57,7 @@ if (isset($_POST['username']) && isset($_POST['pass'])) {
             // Login successful, redirect to members.php
             session_start();
             $_SESSION['club_id'] = $club['id'];
-            $_SESSION['club_name'] = $club['club_name'];
-            $_SESSION['branch_id'] = $club['branch_id'];
+            $_SESSION['club_name'] = $club['club_name']; // Assuming 'club_name' is the correct column name
             header('Location: members.php');
             exit;
         } else {
