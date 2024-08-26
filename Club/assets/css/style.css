@@ -726,6 +726,39 @@ section {
   background: #fff;
   box-shadow: 0 0 30px rgba(214, 215, 216, 0.6);
 }
+.upbox {
+  max-height: 400px; /* Set the maximum height */
+  overflow-y: auto;  /* Enable vertical scrolling */
+  padding-right: 15px; /* Space for scrollbar */
+}
+
+/* Optional: Customize the scrollbar (for webkit browsers like Chrome, Safari) */
+.upbox::-webkit-scrollbar {
+  width: 10px;
+}
+
+.upbox::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.upbox::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.upbox::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Additional styling to improve readability */
+.update-entry {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.update-entry h4 {
+  margin-top: 0;
+}
 
 
 /*--------------------------------------------------------------
