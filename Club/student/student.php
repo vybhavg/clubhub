@@ -54,6 +54,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
     // Upload file if all checks are passed
     if ($uploadOk == 1) {
         if (move_uploaded_file($resume["tmp_name"], $target_file)) {
+            // Store the relative path in the database
+            $resumePath = 'Club/student/uploads/' . $unique_name;
+
             // Check if student already exists
             $stmt = $conn->prepare("SELECT id FROM students WHERE name = ? AND email = ?");
             if ($stmt === false) {
@@ -97,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
             if ($stmt === false) {
                 die('Prepare failed: ' . htmlspecialchars($conn->error));
             }
-            $stmt->bind_param("iiss", $student_id, $club_id, $target_file, $target_file);
+            $stmt->bind_param("iiss", $student_id, $club_id, $resumePath, $resumePath);
             if (!$stmt->execute()) {
                 die('Execute failed: ' . htmlspecialchars($stmt->error));
             }
@@ -119,6 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 <!DOCTYPE html>
