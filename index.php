@@ -207,7 +207,7 @@ $conn->close();
     </div>
 
     <!-- Events Section -->
-    <div class="upbox update-item filter-events">
+    <div class="upbox update-item filter-events active">
       <h3>Events</h3>
       <?php foreach ($events as $event): ?>
         <div class="update-entry">
@@ -220,19 +220,18 @@ $conn->close();
     </div>
 
     <!-- Recruitments Section -->
-   <div class="upbox update-item filter-recruitment" style="display: none;">
-  <h3>Recruitments</h3>
-  <?php foreach ($recruitments as $recruitment): ?>
-    <div class="update-entry">
-      <h4><?php echo htmlspecialchars($recruitment['role']); ?></h4>
-      <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
-      <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
-      <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
-      <a href="Club/student/student.php?club_id=<?php echo $recruitment['club_id']; ?>" class="btn btn-primary">Apply</a>
+    <div class="upbox update-item filter-recruitment">
+      <h3>Recruitments</h3>
+      <?php foreach ($recruitments as $recruitment): ?>
+        <div class="update-entry">
+          <h4><?php echo htmlspecialchars($recruitment['role']); ?></h4>
+          <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
+          <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
+          <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
+          <a href="Club/student/student.php?club_id=<?php echo $recruitment['club_id']; ?>" class="btn btn-primary">Apply</a>
+        </div>
+      <?php endforeach; ?>
     </div>
-  <?php endforeach; ?>
-</div>
-
   </div>
 </section>
 <!-- End Updates Section -->
