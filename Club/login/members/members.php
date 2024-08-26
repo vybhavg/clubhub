@@ -310,47 +310,57 @@ $conn->close();
             </section><!-- /Faq Section -->
         </div>
 
-    <?php } elseif ($updateType == 'applications') { ?>
-        <!-- Applications Section -->
-        <section id="applications" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Applications</h2>
-                <p>View and manage student applications here.</p>
-            </div>
-        </section><!-- /Applications Section -->
+   <?php } elseif ($updateType == 'applications') { ?>
+    <!-- Applications Section -->
+    <section id="applications" class="about section">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Applications</h2>
+            <p>View and manage student applications here.</p>
+        </div>
+    </section><!-- /Applications Section -->
 
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3>Applications for Your Club</h3>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Email</th>
-                                <th>Resume</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                                while ($application = $applicationsResult->fetch_assoc()) { ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($application['student_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                        <td><a href="<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
-                                    </tr>
-                                <?php }
-                            } else {
-                                echo "<tr><td colspan='3'>No applications available</td></tr>";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>Applications for Your Club</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Resume</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                            while ($application = $applicationsResult->fetch_assoc()) { 
+                                // Ensure the resume path is correctly formatted and accessible
+                                $resumePath = htmlspecialchars($application['resume_path']);
+                                
+                                // Debugging: Check if resume path is correct
+                                // echo "<!-- Resume Path: $resumePath -->";
+                                ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($application['student_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($application['email']); ?></td>
+                                    <td>
+                                        <!-- Make sure the resume URL is correct and accessible -->
+                                        <a href="<?php echo $resumePath; ?>" class="btn btn-info" target="_blank">View Resume</a>
+                                    </td>
+                                </tr>
+                            <?php }
+                        } else {
+                            echo "<tr><td colspan='3'>No applications available</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
             </div>
         </div>
-    <?php } ?>
+    </div>
+<?php } ?>
+
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
