@@ -1,23 +1,19 @@
 <?php
 session_start();
-include('/var/www/html/db_connect.php'); // Ensure this file connects to your database correctly
+include('/var/www/html/db_connect.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Check if the user is logged in and has a valid club_id
 if (!isset($_SESSION['club_id'])) {
-    header('Location: login.php'); // Redirect to login if not logged in
+    header('Location: login.php');
     exit;
 }
 
-// Get session variables
 $club_id = $_SESSION['club_id'];
-$branch_id = $_SESSION['branch_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 $club_name = '';
 
-// Fetch club_name based on club_id
 $stmt = $conn->prepare("SELECT club_name FROM clubs WHERE id = ?");
 if ($stmt) {
     $stmt->bind_param("i", $club_id);
@@ -27,20 +23,18 @@ if ($stmt) {
         $club = $result->fetch_assoc();
         $club_name = $club['club_name'];
     } else {
-        $club_name = 'Club'; // Default value if not found
+        $club_name = 'Club';
     }
     $stmt->close();
 } else {
-    // Handle error if prepare fails
     error_log("Prepare failed: " . $conn->error);
 }
-// Handle form submissions
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         $title = $_POST['event_title'];
         $description = $_POST['event_description'];
 
-        // Prepare and execute SQL statement to insert event
         $stmt = $conn->prepare("INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)");
         if ($stmt === false) {
             error_log("Prepare failed: " . $conn->error);
@@ -58,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $description = $_POST['recruitment_description'];
         $deadline = $_POST['deadline'];
 
-        // Prepare and execute SQL statement to insert recruitment
         $stmt = $conn->prepare("INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)");
         if ($stmt === false) {
             error_log("Prepare failed: " . $conn->error);
@@ -74,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['delete_event'])) {
         $event_id = $_POST['event_id'];
 
-        // Prepare and execute SQL statement to delete event
         $stmt = $conn->prepare("DELETE FROM events WHERE id = ? AND club_id = ?");
         if ($stmt === false) {
             error_log("Prepare failed: " . $conn->error);
@@ -90,7 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['delete_recruitment'])) {
         $recruitment_id = $_POST['recruitment_id'];
 
-        // Prepare and execute SQL statement to delete recruitment
         $stmt = $conn->prepare("DELETE FROM recruitments WHERE id = ? AND club_id = ?");
         if ($stmt === false) {
             error_log("Prepare failed: " . $conn->error);
@@ -106,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Fetch events and recruitments for the logged-in club
 $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
 $recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
 
@@ -122,7 +112,6 @@ if ($recruitmentsResult) {
     $recruitmentsResult = $recruitmentsResult->get_result();
 }
 
-// Fetch applications for the logged-in club
 $applicationsResult = $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
@@ -130,7 +119,6 @@ if ($applicationsResult) {
     $applicationsResult = $applicationsResult->get_result();
 }
 
-// Close the database connection
 $conn->close();
 ?>
 
