@@ -133,7 +133,6 @@ if ($applicationsResult) {
 // Close the database connection
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -321,7 +320,7 @@ $conn->close();
             </section><!-- /Faq Section -->
         </div>
 
-    <?php } elseif ($updateType == 'applications') { ?>
+   <?php } elseif ($updateType == 'applications') { ?>
         <!-- Applications Section -->
         <section id="applications" class="about section">
             <div class="container section-title" data-aos="fade-up">
@@ -349,7 +348,7 @@ $conn->close();
                                     <tr>
                                         <td><?php echo htmlspecialchars($application['student_name']); ?></td>
                                         <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                        <td><a href="<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                        <td><a href="http://18.212.212.22/Club/student/uploads/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
                                     </tr>
                                 <?php }
                             } else {
