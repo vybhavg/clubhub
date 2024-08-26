@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Check if club_id is set
 if (!isset($_SESSION['club_id'])) {
     header('Location: login.php');
     exit;
@@ -14,6 +15,7 @@ $club_id = $_SESSION['club_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 $club_name = '';
 
+// Fetch club name
 $stmt = $conn->prepare("SELECT club_name FROM clubs WHERE id = ?");
 if ($stmt) {
     $stmt->bind_param("i", $club_id);
@@ -30,75 +32,87 @@ if ($stmt) {
     error_log("Prepare failed: " . $conn->error);
 }
 
+// Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         $title = $_POST['event_title'];
         $description = $_POST['event_description'];
 
         $stmt = $conn->prepare("INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)");
-        if ($stmt === false) {
+        if ($stmt) {
+            $stmt->bind_param("ssi", $title, $description, $club_id);
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
+                $_SESSION['message'] = "Error adding event.";
+            } else {
+                $_SESSION['message'] = "Event added successfully.";
+            }
+            $stmt->close();
+        } else {
             error_log("Prepare failed: " . $conn->error);
         }
-        $stmt->bind_param("ssi", $title, $description, $club_id);
-        if (!$stmt->execute()) {
-            error_log("Execute failed: " . $stmt->error);
-            $_SESSION['message'] = "Error adding event.";
-        } else {
-            $_SESSION['message'] = "Event added successfully.";
-        }
-        $stmt->close();
     } elseif (isset($_POST['add_recruitment'])) {
         $role = $_POST['role'];
         $description = $_POST['recruitment_description'];
         $deadline = $_POST['deadline'];
 
         $stmt = $conn->prepare("INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)");
-        if ($stmt === false) {
+        if ($stmt) {
+            $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
+                $_SESSION['message'] = "Error adding recruitment.";
+            } else {
+                $_SESSION['message'] = "Recruitment added successfully.";
+            }
+            $stmt->close();
+        } else {
             error_log("Prepare failed: " . $conn->error);
         }
-        $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
-        if (!$stmt->execute()) {
-            error_log("Execute failed: " . $stmt->error);
-            $_SESSION['message'] = "Error adding recruitment.";
-        } else {
-            $_SESSION['message'] = "Recruitment added successfully.";
-        }
-        $stmt->close();
     } elseif (isset($_POST['delete_event'])) {
         $event_id = $_POST['event_id'];
 
         $stmt = $conn->prepare("DELETE FROM events WHERE id = ? AND club_id = ?");
-        if ($stmt === false) {
+        if ($stmt) {
+            $stmt->bind_param("ii", $event_id, $club_id);
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
+                $_SESSION['message'] = "Error deleting event.";
+            } else {
+                $_SESSION['message'] = "Event deleted successfully.";
+            }
+            $stmt->close();
+        } else {
             error_log("Prepare failed: " . $conn->error);
         }
-        $stmt->bind_param("ii", $event_id, $club_id);
-        if (!$stmt->execute()) {
-            error_log("Execute failed: " . $stmt->error);
-            $_SESSION['message'] = "Error deleting event.";
-        } else {
-            $_SESSION['message'] = "Event deleted successfully.";
-        }
-        $stmt->close();
     } elseif (isset($_POST['delete_recruitment'])) {
         $recruitment_id = $_POST['recruitment_id'];
 
         $stmt = $conn->prepare("DELETE FROM recruitments WHERE id = ? AND club_id = ?");
-        if ($stmt === false) {
+        if ($stmt) {
+            $stmt->bind_param("ii", $recruitment_id, $club_id);
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
+                $_SESSION['message'] = "Error deleting recruitment.";
+            } else {
+                $_SESSION['message'] = "Recruitment deleted successfully.";
+            }
+            $stmt->close();
+        } else {
             error_log("Prepare failed: " . $conn->error);
         }
-        $stmt->bind_param("ii", $recruitment_id, $club_id);
-        if (!$stmt->execute()) {
-            error_log("Execute failed: " . $stmt->error);
-            $_SESSION['message'] = "Error deleting recruitment.";
-        } else {
-            $_SESSION['message'] = "Recruitment deleted successfully.";
-        }
-        $stmt->close();
     }
 }
 
+// Fetch events, recruitments, and applications
 $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
 $recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
+$applicationsResult = $conn->prepare("
+    SELECT s.name AS student_name, s.email AS email, a.resume_path AS resume_path
+    FROM applications a
+    INNER JOIN students s ON a.student_id = s.id
+    WHERE a.club_id = ?
+");
 
 if ($eventsResult) {
     $eventsResult->bind_param("i", $club_id);
@@ -112,7 +126,6 @@ if ($recruitmentsResult) {
     $recruitmentsResult = $recruitmentsResult->get_result();
 }
 
-$applicationsResult = $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
@@ -121,7 +134,6 @@ if ($applicationsResult) {
 
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
