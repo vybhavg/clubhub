@@ -348,7 +348,7 @@ $conn->close();
                                     <tr>
                                         <td><?php echo htmlspecialchars($application['student_name']); ?></td>
                                         <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                        <td><a href="http://18.212.212.22/Club/student/uploads/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                        <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
                                     </tr>
                                 <?php }
                             } else {
