@@ -1,36 +1,20 @@
 <?php
 session_start();
-include('/var/www/html/db_connect.php');
+include('/var/www/html/db_connect.php'); // Ensure this file connects to your database correctly
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Check if club_id is set
+// Check if the user is logged in and has a valid club_id
 if (!isset($_SESSION['club_id'])) {
-    header('Location: login.php');
+    header('Location: login.php'); // Redirect to login if not logged in
     exit;
 }
 
+// Get session variables
 $club_id = $_SESSION['club_id'];
+$branch_id = $_SESSION['branch_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
-$club_name = '';
-
-// Fetch club name
-$stmt = $conn->prepare("SELECT club_name FROM clubs WHERE id = ?");
-if ($stmt) {
-    $stmt->bind_param("i", $club_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        $club = $result->fetch_assoc();
-        $club_name = $club['club_name'];
-    } else {
-        $club_name = 'Club';
-    }
-    $stmt->close();
-} else {
-    error_log("Prepare failed: " . $conn->error);
-}
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -38,81 +22,75 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $title = $_POST['event_title'];
         $description = $_POST['event_description'];
 
+        // Prepare and execute SQL statement to insert event
         $stmt = $conn->prepare("INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)");
-        if ($stmt) {
-            $stmt->bind_param("ssi", $title, $description, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error adding event.";
-            } else {
-                $_SESSION['message'] = "Event added successfully.";
-            }
-            $stmt->close();
-        } else {
+        if ($stmt === false) {
             error_log("Prepare failed: " . $conn->error);
         }
+        $stmt->bind_param("ssi", $title, $description, $club_id);
+        if (!$stmt->execute()) {
+            error_log("Execute failed: " . $stmt->error);
+            $_SESSION['message'] = "Error adding event.";
+        } else {
+            $_SESSION['message'] = "Event added successfully.";
+        }
+        $stmt->close();
     } elseif (isset($_POST['add_recruitment'])) {
         $role = $_POST['role'];
         $description = $_POST['recruitment_description'];
         $deadline = $_POST['deadline'];
 
+        // Prepare and execute SQL statement to insert recruitment
         $stmt = $conn->prepare("INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)");
-        if ($stmt) {
-            $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error adding recruitment.";
-            } else {
-                $_SESSION['message'] = "Recruitment added successfully.";
-            }
-            $stmt->close();
-        } else {
+        if ($stmt === false) {
             error_log("Prepare failed: " . $conn->error);
         }
+        $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
+        if (!$stmt->execute()) {
+            error_log("Execute failed: " . $stmt->error);
+            $_SESSION['message'] = "Error adding recruitment.";
+        } else {
+            $_SESSION['message'] = "Recruitment added successfully.";
+        }
+        $stmt->close();
     } elseif (isset($_POST['delete_event'])) {
         $event_id = $_POST['event_id'];
 
+        // Prepare and execute SQL statement to delete event
         $stmt = $conn->prepare("DELETE FROM events WHERE id = ? AND club_id = ?");
-        if ($stmt) {
-            $stmt->bind_param("ii", $event_id, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error deleting event.";
-            } else {
-                $_SESSION['message'] = "Event deleted successfully.";
-            }
-            $stmt->close();
-        } else {
+        if ($stmt === false) {
             error_log("Prepare failed: " . $conn->error);
         }
+        $stmt->bind_param("ii", $event_id, $club_id);
+        if (!$stmt->execute()) {
+            error_log("Execute failed: " . $stmt->error);
+            $_SESSION['message'] = "Error deleting event.";
+        } else {
+            $_SESSION['message'] = "Event deleted successfully.";
+        }
+        $stmt->close();
     } elseif (isset($_POST['delete_recruitment'])) {
         $recruitment_id = $_POST['recruitment_id'];
 
+        // Prepare and execute SQL statement to delete recruitment
         $stmt = $conn->prepare("DELETE FROM recruitments WHERE id = ? AND club_id = ?");
-        if ($stmt) {
-            $stmt->bind_param("ii", $recruitment_id, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error deleting recruitment.";
-            } else {
-                $_SESSION['message'] = "Recruitment deleted successfully.";
-            }
-            $stmt->close();
-        } else {
+        if ($stmt === false) {
             error_log("Prepare failed: " . $conn->error);
         }
+        $stmt->bind_param("ii", $recruitment_id, $club_id);
+        if (!$stmt->execute()) {
+            error_log("Execute failed: " . $stmt->error);
+            $_SESSION['message'] = "Error deleting recruitment.";
+        } else {
+            $_SESSION['message'] = "Recruitment deleted successfully.";
+        }
+        $stmt->close();
     }
 }
 
-// Fetch events, recruitments, and applications
+// Fetch events and recruitments for the logged-in club
 $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
 $recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
-$applicationsResult = $conn->prepare("
-    SELECT s.name AS student_name, s.email AS email, a.resume_path AS resume_path
-    FROM applications a
-    INNER JOIN students s ON a.student_id = s.id
-    WHERE a.club_id = ?
-");
 
 if ($eventsResult) {
     $eventsResult->bind_param("i", $club_id);
@@ -126,14 +104,18 @@ if ($recruitmentsResult) {
     $recruitmentsResult = $recruitmentsResult->get_result();
 }
 
+// Fetch applications for the logged-in club
+$applicationsResult = $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
     $applicationsResult = $applicationsResult->get_result();
 }
 
+// Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -322,60 +304,47 @@ $conn->close();
             </section><!-- /Faq Section -->
         </div>
 
-<?php } elseif ($updateType == 'applications') { ?>
-    <!-- Applications Section -->
-    <section id="applications" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Applications</h2>
-            <p>View and manage student applications here.</p>
-        </div>
-<?php } elseif ($updateType == 'applications') { ?>
-    <!-- Applications Section -->
-    <section id="applications" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Applications</h2>
-            <p>View and manage student applications here.</p>
-        </div>
-    </section><!-- /Applications Section -->
+    <?php } elseif ($updateType == 'applications') { ?>
+        <!-- Applications Section -->
+        <section id="applications" class="about section">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Applications</h2>
+                <p>View and manage student applications here.</p>
+            </div>
+        </section><!-- /Applications Section -->
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h3>Applications for Your Club</h3>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Email</th>
-                            <th>Resume</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                            while ($application = $applicationsResult->fetch_assoc()) { 
-                                // Construct the URL for the resume
-                                $resumeFilename = htmlspecialchars($application['resume_path']); // Ensure only filename or relative path is stored
-                                $resumeUrl = '/Club/student/uploads/' . $resumeFilename; ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($application['student_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                    <td><a href="<?php echo htmlspecialchars($resumeUrl); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
-                                </tr>
-                            <?php }
-                        } else {
-                            echo "<tr><td colspan='3'>No applications available</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>Applications for Your Club</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Email</th>
+                                <th>Resume</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                                while ($application = $applicationsResult->fetch_assoc()) { ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($application['student_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($application['email']); ?></td>
+                                        <td><a href="<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                    </tr>
+                                <?php }
+                            } else {
+                                echo "<tr><td colspan='3'>No applications available</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-<?php } ?>
-
-
-
+    <?php } ?>
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
