@@ -13,7 +13,6 @@ if (!isset($_SESSION['club_id'])) {
 
 // Get session variables
 $club_id = $_SESSION['club_id'];
-$branch_id = $_SESSION['branch_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 
 // Handle form submissions
@@ -115,6 +114,7 @@ if ($applicationsResult) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 <!DOCTYPE html>
