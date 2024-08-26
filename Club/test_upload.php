@@ -1,35 +1,24 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $target_dir = "/var/www/html/Club/student/uploads/";
-    $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-    $uploadOk = 1;
-    $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-    // Check if file is a PDF
-    if ($fileType != "pdf") {
-        echo "Sorry, only PDF files are allowed.";
-        $uploadOk = 0;
-    }
-
-    // Check file size (optional, max 5MB)
-    if ($_FILES["fileToUpload"]["size"] > 5000000) {
-        echo "Sorry, your file is too large.";
-        $uploadOk = 0;
-    }
-
-    // Upload file if all checks are passed
-    if ($uploadOk == 1) {
-        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-            echo "The file " . basename($_FILES["fileToUpload"]["name"]) . " has been uploaded.";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_FILES['file'])) {
+        $file = $_FILES['file'];
+        if ($file['error'] == UPLOAD_ERR_OK) {
+            $target_file = '/var/www/html/Club/student/uploads/' . basename($file['name']);
+            if (move_uploaded_file($file['tmp_name'], $target_file)) {
+                echo "File uploaded successfully.";
+            } else {
+                echo "Error moving file.";
+            }
         } else {
-            echo "Sorry, there was an error uploading your file.";
+            echo "Error uploading file: " . $file['error'];
         }
+    } else {
+        echo "No file uploaded.";
     }
 }
 ?>
 
-<form action="" method="post" enctype="multipart/form-data">
-    Select file to upload:
-    <input type="file" name="fileToUpload" id="fileToUpload">
-    <input type="submit" value="Upload File" name="submit">
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <button type="submit">Upload</button>
 </form>
