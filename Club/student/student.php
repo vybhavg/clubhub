@@ -16,8 +16,17 @@ if (!isset($_SESSION['selected_club']) || empty($_SESSION['selected_club'])) {
     exit();
 }
 
-// Get the club_id from session
-$club_id = $_SESSION['selected_club'];
+// Check if club_id is provided in the URL
+if (isset($_GET['club_id']) && !empty($_GET['club_id'])) {
+    $club_id = intval($_GET['club_id']);
+    $_SESSION['selected_club'] = $club_id; // Store it in session for later use
+} elseif (isset($_SESSION['selected_club']) && !empty($_SESSION['selected_club'])) {
+    $club_id = $_SESSION['selected_club'];
+} else {
+    echo "No club selected.";
+    exit();
+}
+
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
