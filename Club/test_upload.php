@@ -1,4 +1,11 @@
 <?php
+// Example PHP code to check directory access
+if (is_writable('/var/www/html/Club/student/uploads')) {
+    echo 'Directory is writable.';
+} else {
+    echo 'Directory is not writable.';
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_FILES['file'])) {
         $file = $_FILES['file'];
