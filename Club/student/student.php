@@ -104,7 +104,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
             $_SESSION['message'] = "The file " . htmlspecialchars(basename($resume["name"])) . " has been uploaded and your application has been submitted.";
             $stmt->close();
         } else {
-            $_SESSION['message'] = "Sorry, there was an error uploading your file.";
+            // Improved error logging
+            $uploadError = $_FILES['resume']['error'];
+            $_SESSION['message'] = "Sorry, there was an error uploading your file. Error code: $uploadError";
         }
     } else {
         $_SESSION['message'] = "File upload failed.";
@@ -117,6 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
