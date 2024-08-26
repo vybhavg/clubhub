@@ -206,6 +206,7 @@ $conn->close();
       </div>
     </div>
 
+    <!-- Events Section -->
     <div class="upbox update-item filter-events">
       <h3>Events</h3>
       <?php foreach ($events as $event): ?>
@@ -213,10 +214,12 @@ $conn->close();
           <h4><?php echo htmlspecialchars($event['title']); ?></h4>
           <p><?php echo htmlspecialchars($event['description']); ?></p>
           <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
+          <a href="register_event.php?event_id=<?php echo $event['id']; ?>&club_id=<?php echo $event['club_id']; ?>" class="btn btn-primary">Register</a>
         </div>
       <?php endforeach; ?>
     </div>
 
+    <!-- Recruitments Section -->
     <div class="upbox update-item filter-recruitment" style="display: none;">
       <h3>Recruitments</h3>
       <?php foreach ($recruitments as $recruitment): ?>
@@ -225,12 +228,14 @@ $conn->close();
           <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
           <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
           <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
-          <a href="Club/student/student.php" class="btn btn-primary">Apply</a>
+          <a href="Club/student/student.php?club_id=<?php echo $recruitment['club_id']; ?>" class="btn btn-primary">Apply</a>
         </div>
       <?php endforeach; ?>
     </div>
   </div>
-</section><!-- End Updates Section -->
+</section>
+<!-- End Updates Section -->
+
 
 
     <!-- ======= Services Section ======= -->
