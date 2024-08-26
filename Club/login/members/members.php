@@ -310,7 +310,7 @@ $conn->close();
             </section><!-- /Faq Section -->
         </div>
 
-   <?php } elseif ($updateType == 'applications') { ?>
+<?php } elseif ($updateType == 'applications') { ?>
     <!-- Applications Section -->
     <section id="applications" class="about section">
         <div class="container section-title" data-aos="fade-up">
@@ -335,19 +335,12 @@ $conn->close();
                         <?php 
                         if ($applicationsResult && $applicationsResult->num_rows > 0) {
                             while ($application = $applicationsResult->fetch_assoc()) { 
-                                // Ensure the resume path is correctly formatted and accessible
-                                $resumePath = htmlspecialchars($application['resume_path']);
-                                
-                                // Debugging: Check if resume path is correct
-                                // echo "<!-- Resume Path: $resumePath -->";
-                                ?>
+                                // Construct the URL for the resume
+                                $resumeUrl = '/Club/student/uploads/' . htmlspecialchars($application['resume_path']); ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($application['student_name']); ?></td>
                                     <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                    <td>
-                                        <!-- Make sure the resume URL is correct and accessible -->
-                                        <a href="<?php echo $resumePath; ?>" class="btn btn-info" target="_blank">View Resume</a>
-                                    </td>
+                                    <td><a href="<?php echo htmlspecialchars($resumeUrl); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
                                 </tr>
                             <?php }
                         } else {
@@ -360,6 +353,7 @@ $conn->close();
         </div>
     </div>
 <?php } ?>
+
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
