@@ -10,12 +10,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Ensure club_id is set in session or request
-if (!isset($_SESSION['selected_club']) || empty($_SESSION['selected_club'])) {
-    echo "No club selected.";
-    exit();
-}
-
 // Check if club_id is provided in the URL
 if (isset($_GET['club_id']) && !empty($_GET['club_id'])) {
     $club_id = intval($_GET['club_id']);
@@ -27,7 +21,6 @@ if (isset($_GET['club_id']) && !empty($_GET['club_id'])) {
     exit();
 }
 
-
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
     $name = htmlspecialchars($_POST['name']);
@@ -36,21 +29,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 
     // Directory where resume will be uploaded
     $target_dir = "uploads/";
-    // Ensure directory exists and is writable
     if (!file_exists($target_dir)) {
-        mkdir($target_dir, 0755, true); // Create directory if it doesn't exist
+        mkdir($target_dir, 0755, true);
     }
-    $target_file = $target_dir . basename($resume["name"]);
+    
+    // Unique filename to avoid conflicts
+    $unique_name = uniqid() . "_" . basename($resume["name"]);
+    $target_file = $target_dir . $unique_name;
     $uploadOk = 1;
     $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-    // Check if file is a real PDF
+    // Check if file is a PDF
     if ($fileType != "pdf") {
         $_SESSION['message'] = "Sorry, only PDF files are allowed.";
         $uploadOk = 0;
     }
 
-    // Check file size (optional, e.g., max 5MB)
+    // Check file size (optional, max 5MB)
     if ($resume["size"] > 5000000) {
         $_SESSION['message'] = "Sorry, your file is too large.";
         $uploadOk = 0;
@@ -73,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
                 $student = $result->fetch_assoc();
                 $student_id = $student['id'];
 
-                // Update the student's record
+                // Update the student's record (optional)
                 $stmt = $conn->prepare("UPDATE students SET name = ?, email = ? WHERE id = ?");
                 if ($stmt === false) {
                     die('Prepare failed: ' . htmlspecialchars($conn->error));
@@ -93,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
                 if (!$stmt->execute()) {
                     die('Execute failed: ' . htmlspecialchars($stmt->error));
                 }
-                $student_id = $stmt->insert_id; // Get the newly inserted student ID
+                $student_id = $stmt->insert_id;
                 $stmt->close();
             }
 
@@ -110,8 +105,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
             $stmt->close();
         } else {
             $_SESSION['message'] = "Sorry, there was an error uploading your file.";
-            $_SESSION['message'] .= " Temporary file path: " . $resume["tmp_name"] . "<br>";
-            $_SESSION['message'] .= " Target path: " . $target_file;
         }
     } else {
         $_SESSION['message'] = "File upload failed.";
