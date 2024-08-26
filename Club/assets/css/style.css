@@ -680,16 +680,17 @@ section {
 /* Update items without animation */
 /* Add a transition for fading */
 /* Update items without animation */
+/* Ensure update items are hidden by default */
 .update-item {
-  display: none; /* Ensure items are hidden by default */
+  display: none;
 }
 
+/* Display active items */
 .update-item.active {
-  display: block; /* Ensure active items are displayed */
+  display: block;
 }
 
-
-/* Make sure the filter active styling is applied correctly */
+/* Styling for the filters */
 #update-flters {
   padding: 0;
   margin: 0 auto 35px auto;
@@ -721,18 +722,17 @@ section {
   margin-right: 0;
 }
 
+/* Container for updates with scrolling */
 .upbox {
   padding: 20px;
   background: #fff;
   box-shadow: 0 0 30px rgba(214, 215, 216, 0.6);
-}
-.upbox {
   max-height: 400px; /* Set the maximum height */
   overflow-y: auto;  /* Enable vertical scrolling */
   padding-right: 15px; /* Space for scrollbar */
 }
 
-/* Optional: Customize the scrollbar (for webkit browsers like Chrome, Safari) */
+/* Custom scrollbar for webkit browsers */
 .upbox::-webkit-scrollbar {
   width: 10px;
 }
@@ -749,7 +749,7 @@ section {
   background: #555;
 }
 
-/* Additional styling to improve readability */
+/* Styling for individual update entries */
 .update-entry {
   padding: 10px;
   margin-bottom: 10px;
@@ -759,6 +759,7 @@ section {
 .update-entry h4 {
   margin-top: 0;
 }
+
 
 
 /*--------------------------------------------------------------
