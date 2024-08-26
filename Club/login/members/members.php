@@ -317,6 +317,13 @@ $conn->close();
             <h2>Applications</h2>
             <p>View and manage student applications here.</p>
         </div>
+<?php } elseif ($updateType == 'applications') { ?>
+    <!-- Applications Section -->
+    <section id="applications" class="about section">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Applications</h2>
+            <p>View and manage student applications here.</p>
+        </div>
     </section><!-- /Applications Section -->
 
     <div class="container">
@@ -336,7 +343,8 @@ $conn->close();
                         if ($applicationsResult && $applicationsResult->num_rows > 0) {
                             while ($application = $applicationsResult->fetch_assoc()) { 
                                 // Construct the URL for the resume
-                                $resumeUrl = '/Club/student/uploads/' . htmlspecialchars($application['resume_path']); ?>
+                                $resumeFilename = htmlspecialchars($application['resume_path']); // Ensure only filename or relative path is stored
+                                $resumeUrl = '/Club/student/uploads/' . $resumeFilename; ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($application['student_name']); ?></td>
                                     <td><?php echo htmlspecialchars($application['email']); ?></td>
@@ -353,6 +361,7 @@ $conn->close();
         </div>
     </div>
 <?php } ?>
+
 
 
     <!-- Contact Section -->
