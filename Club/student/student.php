@@ -96,11 +96,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
             }
 
             // Insert or update the application record
-            $stmt = $conn->prepare("INSERT INTO applications (student_id, club_id, resume_path) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE resume_path = ?");
+            $stmt = $conn->prepare("INSERT INTO applications (student_id, club_id, resume_path) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE resume_path = VALUES(resume_path)");
             if ($stmt === false) {
                 die('Prepare failed: ' . htmlspecialchars($conn->error));
             }
-            $stmt->bind_param("iis", $student_id, $club_id, $relative_path, $relative_path);
+            $stmt->bind_param("iis", $student_id, $club_id, $relative_path);
             if (!$stmt->execute()) {
                 die('Execute failed: ' . htmlspecialchars($stmt->error));
             }
