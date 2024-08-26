@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
     if (!file_exists($target_dir)) {
         mkdir($target_dir, 0755, true);
     }
-    
+
     // Unique filename to avoid conflicts
     $unique_name = uniqid() . "_" . basename($resume["name"]);
     $target_file = $target_dir . $unique_name;
@@ -54,8 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
     // Upload file if all checks are passed
     if ($uploadOk == 1) {
         if (move_uploaded_file($resume["tmp_name"], $target_file)) {
-            // Store the relative path in the database
-            $resumePath = 'Club/student/uploads/' . $unique_name;
+            // Store relative path in the database
+            $relative_path = 'Club/student/uploads/' . $unique_name;
 
             // Check if student already exists
             $stmt = $conn->prepare("SELECT id FROM students WHERE name = ? AND email = ?");
@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
             if ($stmt === false) {
                 die('Prepare failed: ' . htmlspecialchars($conn->error));
             }
-            $stmt->bind_param("iiss", $student_id, $club_id, $resumePath, $resumePath);
+            $stmt->bind_param("iis", $student_id, $club_id, $relative_path, $relative_path);
             if (!$stmt->execute()) {
                 die('Execute failed: ' . htmlspecialchars($stmt->error));
             }
@@ -122,6 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 
