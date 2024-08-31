@@ -325,7 +325,8 @@ $conn->close();
             </section><!-- /Faq Section -->
         </div>
 
-<!-- Applications Section -->
+   <?php } elseif ($updateType == 'applications') { ?>
+        <!-- Applications Section -->
         <section id="applications" class="about section">
             <div class="container section-title" data-aos="fade-up">
                 <h2>Applications</h2>
