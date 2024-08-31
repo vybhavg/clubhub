@@ -47,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $
     }
 }
 
-
 // Handle login
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'], $_POST['pass'])) {
     $username = $_POST['username'];
