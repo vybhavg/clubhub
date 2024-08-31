@@ -13,7 +13,6 @@ if (!isset($_SESSION['club_id'])) {
 
 // Get session variables
 $club_id = $_SESSION['club_id'];
-$branch_id = $_SESSION['branch_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 
 // Initialize $club_name
@@ -126,23 +125,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
                     if ($stmt) {
                         $stmt->bind_param("i", $application_id);
-                        if (!$stmt->execute()) {
-                            error_log("Error inserting into onboarding table: " . $stmt->error);
-                            $_SESSION['message'] = "Error moving application to onboarding.";
-                        }
+                        $stmt->execute();
                         $stmt->close();
                     } else {
                         error_log("Prepare failed: " . $conn->error);
                     }
                 } else {
                     // Move to rejected table
-                    $stmt = $conn->prepare("INSERT INTO rejected (student_id, club_id) VALUES ((SELECT student_id FROM applications WHERE id = ?), (SELECT club_id FROM applications WHERE id = ?))");
+                    $stmt = $conn->prepare("INSERT INTO rejected (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
                     if ($stmt) {
-                        $stmt->bind_param("ii", $application_id, $application_id);
-                        if (!$stmt->execute()) {
-                            error_log("Error inserting into rejected table: " . $stmt->error);
-                            $_SESSION['message'] = "Error moving application to rejected.";
-                        }
+                        $stmt->bind_param("i", $application_id);
+                        $stmt->execute();
                         $stmt->close();
                     } else {
                         error_log("Prepare failed: " . $conn->error);
@@ -153,10 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt = $conn->prepare("DELETE FROM applications WHERE id = ?");
                 if ($stmt) {
                     $stmt->bind_param("i", $application_id);
-                    if (!$stmt->execute()) {
-                        error_log("Error deleting application: " . $stmt->error);
-                        $_SESSION['message'] = "Error deleting application.";
-                    }
+                    $stmt->execute();
                     $stmt->close();
                 } else {
                     error_log("Prepare failed: " . $conn->error);
@@ -198,7 +188,7 @@ if ($recruitmentsResult) {
     error_log("Prepare failed: " . $conn->error);
 }
 
-// Fetch applications for the logged-in club
+// Fetch applications for the logged-in club (status NULL means new applicants)
 $applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ? AND a.status IS NULL");
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
@@ -207,6 +197,7 @@ if ($applicationsResult) {
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
+
 // Fetch onboarded students for the logged-in club
 $onboardingResult = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
 if ($onboardingResult) {
@@ -216,9 +207,11 @@ if ($onboardingResult) {
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
+
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 <!DOCTYPE html>
