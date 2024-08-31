@@ -6,10 +6,6 @@
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
 }
-.container.active .sign-in,
-.container.active .sign-up {
-    transition: none;
-}
 
 
 body{
