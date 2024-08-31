@@ -462,7 +462,7 @@ if ($onboardedStmt) {
 
 
     <?php } ?>
-
+   <?php } elseif ($updateType == 'onboarding') { ?>
  <section id="onboarding" class="onboarding section">
     <div class="container section-title" data-aos="fade-up">
         <h2>Onboarded Students</h2>
@@ -493,7 +493,7 @@ if ($onboardedStmt) {
         </table>
     </div>
 </section><!-- /Onboarding Section -->
-
+<?php } ?>
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
