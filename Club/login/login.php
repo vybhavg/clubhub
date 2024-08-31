@@ -94,15 +94,26 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Register</title>
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="login.css">
-    <title>Modern Login Page</title>
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" type="text/css" href="util.css">
+    <link rel="stylesheet" type="text/css" href="login.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta name="robots" content="noindex, follow">
 </head>
 <body>
     <div class="container" id="container">
-        <!-- Registration Form -->
-        <div class="form-container sign-up">
-            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form">
+        <div class="form-container sign-up" style="display: none;">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
                 <h1>Create Account</h1>
                 <div class="social-icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
@@ -112,23 +123,20 @@ $conn->close();
                 </div>
                 <span>or use your email for registration</span>
                 <input type="text" name="club_name" placeholder="Club Name">
+                <input type="text" name="register_username" placeholder="Username">
+                <input type="password" name="register_pass" placeholder="Password">
                 <select name="branch_id">
                     <option value="">Select Branch</option>
                     <?php echo $branch_options; ?>
                 </select>
-                <input type="text" name="register_username" placeholder="Username">
-                <input type="password" name="register_pass" placeholder="Password">
-                <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
                 <button type="submit">Sign Up</button>
-                <div class="text-center">
-                    <a href="#" id="login">Already have an account? Login here</a>
-                </div>
+                <div id="register-success-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
+                <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
             </form>
         </div>
 
-        <!-- Login Form -->
         <div class="form-container sign-in">
-            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="login-form">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
                 <h1>Sign In</h1>
                 <div class="social-icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
@@ -137,34 +145,47 @@ $conn->close();
                     <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
                 <span>or use your email password</span>
-                <input type="email" name="username" placeholder="Email">
+                <input type="text" name="username" placeholder="Username">
                 <input type="password" name="pass" placeholder="Password">
-                <a href="#">Forgot Your Password?</a>
-                <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+                <a href="#">Forget Your Password?</a>
                 <button type="submit">Sign In</button>
-                <div class="text-center">
-                    <a href="#" id="register">Don't have an account? Register here</a>
-                </div>
+                <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
             </form>
         </div>
 
-        <!-- Toggle Container -->
         <div class="toggle-container">
             <div class="toggle">
                 <div class="toggle-panel toggle-left">
                     <h1>Welcome Back!</h1>
                     <p>Enter your personal details to use all of site features</p>
-                    <button class="hidden" id="login">Sign In</button>
+                    <button class="hidden" id="login-toggle">Sign In</button>
                 </div>
                 <div class="toggle-panel toggle-right">
                     <h1>Hello, Friend!</h1>
                     <p>Register with your personal details to use all of site features</p>
-                    <button class="hidden" id="register">Sign Up</button>
+                    <button class="hidden" id="register-toggle">Sign Up</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="login.js"></script>
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="vendor/animsition/js/animsition.min.js"></script>
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/select2/select2.min.js"></script>
+    <script src="vendor/daterangepicker/moment.min.js"></script>
+    <script src="vendor/daterangepicker/daterangepicker.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.getElementById('register-toggle').addEventListener('click', function() {
+            document.querySelector('.form-container.sign-in').style.display = 'none';
+            document.querySelector('.form-container.sign-up').style.display = 'block';
+        });
+        document.getElementById('login-toggle').addEventListener('click', function() {
+            document.querySelector('.form-container.sign-up').style.display = 'none';
+            document.querySelector('.form-container.sign-in').style.display = 'block';
+        });
+    </script>
 </body>
 </html>
