@@ -124,10 +124,11 @@ $conn->close();
                 <input type="text" name="club_name" placeholder="Club Name">
                 <input type="text" name="register_username" placeholder="Username">
                 <input type="password" name="register_pass" placeholder="Password">
+                <div class="branch">
                 <select name="branch_id">
                     <option value="">Select Branch</option>
                     <?php echo $branch_options; ?>
-                </select>
+                </select></div>
                 <button type="submit">Sign Up</button>
                 <div id="register-success-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
                 <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
