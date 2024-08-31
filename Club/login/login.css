@@ -38,12 +38,16 @@ body {
     transform: translateX(100%);
 }
 
-.sign-in-form {
+.container.sign-in-mode .sign-in {
     transform: translateX(0);
 }
 
-.sign-up-form {
+.container.sign-in-mode .sign-up {
     transform: translateX(100%);
+}
+
+.container.sign-in-mode .form-container {
+    transform: translateX(0);
 }
 
 .hidden {
@@ -152,12 +156,4 @@ button:hover {
 
 .toggle-panel h1 {
     font-size: 18px;
-}
-
-.container.sign-in-mode .sign-in {
-    transform: translateX(0);
-}
-
-.container.sign-in-mode .sign-up {
-    transform: translateX(100%);
 }
