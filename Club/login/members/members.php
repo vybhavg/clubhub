@@ -190,6 +190,7 @@ if ($onboardedResult) {
 $conn->close();
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -433,7 +434,6 @@ $conn->close();
         </div>
     </div>
 </div>
-
 
 <?php } ?>
 
