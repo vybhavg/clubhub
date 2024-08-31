@@ -103,6 +103,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
+    } elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
+        $application_id = $_POST['application_id'];
+        $status = isset($_POST['accept_application']) ? 'accepted' : 'rejected';
+
+        // Insert into onboarding table if accepted
+        if ($status == 'accepted') {
+            $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
+            if ($stmt) {
+                $stmt->bind_param("i", $application_id);
+                if (!$stmt->execute()) {
+                    error_log("Execute failed: " . $stmt->error);
+                    $_SESSION['message'] = "Error onboarding student.";
+                }
+                $stmt->close();
+            } else {
+                error_log("Prepare failed: " . $conn->error);
+            }
+        }
+
+        // Delete from applications table
+        $stmt = $conn->prepare("DELETE FROM applications WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param("i", $application_id);
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
+                $_SESSION['message'] = "Error deleting application.";
+            } else {
+                $_SESSION['message'] = "Application processed successfully.";
+            }
+            $stmt->close();
+        } else {
+            error_log("Prepare failed: " . $conn->error);
+        }
+
+        // Redirect to avoid form resubmission
+        header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
+        exit;
     }
 
     // Redirect to avoid form resubmission
@@ -127,11 +164,19 @@ if ($recruitmentsResult) {
 }
 
 // Fetch applications for the logged-in club
-$applicationsResult = $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+$applicationsResult = $conn->prepare("SELECT id, s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
     $applicationsResult = $applicationsResult->get_result();
+}
+
+// Fetch onboarding for the logged-in club
+$onboardingResult = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
+if ($onboardingResult) {
+    $onboardingResult->bind_param("i", $club_id);
+    $onboardingResult->execute();
+    $onboardingResult = $onboardingResult->get_result();
 }
 
 // Close the database connection
@@ -325,47 +370,91 @@ $conn->close();
             </section><!-- /Faq Section -->
         </div>
 
-   <?php } elseif ($updateType == 'applications') { ?>
-        <!-- Applications Section -->
-        <section id="applications" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Applications</h2>
-                <p>View and manage student applications here.</p>
-            </div>
-        </section><!-- /Applications Section -->
+<!-- Applications Section -->
+<section id="applications" class="about section">
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Applications</h2>
+        <p>View and manage student applications here.</p>
+    </div>
+</section><!-- /Applications Section -->
 
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3>Applications for Your Club</h3>
-                    <table class="table table-striped">
-                        <thead>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>Applications for Your Club</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Resume</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                        while ($application = $applicationsResult->fetch_assoc()) { ?>
                             <tr>
-                                <th>Student Name</th>
-                                <th>Email</th>
-                                <th>Resume</th>
+                                <td><?php echo htmlspecialchars($application['student_name']); ?></td>
+                                <td><?php echo htmlspecialchars($application['email']); ?></td>
+                                <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                <td>
+                                    <form method="POST" style="display:inline;">
+                                        <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id']); ?>">
+                                        <button type="submit" name="accept_application" class="btn btn-success">Accept</button>
+                                        <button type="submit" name="reject_application" class="btn btn-danger">Reject</button>
+                                    </form>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                                while ($application = $applicationsResult->fetch_assoc()) { ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($application['student_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                        <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
-                                    </tr>
-                                <?php }
-                            } else {
-                                echo "<tr><td colspan='3'>No applications available</td></tr>";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        <?php }
+                    } else {
+                        echo "<tr><td colspan='4'>No applications available</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
-    <?php } ?>
+    </div>
+</div>
+
+<!-- Onboarding Section -->
+<section id="onboarding" class="about section">
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Onboarding</h2>
+        <p>View and manage onboarded members here.</p>
+    </div>
+</section><!-- /Onboarding Section -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>Onboarded Members</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    if ($onboardingResult && $onboardingResult->num_rows > 0) {
+                        while ($member = $onboardingResult->fetch_assoc()) { ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($member['student_name']); ?></td>
+                                <td><?php echo htmlspecialchars($member['email']); ?></td>
+                            </tr>
+                        <?php }
+                    } else {
+                        echo "<tr><td colspan='2'>No onboarded members available</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
