@@ -159,7 +159,7 @@ $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
 $recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
 
 // Fetch applications and onboarded students
-$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status as status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
 $onboardedResult = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
 
 if ($eventsResult) {
@@ -189,6 +189,7 @@ if ($onboardedResult) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
