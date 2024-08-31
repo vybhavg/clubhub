@@ -29,7 +29,7 @@ if ($stmt) {
         $club = $result->fetch_assoc();
         $club_name = htmlspecialchars($club['club_name']); // Sanitize output
     }
-    $stmt->close();
+    $stmt->close(); // Ensure this is only called once
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Event added successfully.";
             }
-            $stmt->close();
+            $stmt->close(); // Ensure this is only called once
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Recruitment added successfully.";
             }
-            $stmt->close();
+            $stmt->close(); // Ensure this is only called once
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Event deleted successfully.";
             }
-            $stmt->close();
+            $stmt->close(); // Ensure this is only called once
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Recruitment deleted successfully.";
             }
-            $stmt->close();
+            $stmt->close(); // Ensure this is only called once
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -112,11 +112,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param("ii", $application_id, $club_id);
             if ($stmt->execute()) {
                 // Add student to onboarding table
-                $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
-                if ($stmt) {
-                    $stmt->bind_param("i", $application_id);
-                    $stmt->execute();
-                    $stmt->close();
+                $stmt2 = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
+                if ($stmt2) {
+                    $stmt2->bind_param("i", $application_id);
+                    $stmt2->execute();
+                    $stmt2->close(); // Ensure this is only called once
                 } else {
                     error_log("Prepare failed: " . $conn->error);
                 }
@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 error_log("Execute failed: " . $stmt->error);
                 $_SESSION['message'] = "Error accepting application.";
             }
-            $stmt->close();
+            $stmt->close(); // Ensure this is only called once
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Application rejected.";
             }
-            $stmt->close();
+            $stmt->close(); // Ensure this is only called once
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -166,24 +166,28 @@ if ($eventsResult) {
     $eventsResult->bind_param("i", $club_id);
     $eventsResult->execute();
     $eventsResult = $eventsResult->get_result();
+    $eventsResult->close(); // Ensure this is only called once
 }
 
 if ($recruitmentsResult) {
     $recruitmentsResult->bind_param("i", $club_id);
     $recruitmentsResult->execute();
     $recruitmentsResult = $recruitmentsResult->get_result();
+    $recruitmentsResult->close(); // Ensure this is only called once
 }
 
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
     $applicationsResult = $applicationsResult->get_result();
+    $applicationsResult->close(); // Ensure this is only called once
 }
 
 if ($onboardedResult) {
     $onboardedResult->bind_param("i", $club_id);
     $onboardedResult->execute();
     $onboardedResult = $onboardedResult->get_result();
+    $onboardedResult->close(); // Ensure this is only called once
 }
 
 // Close the database connection
