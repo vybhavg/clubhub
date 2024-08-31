@@ -176,14 +176,14 @@ $conn->close();
     <script src="vendor/daterangepicker/moment.min.js"></script>
     <script src="vendor/daterangepicker/daterangepicker.js"></script>
     <script>
-        document.getElementById('register-toggle').addEventListener('click', function() {
-            document.querySelector('.form-container.sign-in').style.display = 'none';
-            document.querySelector('.form-container.sign-up').style.display = 'block';
-        });
-        document.getElementById('login-toggle').addEventListener('click', function() {
-            document.querySelector('.form-container.sign-up').style.display = 'none';
-            document.querySelector('.form-container.sign-in').style.display = 'block';
-        });
+       document.getElementById('register-toggle').addEventListener('click', function() {
+    document.getElementById('container').classList.add('active');
+});
+
+document.getElementById('login-toggle').addEventListener('click', function() {
+    document.getElementById('container').classList.remove('active');
+});
+
     </script>
 </body>
 </html>
