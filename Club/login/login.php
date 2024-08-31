@@ -89,121 +89,86 @@ foreach ($branches as $key => $branch) {
 $conn->close();
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <title>Login and Register</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
-  <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
-  <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
-  <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
-  <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
-  <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
-  <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
-  <link rel="stylesheet" type="text/css" href="util.css">
-  <link rel="stylesheet" type="text/css" href="login.css">
-  <meta name="robots" content="noindex, follow">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Modern Login Page</title>
 </head>
+
 <body>
-  <div class="limiter">
-    <div class="container-login100" style="background-image: url('loginbck.jpg');">
-      <div class="wrap-login100 p-t-30 p-b-50">
-        <span class="login100-form-title p-b-41">
-          Member Login & Register
-        </span>
-
-        <!-- Login Form -->
-        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="login-form">
-          <div class="wrap-input100 validate-input" data-validate="Enter username">
-            <input class="input100" type="text" name="username" placeholder="Username">
-            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-          </div>
-          <div class="wrap-input100 validate-input" data-validate="Enter password">
-            <input class="input100" type="password" name="pass" placeholder="Password">
-            <span class="focus-input100" data-placeholder="&#xe80f;"></span>
-          </div>
-          <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
-          <div class="container-login100-form-btn m-t-32">
-            <button class="login100-form-btn">
-              Login
-            </button>
-          </div>
-          <div class="text-center p-t-136">
-            <a class="txt2" href="#" onclick="showRegister()">Don't have an account? Register here</a>
-          </div>
-        </form>
-
-        <!-- Registration Form -->
-        <form class="login100-form validate-form p-b-33 p-t-5" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form" style="display: none;">
-          <div class="wrap-input100 validate-input" data-validate="Enter club name">
-            <input class="input100" type="text" name="club_name" placeholder="Club Name">
-            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-          </div>
-          <div class="wrap-input100 validate-input" data-validate="Select branch">
-            <select class="input100" name="branch_id">
-              <option value="">Select Branch</option>
-              <?php echo $branch_options; ?>
-            </select>
-            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-          </div>
-          <div class="wrap-input100 validate-input" data-validate="Enter username">
-            <input class="input100" type="text" name="register_username" placeholder="Username">
-            <span class="focus-input100" data-placeholder="&#xe82a;"></span>
-          </div>
-          <div class="wrap-input100 validate-input" data-validate="Enter password">
-            <input class="input100" type="password" name="register_pass" placeholder="Password">
-            <span class="focus-input100" data-placeholder="&#xe80f;"></span>
-          </div>
-          <div id="register-success-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
-          <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
-          <div class="container-login100-form-btn m-t-32">
-            <button class="login100-form-btn">
-              Register
-            </button>
-          </div>
-          <div class="text-center p-t-136">
-            <a class="txt2" href="#" onclick="showLogin()">Already have an account? Login here</a>
-          </div>
-        </form>
-      </div>
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+                <h1>Create Account</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input type="text" name="club_name" placeholder="Club Name" required>
+                <select name="branch_id" required>
+                    <option value="">Select Branch</option>
+                    <?php echo $branch_options; ?>
+                </select>
+                <input type="text" name="register_username" placeholder="Username" required>
+                <input type="password" name="register_pass" placeholder="Password" required>
+                <button type="submit">Sign Up</button>
+                <div id="register-success-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
+                <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+            </form>
+        </div>
+        <div class="form-container sign-in">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+                <h1>Sign In</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email password</span>
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="pass" placeholder="Password" required>
+                <a href="#">Forget Your Password?</a>
+                <button type="submit">Sign In</button>
+                <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to use all of the site features</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Register with your personal details to use all of the site features</p>
+                    <button class="hidden" id="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <div id="dropDownSelect1"></div>
 
-  <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-  <script src="vendor/animsition/js/animsition.min.js"></script>
-  <script src="vendor/bootstrap/js/popper.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-  <script src="vendor/select2/select2.min.js"></script>
-  <script src="vendor/daterangepicker/moment.min.js"></script>
-  <script src="vendor/daterangepicker/daterangepicker.js"></script>
-  <script src="vendor/countdowntime/countdowntime.js"></script>
-  <script src="login.js"></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-    gtag('config', 'UA-23581568-13');
-  </script>
-  <script>
-    function showRegister() {
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('register-form').style.display = 'block';
-    }
-    
-    function showLogin() {
-      document.getElementById('login-form').style.display = 'block';
-      document.getElementById('register-form').style.display = 'none';
-    }
-  </script>
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="login.js"></script>
+    <script>
+        const container = document.getElementById('container');
+        document.getElementById('register').addEventListener('click', () => {
+            container.classList.add("right-panel-active");
+        });
+        document.getElementById('login').addEventListener('click', () => {
+            container.classList.remove("right-panel-active");
+        });
+    </script>
 </body>
-</html>
 
+</html>
