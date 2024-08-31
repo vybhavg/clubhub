@@ -114,7 +114,7 @@ $conn->close();
         <div class="form-container sign-up" >
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
                 <h1>Create Account</h1>
-                <span>or use your email for registration</span>
+                <br>
                 <input type="text" name="club_name" placeholder="Club Name">
                 <input type="text" name="register_username" placeholder="Username">
                 <input type="password" name="register_pass" placeholder="Password">
@@ -132,7 +132,7 @@ $conn->close();
         <div class="form-container sign-in">
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
                 <h1>Sign In</h1>
-                <span>or use your email password</span>
+                <br>
                 <input type="text" name="username" placeholder="Username">
                 <input type="password" name="pass" placeholder="Password">
                 <a href="#">Forget Your Password?</a>
