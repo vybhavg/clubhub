@@ -107,7 +107,6 @@ $conn->close();
     <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" type="text/css" href="util.css">
     <link rel="stylesheet" type="text/css" href="login.css">
-    <link rel="stylesheet" type="text/css" href="style.css">
     <meta name="robots" content="noindex, follow">
 </head>
 <body>
@@ -176,7 +175,6 @@ $conn->close();
     <script src="vendor/select2/select2.min.js"></script>
     <script src="vendor/daterangepicker/moment.min.js"></script>
     <script src="vendor/daterangepicker/daterangepicker.js"></script>
-    <script src="js/main.js"></script>
     <script>
         document.getElementById('register-toggle').addEventListener('click', function() {
             document.querySelector('.form-container.sign-in').style.display = 'none';
