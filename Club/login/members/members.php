@@ -104,6 +104,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             error_log("Prepare failed: " . $conn->error);
         }
     }
+
+    // Redirect to avoid form resubmission
+    header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
+    exit;
 }
 
 // Fetch events and recruitments for the logged-in club
@@ -133,6 +137,7 @@ if ($applicationsResult) {
 // Close the database connection
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
