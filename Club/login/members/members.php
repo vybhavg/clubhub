@@ -13,7 +13,6 @@ if (!isset($_SESSION['club_id'])) {
 
 // Get session variables
 $club_id = $_SESSION['club_id'];
-$branch_id = $_SESSION['branch_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 
 // Initialize $club_name
@@ -25,7 +24,7 @@ if ($stmt) {
     $stmt->bind_param("i", $club_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
+    if ($result && $result->num_rows > 0) {
         $club = $result->fetch_assoc();
         $club_name = htmlspecialchars($club['club_name']); // Sanitize output
     }
@@ -155,46 +154,67 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Fetch events and recruitments for the logged-in club
-$eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
-$recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
+$eventsStmt = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
+$recruitmentsStmt = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
+$applicationsStmt = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status as status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+$onboardedStmt = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
 
-// Fetch applications and onboarded students
-$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status as status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
-$onboardedResult = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
-
-if ($eventsResult) {
-    $eventsResult->bind_param("i", $club_id);
-    $eventsResult->execute();
-    $eventsResult = $eventsResult->get_result();
-    $eventsResult->close(); // Ensure this is only called once
+if ($eventsStmt) {
+    $eventsStmt->bind_param("i", $club_id);
+    $eventsStmt->execute();
+    $eventsResult = $eventsStmt->get_result();
+    // Fetch events data
+    if ($eventsResult) {
+        while ($row = $eventsResult->fetch_assoc()) {
+            // Process each event row
+        }
+        $eventsResult->free(); // Free result set
+    }
+    $eventsStmt->close(); // Ensure this is only called once
 }
 
-if ($recruitmentsResult) {
-    $recruitmentsResult->bind_param("i", $club_id);
-    $recruitmentsResult->execute();
-    $recruitmentsResult = $recruitmentsResult->get_result();
-    $recruitmentsResult->close(); // Ensure this is only called once
+if ($recruitmentsStmt) {
+    $recruitmentsStmt->bind_param("i", $club_id);
+    $recruitmentsStmt->execute();
+    $recruitmentsResult = $recruitmentsStmt->get_result();
+    // Fetch recruitments data
+    if ($recruitmentsResult) {
+        while ($row = $recruitmentsResult->fetch_assoc()) {
+            // Process each recruitment row
+        }
+        $recruitmentsResult->free(); // Free result set
+    }
+    $recruitmentsStmt->close(); // Ensure this is only called once
 }
 
-if ($applicationsResult) {
-    $applicationsResult->bind_param("i", $club_id);
-    $applicationsResult->execute();
-    $applicationsResult = $applicationsResult->get_result();
-    $applicationsResult->close(); // Ensure this is only called once
+if ($applicationsStmt) {
+    $applicationsStmt->bind_param("i", $club_id);
+    $applicationsStmt->execute();
+    $applicationsResult = $applicationsStmt->get_result();
+    // Fetch applications data
+    if ($applicationsResult) {
+        while ($row = $applicationsResult->fetch_assoc()) {
+            // Process each application row
+        }
+        $applicationsResult->free(); // Free result set
+    }
+    $applicationsStmt->close(); // Ensure this is only called once
 }
 
-if ($onboardedResult) {
-    $onboardedResult->bind_param("i", $club_id);
-    $onboardedResult->execute();
-    $onboardedResult = $onboardedResult->get_result();
-    $onboardedResult->close(); // Ensure this is only called once
+if ($onboardedStmt) {
+    $onboardedStmt->bind_param("i", $club_id);
+    $onboardedStmt->execute();
+    $onboardedResult = $onboardedStmt->get_result();
+    // Fetch onboarded students data
+    if ($onboardedResult) {
+        while ($row = $onboardedResult->fetch_assoc()) {
+            // Process each onboarded student row
+        }
+        $onboardedResult->free(); // Free result set
+    }
+    $onboardedStmt->close(); // Ensure this is only called once
 }
-
-// Close the database connection
-$conn->close();
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
