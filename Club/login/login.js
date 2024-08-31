@@ -1,5 +1,7 @@
 (function($) {
     "use strict";
+    
+    // Old Design - Input Validation and Interaction
     $('.input100').each(function() {
         $(this).on('blur', function() {
             if ($(this).val().trim() != "") {
@@ -7,8 +9,9 @@
             } else {
                 $(this).removeClass('has-val');
             }
-        })
-    })
+        });
+    });
+
     var input = $('.validate-input .input100');
     $('.validate-form').on('submit', function() {
         var check = true;
@@ -20,11 +23,13 @@
         }
         return check;
     });
+
     $('.validate-form .input100').each(function() {
         $(this).focus(function() {
             hideValidate(this);
         });
     });
+
     function validate(input) {
         if ($(input).attr('type') == 'email' || $(input).attr('name') == 'email') {
             if ($(input).val().trim().match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/) == null) {
@@ -36,14 +41,17 @@
             }
         }
     }
+
     function showValidate(input) {
         var thisAlert = $(input).parent();
         $(thisAlert).addClass('alert-validate');
     }
+
     function hideValidate(input) {
         var thisAlert = $(input).parent();
         $(thisAlert).removeClass('alert-validate');
     }
+
     var showPass = 0;
     $('.btn-show-pass').on('click', function() {
         if (showPass == 0) {
@@ -56,5 +64,18 @@
             showPass = 0;
         }
     });
-}
-)(jQuery);
+
+    // New Design - Toggle Between Login and Register
+    const container = document.getElementById('container');
+    const registerBtn = document.getElementById('register');
+    const loginBtn = document.getElementById('login');
+
+    registerBtn.addEventListener('click', () => {
+        container.classList.add("active");
+    });
+
+    loginBtn.addEventListener('click', () => {
+        container.classList.remove("active");
+    });
+
+})(jQuery);
