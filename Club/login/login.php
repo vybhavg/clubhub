@@ -145,12 +145,12 @@ $conn->close();
             <div class="toggle">
                 <div class="toggle-panel toggle-left">
                     <h1>Welcome Back!</h1>
-                    <p>Enter your personal details to use all of site features</p>
+                    <p>Enter your Club details</p>
                     <button class="hidden" id="login-toggle">Sign In</button>
                 </div>
                 <div class="toggle-panel toggle-right">
-                    <h1>Hello, Friend!</h1>
-                    <p>Register with your personal details to use all of site features</p>
+                    <h1>Hello, Club Members!</h1>
+                    <p>Register with your club details</p>
                     <button class="hidden" id="register-toggle">Sign Up</button>
                 </div>
             </div>
