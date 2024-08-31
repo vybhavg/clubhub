@@ -157,9 +157,10 @@ $conn->close();
         </div>
     </div>
 
+    <!-- JavaScript files -->
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-    <script src="login.js"></script>
+    <script src="login.js"></script> <!-- Link to your JavaScript file -->
 
 </body>
 
