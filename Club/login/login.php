@@ -96,7 +96,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://github.com/cdahaoui/Modern-Login-Page/blob/main/style.css">
     <title>Modern Login Page</title>
 </head>
 
@@ -157,11 +157,7 @@ $conn->close();
         </div>
     </div>
 
-    <!-- JavaScript files -->
-    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-    <script src="login.js"></script> <!-- Link to your JavaScript file -->
-
+    <script src="https://github.com/cdahaoui/Modern-Login-Page/blob/main/script.js"></script>
 </body>
 
 </html>
