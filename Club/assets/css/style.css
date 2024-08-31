@@ -746,7 +746,7 @@ section {
   background: #67B0D1; /* Custom color */
   border-radius: 10px; /* Curved borders */
 }
-
+ 
 .upbox::-webkit-scrollbar-thumb:hover {
   background: #4A98B3; /* Slightly darker shade on hover */
 }
