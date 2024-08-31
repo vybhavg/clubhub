@@ -161,18 +161,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if (!$stmt_delete_application->execute()) {
                         error_log("Error deleting application: " . $stmt_delete_application->error);
                         $_SESSION['message'] = "Error removing application.";
+                    } else {
+                        $_SESSION['message'] = "Application status updated successfully.";
                     }
                     $stmt_delete_application->close();
                 } else {
                     error_log("Prepare failed: " . $conn->error);
                 }
+            } else {
+                $_SESSION['message'] = "Application not found.";
             }
             $stmt_fetch_application_details->close();
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
-
-        $_SESSION['message'] = "Application status updated successfully.";
 
         // Redirect to avoid form resubmission
         header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
@@ -184,41 +186,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $stmt_fetch_events = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
 $stmt_fetch_recruitments = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
 
-if ($stmt_fetch_events) {
+if ($stmt_fetch_events && $stmt_fetch_recruitments) {
     $stmt_fetch_events->bind_param("i", $club_id);
     $stmt_fetch_events->execute();
-    $eventsResult = $stmt_fetch_events->get_result();
-    $stmt_fetch_events->close();
-} else {
-    error_log("Prepare failed: " . $conn->error);
-}
+    $events_result = $stmt_fetch_events->get_result();
 
-if ($stmt_fetch_recruitments) {
     $stmt_fetch_recruitments->bind_param("i", $club_id);
     $stmt_fetch_recruitments->execute();
-    $recruitmentsResult = $stmt_fetch_recruitments->get_result();
+    $recruitments_result = $stmt_fetch_recruitments->get_result();
+
+    $stmt_fetch_events->close();
     $stmt_fetch_recruitments->close();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
 
-// Fetch applications for the logged-in club
-$stmt_fetch_applications = $conn->prepare("
-    SELECT a.id AS app_id, s.name AS student_name, s.email AS email, a.resume_path AS resume 
-    FROM applications a 
-    JOIN students s ON a.student_id = s.id 
-    WHERE a.club_id = ?
-");
-if ($stmt_fetch_applications) {
-    $stmt_fetch_applications->bind_param("i", $club_id);
-    $stmt_fetch_applications->execute();
-    $applicationsResult = $stmt_fetch_applications->get_result();
-    $stmt_fetch_applications->close();
-} else {
-    error_log("Prepare failed: " . $conn->error);
-}
+// Close the database connection
+$conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
