@@ -126,10 +126,11 @@ $conn->close();
                 <input type="text" name="register_username" placeholder="Username">
                 <input type="password" name="register_pass" placeholder="Password">
                 <div class="branch">
-                <select name="branch_id" class="branch_id">
-                    <option value="">Select Branch</option>
-                    <?php echo $branch_options; ?>
-                </select></div>
+                    <select name="branch_id" class="branch_id">
+                        <option value="">Select Branch</option>
+                        <?php echo $branch_options; ?>
+                    </select>
+                </div>
                 <button type="submit">Sign Up</button>
                 <div id="register-success-message" style="color: green;"><?php echo htmlspecialchars($register_success_message); ?></div>
                 <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($register_error_message); ?></div>
@@ -185,6 +186,14 @@ $conn->close();
        document.getElementById('login-toggle').addEventListener('click', function() {
            document.getElementById('container').classList.remove('active');
        });
+
+       // Check if there is a registration error or success message, and switch to the Sign Up section
+       const registerError = "<?php echo $register_error_message; ?>";
+       const registerSuccess = "<?php echo $register_success_message; ?>";
+
+       if (registerError || registerSuccess) {
+           document.getElementById('container').classList.add('active');
+       }
     </script>
 </body>
 </html>
