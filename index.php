@@ -331,381 +331,381 @@ $conn->close();
   
     <!-- ======= Portfolio Section ======= -->
     <section id="portfolio" class="portfolio">
-      <div class="container">
-
-        <div class="section-title" data-aos="fade-in" data-aos-delay="100">
-          <h2>Clubs</h2>
-          <p>Gitam has a total of 39 clubs in all the three campuses</p>
+        <div class="container">
+  
+          <div class="section-title" data-aos="fade-in" data-aos-delay="100">
+            <h2>Clubs</h2>
+            <p>Gitam has a total of 39 clubs in all the three campuses</p>
+          </div>
+  
+          <div class="row" data-aos="fade-in">
+            <div class="col-lg-12 d-flex justify-content-center">
+              <ul id="portfolio-flters">
+                <li data-filter="*" class="filter-active">All</li>
+                <li data-filter=".filter-app">VSP</li>
+                <li data-filter=".filter-card">HYD</li>
+                <li data-filter=".filter-web">BLR</li>
+              </ul>
+            </div>
+          </div>
+  
+          <div class="row portfolio-container" data-aos="fade-up">
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/gcgc.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/gcgc.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 2">Cooking Club-HYD</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/Gitam-quiz-club.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/Gitam-quiz-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 2">Gitam Quiz Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-web">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/Perspective-arts-GITAM-BLR.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/Perspective-arts-GITAM-BLR.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="App 2">Perspective Arts Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/kcc.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/kcc.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 2">Korean Culture Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-web">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/GUSAC.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/GUSAC.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Web 2">GUSAC</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/ic_logo.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/ic_logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="App 3">Innovation Center</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/Kalakrithi.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/Kalakrithi.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 1">Kalakrithi - HYD</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/The-Finer--Things-Club.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/The-Finer--Things-Club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">The Finer Things Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-web">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/Speaking-club.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/Speaking-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Speaking Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/disha.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/disha.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Disha</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/agrow.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/agrow.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Agrow</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-web">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/kalakrithi-blr.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/kalakrithi-blr.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Kalakrithi-BLR</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/charaiveti_logo.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/charaiveti_logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Charaiveti</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="https://www.gitam.edu/sites/default/files/2022-08/aikya.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="https://www.gitam.edu/sites/default/files/2022-08/aikya.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Aikya</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-web">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/gstudio.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/gstudio.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Gstudio - BLR</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/bcg.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/bcg.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Biotechnology Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/cats-logo.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/cats-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">CATS</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/Creative-Arts,Kalakrithi_Club_Visakhapatnam.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/Creative-Arts,Kalakrithi_Club_Visakhapatnam.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Creative Arts Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/Engineers-Without-Borders-(EWB.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/Engineers-Without-Borders-(EWB.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Engineers Without Borders</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/creseendo.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/creseendo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Creseendo</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/CYSEC.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/CYSEC.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">CYSEC</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-card">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/Entrepreneurs-club.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/Entrepreneurs-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Entrepreneurs club - HYD</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/dance-club.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/dance-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Dance club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/faces.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/faces.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Faces</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/GITAM-Aeromodelling-club.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/GITAM-Aeromodelling-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">GITAM Aeromodelling club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/GITAM-National-Service-Scheme.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/GITAM-National-Service-Scheme.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">GITAM National Service Scheme</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="https://www.gitam.edu/sites/default/files/2022-08/GITAM-Toastmasters-club.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="https://www.gitam.edu/sites/default/files/2022-08/GITAM-Toastmasters-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Toastmasters Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/glug-logo.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/glug-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Glug</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/gstudio.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/gstudio.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Gstudio - VSP</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/GUSAC.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/GUSAC.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">GUSAC - VSP</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="https://www.gitam.edu/sites/default/files/2022-08/helping-hands.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="https://www.gitam.edu/sites/default/files/2022-08/helping-hands.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Helping Hands</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/cooking-club-logo.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/cooking-club-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Cooking Club - VSP</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/Entrepreneurs-club.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/Entrepreneurs-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Entrepreneurs Club - VSP</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/ncc-logo.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/ncc-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">NCC</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/NOVUS_CLUB_VSP_3.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/NOVUS_CLUB_VSP_3.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">NOVUS Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/phonia.png" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/phonia.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Phonia</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/rotract-club.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/rotract-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Rotaract Club</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/softskills-logo.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/softskills-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Softskills Club</a>
+                </div>
+              </div>
+            </div>
+  
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <img src="Club/assets/img/anchoring-club.jpg" class="img-fluid" alt="">
+                <div class="portfolio-links">
+                  <a href="Club/assets/img/anchoring-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Web 3">The Anchoring Club</a>
+                </div>
+              </div>
+            </div>
+  
+          </div>
+  
         </div>
-
-        <div class="row" data-aos="fade-in">
-          <div class="col-lg-12 d-flex justify-content-center">
-            <ul id="portfolio-flters">
-              <li data-filter="*" class="filter-active">All</li>
-              <li data-filter=".filter-app">VSP</li>
-              <li data-filter=".filter-card">HYD</li>
-              <li data-filter=".filter-web">BLR</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="row portfolio-container" data-aos="fade-up">
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/gcgc.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/gcgc.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 2">Cooking Club-HYD</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/Gitam-quiz-club.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/Gitam-quiz-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 2">Gitam Quiz Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/Perspective-arts-GITAM-BLR.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/Perspective-arts-GITAM-BLR.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="App 2">Perspective Arts Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/kcc.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/kcc.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 2">Korean Culture Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/GUSAC.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/GUSAC.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Web 2">GUSAC</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/ic_logo.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/ic_logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="App 3">Innovation Center</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/Kalakrithi.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/Kalakrithi.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 1">Kalakrithi - HYD</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/The-Finer--Things-Club.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/The-Finer--Things-Club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">The Finer Things Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/Speaking-club.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/Speaking-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Speaking Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/disha.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/disha.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Disha</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/agrow.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/agrow.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Agrow</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/kalakrithi-blr.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/kalakrithi-blr.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Kalakrithi-BLR</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/charaiveti_logo.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/charaiveti_logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Charaiveti</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-08/aikya.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-08/aikya.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Aikya</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/gstudio.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/gstudio.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Gstudio - BLR</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/bcg.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/bcg.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Biotechnology Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/cats-logo.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/cats-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">CATS</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/Creative-Arts,Kalakrithi_Club_Visakhapatnam.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/Creative-Arts,Kalakrithi_Club_Visakhapatnam.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Creative Arts Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/Engineers-Without-Borders-(EWB.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/Engineers-Without-Borders-(EWB.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Engineers Without Borders</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/creseendo.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/creseendo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Creseendo</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/CYSEC.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/CYSEC.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">CYSEC</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/Entrepreneurs-club.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/Entrepreneurs-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Entrepreneurs club - HYD</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/dance-club.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/dance-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Dance club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/faces.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/faces.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Faces</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/GITAM-Aeromodelling-club.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/GITAM-Aeromodelling-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">GITAM Aeromodelling club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/GITAM-National-Service-Scheme.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/GITAM-National-Service-Scheme.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">GITAM National Service Scheme</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-08/GITAM-Toastmasters-club.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-08/GITAM-Toastmasters-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Toastmasters Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/glug-logo.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/glug-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Glug</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-10/gstudio.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-10/gstudio.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Gstudio - VSP</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/GUSAC.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/GUSAC.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">GUSAC - VSP</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-08/helping-hands.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-08/helping-hands.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Helping Hands</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/cooking-club-logo.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/cooking-club-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Cooking Club - VSP</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/Entrepreneurs-club.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/Entrepreneurs-club.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Entrepreneurs Club - VSP</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/ncc-logo.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/ncc-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">NCC</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/NOVUS_CLUB_VSP_3.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/NOVUS_CLUB_VSP_3.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">NOVUS Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/phonia.png" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/phonia.png" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Phonia</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/Rotaract-Club-of-GITAM.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/Rotaract-Club-of-GITAM.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Rotaract Club</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/softskills-logo.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/softskills-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Softskills Club</a>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="col-lg-3 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-wrap">
-              <img src="https://www.gitam.edu/sites/default/files/2022-09/the-anchoring-club.jpg" class="img-fluid" alt="">
-              <div class="portfolio-links">
-                <a href="https://www.gitam.edu/sites/default/files/2022-09/the-anchoring-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Web 3">The Anchoring Club</a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section><!-- End Portfolio Section -->
+      </section><!-- End Portfolio Section -->
 
 
     <!-- ======= Contact Section ======= -->
