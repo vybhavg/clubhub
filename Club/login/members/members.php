@@ -13,6 +13,7 @@ if (!isset($_SESSION['club_id'])) {
 
 // Get session variables
 $club_id = $_SESSION['club_id'];
+$branch_id = $_SESSION['branch_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 
 // Initialize $club_name
@@ -24,11 +25,11 @@ if ($stmt) {
     $stmt->bind_param("i", $club_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    if ($result && $result->num_rows > 0) {
+    if ($result->num_rows > 0) {
         $club = $result->fetch_assoc();
         $club_name = htmlspecialchars($club['club_name']); // Sanitize output
     }
-    $stmt->close(); // Ensure this is only called once
+    $stmt->close();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Event added successfully.";
             }
-            $stmt->close(); // Ensure this is only called once
+            $stmt->close();
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -66,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Recruitment added successfully.";
             }
-            $stmt->close(); // Ensure this is only called once
+            $stmt->close();
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -82,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Event deleted successfully.";
             }
-            $stmt->close(); // Ensure this is only called once
+            $stmt->close();
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -98,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Recruitment deleted successfully.";
             }
-            $stmt->close(); // Ensure this is only called once
+            $stmt->close();
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -111,11 +112,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param("ii", $application_id, $club_id);
             if ($stmt->execute()) {
                 // Add student to onboarding table
-                $stmt2 = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
-                if ($stmt2) {
-                    $stmt2->bind_param("i", $application_id);
-                    $stmt2->execute();
-                    $stmt2->close(); // Ensure this is only called once
+                $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
+                if ($stmt) {
+                    $stmt->bind_param("i", $application_id);
+                    $stmt->execute();
+                    $stmt->close();
                 } else {
                     error_log("Prepare failed: " . $conn->error);
                 }
@@ -125,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 error_log("Execute failed: " . $stmt->error);
                 $_SESSION['message'] = "Error accepting application.";
             }
-            $stmt->close(); // Ensure this is only called once
+            $stmt->close();
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -142,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['message'] = "Application rejected.";
             }
-            $stmt->close(); // Ensure this is only called once
+            $stmt->close();
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
@@ -154,67 +155,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Fetch events and recruitments for the logged-in club
-$eventsStmt = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
-$recruitmentsStmt = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
-$applicationsStmt = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status as status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
-$onboardedStmt = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
+$eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
+$recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
 
-if ($eventsStmt) {
-    $eventsStmt->bind_param("i", $club_id);
-    $eventsStmt->execute();
-    $eventsResult = $eventsStmt->get_result();
-    // Fetch events data
-    if ($eventsResult) {
-        while ($row = $eventsResult->fetch_assoc()) {
-            // Process each event row
-        }
-        $eventsResult->free(); // Free result set
-    }
-    $eventsStmt->close(); // Ensure this is only called once
+// Fetch applications and onboarded students
+$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status as status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+$onboardedResult = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
+
+if ($eventsResult) {
+    $eventsResult->bind_param("i", $club_id);
+    $eventsResult->execute();
+    $eventsResult = $eventsResult->get_result();
 }
 
-if ($recruitmentsStmt) {
-    $recruitmentsStmt->bind_param("i", $club_id);
-    $recruitmentsStmt->execute();
-    $recruitmentsResult = $recruitmentsStmt->get_result();
-    // Fetch recruitments data
-    if ($recruitmentsResult) {
-        while ($row = $recruitmentsResult->fetch_assoc()) {
-            // Process each recruitment row
-        }
-        $recruitmentsResult->free(); // Free result set
-    }
-    $recruitmentsStmt->close(); // Ensure this is only called once
+if ($recruitmentsResult) {
+    $recruitmentsResult->bind_param("i", $club_id);
+    $recruitmentsResult->execute();
+    $recruitmentsResult = $recruitmentsResult->get_result();
 }
 
-if ($applicationsStmt) {
-    $applicationsStmt->bind_param("i", $club_id);
-    $applicationsStmt->execute();
-    $applicationsResult = $applicationsStmt->get_result();
-    // Fetch applications data
-    if ($applicationsResult) {
-        while ($row = $applicationsResult->fetch_assoc()) {
-            // Process each application row
-        }
-        $applicationsResult->free(); // Free result set
-    }
-    $applicationsStmt->close(); // Ensure this is only called once
+if ($applicationsResult) {
+    $applicationsResult->bind_param("i", $club_id);
+    $applicationsResult->execute();
+    $applicationsResult = $applicationsResult->get_result();
 }
 
-if ($onboardedStmt) {
-    $onboardedStmt->bind_param("i", $club_id);
-    $onboardedStmt->execute();
-    $onboardedResult = $onboardedStmt->get_result();
-    // Fetch onboarded students data
-    if ($onboardedResult) {
-        while ($row = $onboardedResult->fetch_assoc()) {
-            // Process each onboarded student row
-        }
-        $onboardedResult->free(); // Free result set
-    }
-    $onboardedStmt->close(); // Ensure this is only called once
+if ($onboardedResult) {
+    $onboardedResult->bind_param("i", $club_id);
+    $onboardedResult->execute();
+    $onboardedResult = $onboardedResult->get_result();
 }
+
+// Close the database connection
+$conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
