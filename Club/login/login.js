@@ -1,6 +1,6 @@
 (function($) {
     "use strict";
-    
+
     // Old Design - Input Validation and Interaction
     $('.input100').each(function() {
         $(this).on('blur', function() {
@@ -70,12 +70,13 @@
     const registerBtn = document.getElementById('register');
     const loginBtn = document.getElementById('login');
 
-    registerBtn.addEventListener('click', () => {
-        container.classList.add("active");
-    });
+    if (registerBtn && loginBtn) {
+        registerBtn.addEventListener('click', function() {
+            container.classList.add("right-panel-active");
+        });
 
-    loginBtn.addEventListener('click', () => {
-        container.classList.remove("active");
-    });
-
+        loginBtn.addEventListener('click', function() {
+            container.classList.remove("right-panel-active");
+        });
+    }
 })(jQuery);
