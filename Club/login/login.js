@@ -48,20 +48,19 @@
     });
 
     // Toggle Between Login and Register
-document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('container');
-    const registerBtn = document.getElementById('register');
-    const loginBtn = document.getElementById('login');
+const container = document.getElementById('container');
+const registerBtn = document.getElementById('register');
+const loginBtn = document.getElementById('login');
 
-    if (registerBtn && loginBtn) {
-        registerBtn.addEventListener('click', () => {
-            container.classList.add("right-panel-active");
-        });
-
-        loginBtn.addEventListener('click', () => {
-            container.classList.remove("right-panel-active");
-        });
-    }
+// Toggle to Sign Up
+registerBtn.addEventListener('click', () => {
+    container.classList.add("sign-in-mode");
 });
+
+// Toggle to Sign In
+loginBtn.addEventListener('click', () => {
+    container.classList.remove("sign-in-mode");
+});
+
 
 })(jQuery);
