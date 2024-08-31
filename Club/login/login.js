@@ -47,19 +47,16 @@
         $(this).toggleClass('active', !isPasswordVisible);
     });
 
-    // Toggle Between Login and Register
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('register');
 const loginBtn = document.getElementById('login');
 
-// Toggle to Sign Up
 registerBtn.addEventListener('click', () => {
-    container.classList.add("sign-in-mode");
+    container.classList.add("active");
 });
 
-// Toggle to Sign In
 loginBtn.addEventListener('click', () => {
-    container.classList.remove("sign-in-mode");
+    container.classList.remove("active");
 });
 
 
