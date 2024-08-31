@@ -406,7 +406,6 @@ if ($onboardedStmt) {
         </div>
 
 <?php if ($updateType == 'applications') { ?>
-<!-- Applications Section -->
 <section id="applications" class="about section">
     <div class="container section-title" data-aos="fade-up">
         <h2>Applications</h2>
@@ -429,8 +428,8 @@ if ($onboardedStmt) {
                 </thead>
                 <tbody>
                     <?php 
-                    if (!empty($applications)) {
-                        foreach ($applications as $application) { ?>
+                    if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                        while ($application = $applicationsResult->fetch_assoc()) { ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
                                 <td><?php echo htmlspecialchars($application['email'] ?? 'N/A'); ?></td>
@@ -460,9 +459,8 @@ if ($onboardedStmt) {
     </div>
 </div>
 
-<?php } ?>
 
-<!-- Onboarding Section -->
+<?php } ?>
 <section id="onboarding" class="onboarding section">
     <div class="container section-title" data-aos="fade-up">
         <h2>Onboarded Students</h2>
@@ -478,8 +476,8 @@ if ($onboardedStmt) {
             </thead>
             <tbody>
                 <?php 
-                if (!empty($onboarded)) {
-                    foreach ($onboarded as $student) { ?>
+                if ($onboardedResult && $onboardedResult->num_rows > 0) {
+                    while ($student = $onboardedResult->fetch_assoc()) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($student['student_name'] ?? 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars($student['email'] ?? 'N/A'); ?></td>
@@ -493,6 +491,7 @@ if ($onboardedStmt) {
         </table>
     </div>
 </section><!-- /Onboarding Section -->
+
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
