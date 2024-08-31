@@ -734,19 +734,21 @@ section {
 
 /* Custom scrollbar for webkit browsers */
 .upbox::-webkit-scrollbar {
-  width: 10px;
+  width: 6px; /* Thinner scrollbar */
 }
 
 .upbox::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 10px; /* Curved borders */
 }
 
 .upbox::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #67B0D1; /* Custom color */
+  border-radius: 10px; /* Curved borders */
 }
 
 .upbox::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #4A98B3; /* Slightly darker shade on hover */
 }
 
 /* Styling for individual update entries */
