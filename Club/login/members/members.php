@@ -409,7 +409,7 @@ if ($stmt_fetch_applications) {
             </section><!-- /Faq Section -->
         </div>
 
- <?php } elseif ($updateType == 'applications') { ?>
+<?php } elseif ($updateType == 'applications') { ?>
     <!-- Applications Section -->
     <section id="applications" class="about section">
         <div class="container section-title" data-aos="fade-up">
@@ -436,12 +436,12 @@ if ($stmt_fetch_applications) {
                         if ($applicationsResult && $applicationsResult->num_rows > 0) {
                             while ($application = $applicationsResult->fetch_assoc()) { ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($application['student_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                    <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                    <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars($application['email'] ?? 'N/A'); ?></td>
+                                    <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path'] ?? ''); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
                                     <td>
                                         <form method="POST" action="">
-                                            <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id']); ?>">
+                                            <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id'] ?? ''); ?>">
                                             <button type="submit" name="accept_application" class="btn btn-success">Accept</button>
                                             <button type="submit" name="reject_application" class="btn btn-danger">Reject</button>
                                         </form>
@@ -458,7 +458,6 @@ if ($stmt_fetch_applications) {
         </div>
     </div>
 <?php } ?>
-
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
