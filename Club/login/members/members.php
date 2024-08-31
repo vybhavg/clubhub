@@ -325,44 +325,53 @@ $conn->close();
         </div>
 
 <!-- Applications Section -->
-        <section id="applications" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Applications</h2>
-                <p>View and manage student applications here.</p>
-            </div>
-        </section><!-- /Applications Section -->
+<section id="applications" class="about section">
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Applications</h2>
+        <p>View and manage student applications here.</p>
+    </div>
+</section><!-- /Applications Section -->
 
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3>Applications for Your Club</h3>
-                    <table class="table table-striped">
-                        <thead>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>Applications for Your Club</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Resume</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                        while ($application = $applicationsResult->fetch_assoc()) { ?>
                             <tr>
-                                <th>Student Name</th>
-                                <th>Email</th>
-                                <th>Resume</th>
+                                <td><?php echo htmlspecialchars($application['student_name']); ?></td>
+                                <td><?php echo htmlspecialchars($application['email']); ?></td>
+                                <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                <td>
+                                    <form method="POST" style="display:inline;">
+                                        <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id']); ?>">
+                                        <button type="submit" name="accept_application" class="btn btn-success">Accept</button>
+                                        <button type="submit" name="reject_application" class="btn btn-danger">Reject</button>
+                                    </form>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                                while ($application = $applicationsResult->fetch_assoc()) { ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($application['student_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                        <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
-                                    </tr>
-                                <?php }
-                            } else {
-                                echo "<tr><td colspan='3'>No applications available</td></tr>";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        <?php }
+                    } else {
+                        echo "<tr><td colspan='4'>No applications available</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
+
     <?php } ?>
     <!-- Contact Section -->
     <section id="contact" class="contact section">
