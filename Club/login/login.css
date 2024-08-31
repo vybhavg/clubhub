@@ -9,7 +9,7 @@
 
 
 body{
-    background-image: url('Club/assets/img/hyd.jpg');
+    background-image: url('/Club/assets/img/hyd.jpg');
 
     display: flex;
     align-items: center;
