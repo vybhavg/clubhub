@@ -7,9 +7,42 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-
+        #hero {
+            background: url('path_to_your_image/image.png') top center;
+            background-size: cover;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+        .hero-container h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .hero-container h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .btn-get-started {
+            font-size: 18px;
+            padding: 10px 30px;
+            color: white;
+            border: 2px solid white;
+            text-transform: uppercase;
+            transition: 0.4s;
+        }
+        .btn-get-started:hover {
+            background: white;
+            color: #007bff;
+        }
+        .btn-get-started i {
+            font-size: 32px;
+        }
 body{
-    background-image: url('/Club/assets/img/hyd.jpg');
 
     display: flex;
     align-items: center;
