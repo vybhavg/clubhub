@@ -16,8 +16,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$error_message = "";
-$success_message = "";
+$register_error_message = "";
+$register_success_message = "";
+$login_error_message = "";
 
 // Handle registration
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $_POST['register_pass'], $_POST['club_name'], $_POST['branch_id'])) {
@@ -28,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $
 
     // Check if all required fields are filled
     if (empty($register_username) || empty($register_password) || empty($club_name) || empty($branch_id)) {
-        $error_message = "All fields are required!";
+        $register_error_message = "All fields are required!";
     } else {
         // Prepare the SQL statement to prevent SQL injection
         $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
@@ -38,9 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $
         $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
 
         if ($stmt->execute()) {
-            $success_message = "Registration successful!";
+            $register_success_message = "Registration successful!";
         } else {
-            $error_message = "Registration failed: " . $stmt->error;
+            $register_error_message = "Registration failed: " . $stmt->error;
         }
 
         $stmt->close();
@@ -74,10 +75,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'], $_POST['pa
             header('Location: members/members.php');
             exit;
         } else {
-            $error_message = "Invalid username or password";
+            $login_error_message = "Invalid username or password";
         }
     } else {
-        $error_message = "Invalid username or password";
+        $login_error_message = "Invalid username or password";
     }
 
     $stmt->close();
@@ -116,7 +117,8 @@ $conn->close();
 </head>
 <body>
     <div class="container" id="container">
-        <div class="form-container sign-up" >
+        <!-- Sign Up Form -->
+        <div class="form-container sign-up">
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
                 <h1>Create Account</h1>
                 <br>
@@ -129,11 +131,12 @@ $conn->close();
                     <?php echo $branch_options; ?>
                 </select></div>
                 <button type="submit">Sign Up</button>
-                <div id="register-success-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
-                <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+                <div id="register-success-message" style="color: green;"><?php echo htmlspecialchars($register_success_message); ?></div>
+                <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($register_error_message); ?></div>
             </form>
         </div>
 
+        <!-- Sign In Form -->
         <div class="form-container sign-in">
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
                 <h1>Sign In</h1>
@@ -142,24 +145,25 @@ $conn->close();
                 <input type="password" name="pass" placeholder="Password">
                 <a href="#">Forget Your Password?</a>
                 <button type="submit">Sign In</button>
-                <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+                <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($login_error_message); ?></div>
             </form>
         </div>
 
+        <!-- Toggle Panels -->
         <div class="toggle-container">
             <div class="toggle">
                 <div class="toggle-panel toggle-left">
                     <h1>Hello, Club Members!</h1>
                     <p>Register with your club details</p>
-                   <br>
-                       <p>Already have an account?</p> 
+                    <br>
+                    <p>Already have an account?</p> 
                     <button class="hidden" id="login-toggle">Sign In</button>
                 </div>
                 <div class="toggle-panel toggle-right">
                     <h1>Welcome Back!</h1>
                     <p>Enter your Club details</p>
                     <br>
-                       <p>Don't have an account?</p> 
+                    <p>Don't have an account?</p> 
                     <button class="hidden" id="register-toggle">Sign Up</button>
                 </div>
             </div>
@@ -175,13 +179,12 @@ $conn->close();
     <script src="vendor/daterangepicker/daterangepicker.js"></script>
     <script>
        document.getElementById('register-toggle').addEventListener('click', function() {
-    document.getElementById('container').classList.add('active');
-});
+           document.getElementById('container').classList.add('active');
+       });
 
-document.getElementById('login-toggle').addEventListener('click', function() {
-    document.getElementById('container').classList.remove('active');
-});
-
+       document.getElementById('login-toggle').addEventListener('click', function() {
+           document.getElementById('container').classList.remove('active');
+       });
     </script>
 </body>
 </html>
