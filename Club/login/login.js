@@ -48,12 +48,20 @@
     });
 
     // Toggle Between Login and Register
-    const container = $('#container');
-    $('#register').on('click', function() {
-        container.addClass("right-panel-active");
-    });
-    $('#login').on('click', function() {
-        container.removeClass("right-panel-active");
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('container');
+    const registerBtn = document.getElementById('register');
+    const loginBtn = document.getElementById('login');
+
+    if (registerBtn && loginBtn) {
+        registerBtn.addEventListener('click', () => {
+            container.classList.add("right-panel-active");
+        });
+
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove("right-panel-active");
+        });
+    }
+});
 
 })(jQuery);
