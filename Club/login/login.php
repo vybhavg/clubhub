@@ -26,21 +26,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $
     $club_name = $_POST['club_name'];
     $branch_id = $_POST['branch_id'];
 
-    // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
-    if ($stmt === false) {
-        die("Prepare failed: " . $conn->error);
-    }
-    $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
-
-    if ($stmt->execute()) {
-        $success_message = "Registration successful!";
+    // Check if all required fields are filled
+    if (empty($register_username) || empty($register_password) || empty($club_name) || empty($branch_id)) {
+        $error_message = "All fields are required!";
     } else {
-        $error_message = "Registration failed: " . $stmt->error;
-    }
+        // Prepare the SQL statement to prevent SQL injection
+        $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
+        if ($stmt === false) {
+            die("Prepare failed: " . $conn->error);
+        }
+        $stmt->bind_param("sssi", $club_name, $register_username, $register_password, $branch_id);
 
-    $stmt->close();
+        if ($stmt->execute()) {
+            $success_message = "Registration successful!";
+        } else {
+            $error_message = "Registration failed: " . $stmt->error;
+        }
+
+        $stmt->close();
+    }
 }
+
 
 // Handle login
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'], $_POST['pass'])) {
