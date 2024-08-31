@@ -125,69 +125,6 @@ if ($recruitmentsResult) {
     $recruitmentsResult->execute();
     $recruitmentsResult = $recruitmentsResult->get_result();
 }
-// Handle form submissions
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Other form handling code...
-
-    // Handle application accept/reject
-    if (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
-        $application_id = $_POST['application_id'];
-        $status = isset($_POST['accept_application']) ? 'accepted' : 'rejected';
-
-        // Update the application status
-        $stmt = $conn->prepare("UPDATE applications SET status = ? WHERE id = ?");
-        if ($stmt) {
-            $stmt->bind_param("si", $status, $application_id);
-            if ($stmt->execute()) {
-                if ($status == 'accepted') {
-                    // Move accepted application to onboarding table
-                    $stmt = $conn->prepare("SELECT student_id, club_id FROM applications WHERE id = ?");
-                    if ($stmt) {
-                        $stmt->bind_param("i", $application_id);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                        if ($result->num_rows > 0) {
-                            $application = $result->fetch_assoc();
-                            $student_id = $application['student_id'];
-                            $club_id = $application['club_id'];
-
-                            $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) VALUES (?, ?)");
-                            if ($stmt) {
-                                $stmt->bind_param("ii", $student_id, $club_id);
-                                $stmt->execute();
-                            } else {
-                                error_log("Prepare failed: " . $conn->error);
-                            }
-                        }
-                        $stmt->close();
-                    } else {
-                        error_log("Prepare failed: " . $conn->error);
-                    }
-                }
-            } else {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error updating application status.";
-            }
-            $stmt->close();
-        } else {
-            error_log("Prepare failed: " . $conn->error);
-        }
-    }
-
-    // Redirect to avoid form resubmission
-    header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
-    exit;
-}
-
-// Fetch onboarded students for the logged-in club
-$onboardedResult = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
-if ($onboardedResult) {
-    $onboardedResult->bind_param("i", $club_id);
-    $onboardedResult->execute();
-    $onboardedResult = $onboardedResult->get_result();
-}
-
-// Fetch applications as before
 
 // Fetch applications for the logged-in club
 $applicationsResult = $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
