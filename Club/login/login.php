@@ -111,7 +111,7 @@ $conn->close();
 </head>
 <body>
     <div class="container" id="container">
-        <div class="form-container sign-up" style="display: none;">
+        <div class="form-container sign-up" >
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
                 <h1>Create Account</h1>
                 <div class="social-icons">
