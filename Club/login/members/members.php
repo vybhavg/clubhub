@@ -122,33 +122,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param("si", $status, $application_id);
             if ($stmt->execute()) {
                 if ($status == 'accepted') {
-                    // Move accepted application to onboarding table
-                    $stmt = $conn->prepare("SELECT student_id, club_id FROM applications WHERE id = ?");
+                    // Move to onboarding table
+                    $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
                     if ($stmt) {
                         $stmt->bind_param("i", $application_id);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                        if ($result->num_rows > 0) {
-                            $application = $result->fetch_assoc();
-                            $student_id = $application['student_id'];
-                            $club_id = $application['club_id'];
-
-                            $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) VALUES (?, ?)");
-                            if ($stmt) {
-                                $stmt->bind_param("ii", $student_id, $club_id);
-                                if (!$stmt->execute()) {
-                                    error_log("Error inserting into onboarding table: " . $stmt->error);
-                                    $_SESSION['message'] = "Error moving application to onboarding.";
-                                }
-                            } else {
-                                error_log("Prepare failed: " . $conn->error);
-                            }
+                        if (!$stmt->execute()) {
+                            error_log("Error inserting into onboarding table: " . $stmt->error);
+                            $_SESSION['message'] = "Error moving application to onboarding.";
+                        }
+                        $stmt->close();
+                    } else {
+                        error_log("Prepare failed: " . $conn->error);
+                    }
+                } else {
+                    // Move to rejected table
+                    $stmt = $conn->prepare("INSERT INTO rejected (student_id, club_id) VALUES ((SELECT student_id FROM applications WHERE id = ?), (SELECT club_id FROM applications WHERE id = ?))");
+                    if ($stmt) {
+                        $stmt->bind_param("ii", $application_id, $application_id);
+                        if (!$stmt->execute()) {
+                            error_log("Error inserting into rejected table: " . $stmt->error);
+                            $_SESSION['message'] = "Error moving application to rejected.";
                         }
                         $stmt->close();
                     } else {
                         error_log("Prepare failed: " . $conn->error);
                     }
                 }
+
+                // Delete the application from the applications table
+                $stmt = $conn->prepare("DELETE FROM applications WHERE id = ?");
+                if ($stmt) {
+                    $stmt->bind_param("i", $application_id);
+                    if (!$stmt->execute()) {
+                        error_log("Error deleting application: " . $stmt->error);
+                        $_SESSION['message'] = "Error deleting application.";
+                    }
+                    $stmt->close();
+                } else {
+                    error_log("Prepare failed: " . $conn->error);
+                }
+
                 $_SESSION['message'] = "Application status updated successfully.";
             } else {
                 error_log("Execute failed: " . $stmt->error);
@@ -186,7 +199,7 @@ if ($recruitmentsResult) {
 }
 
 // Fetch applications for the logged-in club
-$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ? AND a.status IS NULL");
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
@@ -198,6 +211,7 @@ if ($applicationsResult) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
