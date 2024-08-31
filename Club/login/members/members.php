@@ -426,12 +426,14 @@ $conn->close();
                     </thead>
                     <tbody>
                         <?php 
-                        if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                        if (isset($applicationsResult) && $applicationsResult->num_rows > 0) {
                             while ($application = $applicationsResult->fetch_assoc()) { ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($application['email'] ?? 'N/A'); ?></td>
-                                    <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path'] ?? ''); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                    <td>
+                                        <a href="<?php echo htmlspecialchars($application['resume_path'] ?? '#'); ?>" class="btn btn-info" target="_blank">View Resume</a>
+                                    </td>
                                     <td>
                                         <form method="POST" action="">
                                             <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id'] ?? ''); ?>">
@@ -451,6 +453,7 @@ $conn->close();
         </div>
     </div>
 <?php } ?>
+
 
 <?php if ($updateType == 'onboarding') { ?>
     <!-- Onboarding Section -->
