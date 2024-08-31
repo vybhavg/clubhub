@@ -348,27 +348,34 @@ $conn->close();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php 
-                    if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                        while ($application = $applicationsResult->fetch_assoc()) { ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($application['student_name']); ?></td>
-                                <td><?php echo htmlspecialchars($application['email']); ?></td>
-                                <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
-                                <td>
-                                    <form method="POST" style="display:inline;">
-                                        <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id']); ?>">
-                                        <button type="submit" name="accept_application" class="btn btn-success">Accept</button>
-                                        <button type="submit" name="reject_application" class="btn btn-danger">Reject</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php }
-                    } else {
-                        echo "<tr><td colspan='4'>No applications available</td></tr>";
-                    }
-                    ?>
-                </tbody>
+    <?php 
+    if ($applicationsResult && $applicationsResult->num_rows > 0) {
+        while ($application = $applicationsResult->fetch_assoc()) { ?>
+            <tr>
+                <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
+                <td><?php echo htmlspecialchars($application['email'] ?? 'N/A'); ?></td>
+                <td>
+                    <?php if (!empty($application['resume_path'])): ?>
+                        <a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path']); ?>" class="btn btn-info" target="_blank">View Resume</a>
+                    <?php else: ?>
+                        No Resume Available
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id'] ?? ''); ?>">
+                        <button type="submit" name="accept_application" class="btn btn-success">Accept</button>
+                        <button type="submit" name="reject_application" class="btn btn-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        <?php }
+    } else {
+        echo "<tr><td colspan='4'>No applications available</td></tr>";
+    }
+    ?>
+</tbody>
+
             </table>
         </div>
     </div>
