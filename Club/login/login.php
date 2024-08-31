@@ -186,6 +186,7 @@ $conn->close();
     <script src="vendor/select2/select2.min.js"></script>
     <script src="vendor/daterangepicker/moment.min.js"></script>
     <script src="vendor/daterangepicker/daterangepicker.js"></script>
+    <script src="login.js"></script>
     <script>
        document.getElementById('register-toggle').addEventListener('click', function() {
            document.getElementById('container').classList.add('active');
