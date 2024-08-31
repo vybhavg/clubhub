@@ -147,7 +147,7 @@ $conn->close();
                     <h1>Hello, Club Members!</h1>
                     <p>Register with your club details</p>
                    <br>
-                       <p>Don't have an account?</p> 
+                       <p>Already have an account?</p> 
                     <button class="hidden" id="login-toggle">Sign In</button>
                 </div>
                 <div class="toggle-panel toggle-right">
