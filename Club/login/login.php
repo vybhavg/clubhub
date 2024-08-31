@@ -125,7 +125,7 @@ $conn->close();
                 <input type="text" name="register_username" placeholder="Username">
                 <input type="password" name="register_pass" placeholder="Password">
                 <div class="branch">
-                <select name="branch_id">
+                <select name="branch_id" class="branch_id">
                     <option value="">Select Branch</option>
                     <?php echo $branch_options; ?>
                 </select></div>
