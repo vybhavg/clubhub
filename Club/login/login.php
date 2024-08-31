@@ -18,7 +18,6 @@ if ($conn->connect_error) {
 
 $error_message = "";
 $success_message = "";
-$active_tab = 'sign-in'; // Default active tab
 
 // Handle registration
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $_POST['register_pass'], $_POST['club_name'], $_POST['branch_id'])) {
@@ -30,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $
     // Check if all required fields are filled
     if (empty($register_username) || empty($register_password) || empty($club_name) || empty($branch_id)) {
         $error_message = "All fields are required!";
-        $active_tab = 'sign-up';
     } else {
         // Prepare the SQL statement to prevent SQL injection
         $stmt = $conn->prepare("INSERT INTO clubs (club_name, username, password, branch_id) VALUES (?, ?, ?, ?)");
@@ -41,58 +39,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register_username'], $
 
         if ($stmt->execute()) {
             $success_message = "Registration successful!";
-            $active_tab = 'sign-in'; // Redirect to sign-in after successful registration
         } else {
             $error_message = "Registration failed: " . $stmt->error;
-            $active_tab = 'sign-up';
         }
 
         $stmt->close();
     }
 }
 
+
 // Handle login
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'], $_POST['pass'])) {
     $username = $_POST['username'];
     $password = $_POST['pass'];
 
-    // Check if username and password are filled
-    if (empty($username) || empty($password)) {
-        $error_message = "Username and password are required!";
-        $active_tab = 'sign-in';
-    } else {
-        // Prepare the SQL statement to prevent SQL injection
-        $stmt = $conn->prepare("SELECT id, club_name, password, branch_id FROM clubs WHERE username = ?");
-        if ($stmt === false) {
-            die("Prepare failed: " . $conn->error);
-        }
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    // Prepare the SQL statement to prevent SQL injection
+    $stmt = $conn->prepare("SELECT id, club_name, password, branch_id FROM clubs WHERE username = ?");
+    if ($stmt === false) {
+        die("Prepare failed: " . $conn->error);
+    }
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            $club = $result->fetch_assoc();
+    if ($result->num_rows > 0) {
+        $club = $result->fetch_assoc();
 
-            // Verify the password
-            if (password_verify($password, $club['password'])) {
-                // Login successful, start session and set session variables
-                session_start();
-                $_SESSION['club_id'] = $club['id'];
-                $_SESSION['club_name'] = $club['club_name'];
-                $_SESSION['branch_id'] = $club['branch_id'];
-                header('Location: members/members.php');
-                exit;
-            } else {
-                $error_message = "Invalid username or password";
-                $active_tab = 'sign-in';
-            }
+        // Verify the password
+        if (password_verify($password, $club['password'])) {
+            // Login successful, start session and set session variables
+            session_start();
+            $_SESSION['club_id'] = $club['id'];
+            $_SESSION['club_name'] = $club['club_name'];
+            $_SESSION['branch_id'] = $club['branch_id'];
+            header('Location: members/members.php');
+            exit;
         } else {
             $error_message = "Invalid username or password";
-            $active_tab = 'sign-in';
         }
-
-        $stmt->close();
+    } else {
+        $error_message = "Invalid username or password";
     }
+
+    $stmt->close();
 }
 
 // Fetch branch options
@@ -111,67 +100,89 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login/Register</title>
-    <link rel="stylesheet" href="login.css">
-    <style>
-        /* Add your CSS styles */
-    </style>
+    <title>Login and Register</title>
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" type="text/css" href="util.css">
+    <link rel="stylesheet" type="text/css" href="login.css">
+    <meta name="robots" content="noindex, follow">
 </head>
 <body>
     <div class="container" id="container">
-        <div class="form-container sign-up <?php echo $active_tab == 'sign-up' ? 'active' : ''; ?>">
+        <div class="form-container sign-up" >
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
                 <h1>Create Account</h1>
-                <div class="social-icons">
-                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
-                </div>
-                <span>or use your email for registration</span>
+                <br>
                 <input type="text" name="club_name" placeholder="Club Name">
                 <input type="text" name="register_username" placeholder="Username">
                 <input type="password" name="register_pass" placeholder="Password">
                 <div class="branch">
-                    <select name="branch_id" class="branch_id">
-                        <option value="">Select Branch</option>
-                        <?php echo $branch_options; ?>
-                    </select>
-                </div>
+                <select name="branch_id" class="branch_id">
+                    <option value="">Select Branch</option>
+                    <?php echo $branch_options; ?>
+                </select></div>
                 <button type="submit">Sign Up</button>
                 <div id="register-success-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
-                <div id="register-error-message" style="color: red;"><?php echo $active_tab == 'sign-up' ? htmlspecialchars($error_message) : ''; ?></div>
+                <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
             </form>
         </div>
-        <div class="form-container sign-in <?php echo $active_tab == 'sign-in' ? 'active' : ''; ?>">
+
+        <div class="form-container sign-in">
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-                <h1>Sign in</h1>
-                <div class="social-icons">
-                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
-                </div>
-                <span>or use your account</span>
+                <h1>Sign In</h1>
+                <br>
                 <input type="text" name="username" placeholder="Username">
                 <input type="password" name="pass" placeholder="Password">
+                <a href="#">Forget Your Password?</a>
                 <button type="submit">Sign In</button>
-                <div id="login-error-message" style="color: red;"><?php echo $active_tab == 'sign-in' ? htmlspecialchars($error_message) : ''; ?></div>
+                <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
             </form>
+        </div>
+
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Hello, Club Members!</h1>
+                    <p>Register with your club details</p>
+                   <br>
+                       <p>Already have an account?</p> 
+                    <button class="hidden" id="login-toggle">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your Club details</p>
+                    <br>
+                       <p>Don't have an account?</p> 
+                    <button class="hidden" id="register-toggle">Sign Up</button>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="vendor/animsition/js/animsition.min.js"></script>
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/select2/select2.min.js"></script>
+    <script src="vendor/daterangepicker/moment.min.js"></script>
+    <script src="vendor/daterangepicker/daterangepicker.js"></script>
     <script>
-        // Ensure the active tab remains active after form submission
-        document.addEventListener("DOMContentLoaded", function() {
-            const activeTab = "<?php echo $active_tab; ?>";
-            const container = document.getElementById('container');
-            if (activeTab === 'sign-up') {
-                container.classList.add('right-panel-active');
-            } else {
-                container.classList.remove('right-panel-active');
-            }
-        });
+       document.getElementById('register-toggle').addEventListener('click', function() {
+    document.getElementById('container').classList.add('active');
+});
+
+document.getElementById('login-toggle').addEventListener('click', function() {
+    document.getElementById('container').classList.remove('active');
+});
+
     </script>
 </body>
 </html>
