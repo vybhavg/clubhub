@@ -1,82 +1,59 @@
 (function($) {
     "use strict";
 
-    // Old Design - Input Validation and Interaction
-    $('.input100').each(function() {
-        $(this).on('blur', function() {
-            if ($(this).val().trim() != "") {
-                $(this).addClass('has-val');
-            } else {
-                $(this).removeClass('has-val');
-            }
-        });
+    // Input Validation and Interaction
+    $('.input100').on('blur', function() {
+        $(this).toggleClass('has-val', $(this).val().trim() !== "");
     });
 
-    var input = $('.validate-input .input100');
     $('.validate-form').on('submit', function() {
-        var check = true;
-        for (var i = 0; i < input.length; i++) {
-            if (validate(input[i]) == false) {
-                showValidate(input[i]);
-                check = false;
+        let isValid = true;
+        $('.validate-input .input100').each(function() {
+            if (!validate(this)) {
+                showValidate(this);
+                isValid = false;
             }
-        }
-        return check;
+        });
+        return isValid;
     });
 
-    $('.validate-form .input100').each(function() {
-        $(this).focus(function() {
-            hideValidate(this);
-        });
+    $('.validate-form .input100').on('focus', function() {
+        hideValidate(this);
     });
 
     function validate(input) {
-        if ($(input).attr('type') == 'email' || $(input).attr('name') == 'email') {
-            if ($(input).val().trim().match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/) == null) {
-                return false;
-            }
-        } else {
-            if ($(input).val().trim() == '') {
-                return false;
-            }
+        const value = $(input).val().trim();
+        const type = $(input).attr('type');
+        const name = $(input).attr('name');
+        if (type === 'email' || name === 'email') {
+            return /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/.test(value);
         }
+        return value !== '';
     }
 
     function showValidate(input) {
-        var thisAlert = $(input).parent();
-        $(thisAlert).addClass('alert-validate');
+        $(input).parent().addClass('alert-validate');
     }
 
     function hideValidate(input) {
-        var thisAlert = $(input).parent();
-        $(thisAlert).removeClass('alert-validate');
+        $(input).parent().removeClass('alert-validate');
     }
 
-    var showPass = 0;
+    // Show/Hide Password
     $('.btn-show-pass').on('click', function() {
-        if (showPass == 0) {
-            $(this).next('input').attr('type', 'text');
-            $(this).addClass('active');
-            showPass = 1;
-        } else {
-            $(this).next('input').attr('type', 'password');
-            $(this).removeClass('active');
-            showPass = 0;
-        }
+        const input = $(this).next('input');
+        const isPasswordVisible = input.attr('type') === 'text';
+        input.attr('type', isPasswordVisible ? 'password' : 'text');
+        $(this).toggleClass('active', !isPasswordVisible);
     });
 
-    // New Design - Toggle Between Login and Register
-    const container = document.getElementById('container');
-    const registerBtn = document.getElementById('register');
-    const loginBtn = document.getElementById('login');
+    // Toggle Between Login and Register
+    const container = $('#container');
+    $('#register').on('click', function() {
+        container.addClass("right-panel-active");
+    });
+    $('#login').on('click', function() {
+        container.removeClass("right-panel-active");
+    });
 
-    if (registerBtn && loginBtn) {
-        registerBtn.addEventListener('click', function() {
-            container.classList.add("right-panel-active");
-        });
-
-        loginBtn.addEventListener('click', function() {
-            container.classList.remove("right-panel-active");
-        });
-    }
 })(jQuery);
