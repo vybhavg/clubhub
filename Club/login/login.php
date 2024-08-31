@@ -102,7 +102,7 @@ $conn->close();
     <div class="container" id="container">
         <!-- Registration Form -->
         <div class="form-container sign-up">
-            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="register-form">
                 <h1>Create Account</h1>
                 <div class="social-icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
@@ -111,22 +111,24 @@ $conn->close();
                     <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
                 <span>or use your email for registration</span>
-                <input type="text" name="club_name" placeholder="Club Name" required>
-                <select name="branch_id" required>
+                <input type="text" name="club_name" placeholder="Club Name">
+                <select name="branch_id">
                     <option value="">Select Branch</option>
                     <?php echo $branch_options; ?>
                 </select>
-                <input type="text" name="register_username" placeholder="Username" required>
-                <input type="password" name="register_pass" placeholder="Password" required>
-                <button type="submit">Sign Up</button>
-                <div id="register-success-message" style="color: green;"><?php echo isset($success_message) ? htmlspecialchars($success_message) : ''; ?></div>
+                <input type="text" name="register_username" placeholder="Username">
+                <input type="password" name="register_pass" placeholder="Password">
                 <div id="register-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+                <button type="submit">Sign Up</button>
+                <div class="text-center">
+                    <a href="#" id="login">Already have an account? Login here</a>
+                </div>
             </form>
         </div>
 
         <!-- Login Form -->
         <div class="form-container sign-in">
-            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="login-form">
                 <h1>Sign In</h1>
                 <div class="social-icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
@@ -135,11 +137,14 @@ $conn->close();
                     <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
                 <span>or use your email password</span>
-                <input type="email" name="username" placeholder="Email" required>
-                <input type="password" name="pass" placeholder="Password" required>
-                <a href="#">Forget Your Password?</a>
-                <button type="submit">Sign In</button>
+                <input type="email" name="username" placeholder="Email">
+                <input type="password" name="pass" placeholder="Password">
+                <a href="#">Forgot Your Password?</a>
                 <div id="login-error-message" style="color: red;"><?php echo htmlspecialchars($error_message); ?></div>
+                <button type="submit">Sign In</button>
+                <div class="text-center">
+                    <a href="#" id="register">Don't have an account? Register here</a>
+                </div>
             </form>
         </div>
 
