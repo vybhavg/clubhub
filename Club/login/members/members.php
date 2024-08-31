@@ -103,43 +103,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
-    } elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
-        $application_id = $_POST['application_id'];
-        $status = isset($_POST['accept_application']) ? 'accepted' : 'rejected';
-
-        // Insert into onboarding table if accepted
-        if ($status == 'accepted') {
-            $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param("i", $application_id);
-                if (!$stmt->execute()) {
-                    error_log("Execute failed: " . $stmt->error);
-                    $_SESSION['message'] = "Error onboarding student.";
-                }
-                $stmt->close();
-            } else {
-                error_log("Prepare failed: " . $conn->error);
-            }
-        }
-
-        // Delete from applications table
-        $stmt = $conn->prepare("DELETE FROM applications WHERE id = ?");
-        if ($stmt) {
-            $stmt->bind_param("i", $application_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error deleting application.";
-            } else {
-                $_SESSION['message'] = "Application processed successfully.";
-            }
-            $stmt->close();
-        } else {
-            error_log("Prepare failed: " . $conn->error);
-        }
-
-        // Redirect to avoid form resubmission
-        header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
-        exit;
     }
 
     // Redirect to avoid form resubmission
@@ -164,25 +127,16 @@ if ($recruitmentsResult) {
 }
 
 // Fetch applications for the logged-in club
-$applicationsResult = $conn->prepare("SELECT id, s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+$applicationsResult = $conn->prepare("SELECT s.name as student_name, s.email as email, a.resume_path as resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
     $applicationsResult = $applicationsResult->get_result();
 }
 
-// Fetch onboarding for the logged-in club
-$onboardingResult = $conn->prepare("SELECT s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
-if ($onboardingResult) {
-    $onboardingResult->bind_param("i", $club_id);
-    $onboardingResult->execute();
-    $onboardingResult = $onboardingResult->get_result();
-}
-
 // Close the database connection
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
