@@ -674,33 +674,35 @@ $conn->close();
               </div>
             </div>
   
-            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+             <div class="col-lg-3 col-md-6 portfolio-item filter-web">
               <div class="portfolio-wrap">
                 <img src="Club/assets/img/rotract-club.jpg" class="img-fluid" alt="">
                 <div class="portfolio-links">
-                  <a href="Club/assets/img/rotract-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Rotaract Club</a>
+                  <a href="Club/assets/img/rotract-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Gstudio - BLR</a>
                 </div>
               </div>
             </div>
   
-            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+  
+            <div class="col-lg-3 col-md-6 portfolio-item filter-web">
               <div class="portfolio-wrap">
                 <img src="Club/assets/img/softskills-logo.jpg" class="img-fluid" alt="">
                 <div class="portfolio-links">
-                  <a href="Club/assets/img/softskills-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Softskills Club</a>
+                  <a href="Club/assets/img/softskills-logo.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Gstudio - BLR</a>
                 </div>
               </div>
             </div>
   
   
-            <div class="col-lg-3 col-md-6 portfolio-item filter-app">
+            <div class="col-lg-3 col-md-6 portfolio-item filter-web">
               <div class="portfolio-wrap">
                 <img src="Club/assets/img/anchoring-club.jpg" class="img-fluid" alt="">
                 <div class="portfolio-links">
-                  <a href="Club/assets/img/anchoring-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Web 3">The Anchoring Club</a>
+                  <a href="Club/assets/img/anchoring-club.jpg" data-gallery="portfolioGallery" class="portfolio-lightbox" title="Card 3">Gstudio - BLR</a>
                 </div>
               </div>
             </div>
+  
   
           </div>
   
