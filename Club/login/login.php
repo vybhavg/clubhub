@@ -116,14 +116,7 @@ $conn->close();
     <meta name="robots" content="noindex, follow">
 </head>
 <body>
-    <!-- Hero Section -->
-    <section id="hero">
-        <div class="hero-container" data-aos="fade-up">
-            <h1>Welcome to ClubHub</h1>
-            <h2>The Students Club Interaction Platform</h2>
-            <a href="#login-section" class="btn-get-started scrollto"><i class="bx bx-chevrons-down"></i></a>
-        </div>
-    </section><!-- End Hero -->
+   
     <div class="container" id="container">
         <!-- Sign Up Form -->
         <div class="form-container sign-up">
