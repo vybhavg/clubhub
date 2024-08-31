@@ -160,15 +160,7 @@ $conn->close();
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="login.js"></script>
-    <script>
-        const container = document.getElementById('container');
-        document.getElementById('register').addEventListener('click', () => {
-            container.classList.add("right-panel-active");
-        });
-        document.getElementById('login').addEventListener('click', () => {
-            container.classList.remove("right-panel-active");
-        });
-    </script>
+
 </body>
 
 </html>
