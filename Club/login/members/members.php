@@ -111,65 +111,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             error_log("Prepare failed: " . $conn->error);
         }
     }
- // Handle Application Accept/Reject
-elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
-    $application_id = $_POST['application_id'];
-    $status = isset($_POST['accept_application']) ? 'accepted' : 'rejected';
+    // Handle Application Accept/Reject
+    elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
+        $application_id = $_POST['application_id'];
+        $status = isset($_POST['accept_application']) ? 'accepted' : 'rejected';
 
-    // Update the application status
-    $stmt_update_application_status = $conn->prepare("UPDATE applications SET status = ? WHERE id = ?");
-    if ($stmt_update_application_status) {
-        $stmt_update_application_status->bind_param("si", $status, $application_id);
-        if ($stmt_update_application_status->execute()) {
-            if ($status == 'accepted') {
-                // Move accepted application to onboarding table
-                $stmt_fetch_application_details = $conn->prepare("SELECT student_id, club_id FROM applications WHERE id = ?");
-                if ($stmt_fetch_application_details) {
-                    $stmt_fetch_application_details->bind_param("i", $application_id);
-                    $stmt_fetch_application_details->execute();
-                    $result = $stmt_fetch_application_details->get_result();
-                    if ($result->num_rows > 0) {
-                        $application = $result->fetch_assoc();
-                        $student_id = $application['student_id'];
-                        $club_id = $application['club_id'];
+        // Update the application status
+        $stmt_update_application_status = $conn->prepare("UPDATE applications SET status = ? WHERE id = ?");
+        if ($stmt_update_application_status) {
+            $stmt_update_application_status->bind_param("si", $status, $application_id);
+            if ($stmt_update_application_status->execute()) {
+                if ($status == 'accepted') {
+                    // Move accepted application to onboarding table
+                    $stmt_fetch_application_details = $conn->prepare("SELECT student_id, club_id FROM applications WHERE id = ?");
+                    if ($stmt_fetch_application_details) {
+                        $stmt_fetch_application_details->bind_param("i", $application_id);
+                        $stmt_fetch_application_details->execute();
+                        $result = $stmt_fetch_application_details->get_result();
+                        if ($result->num_rows > 0) {
+                            $application = $result->fetch_assoc();
+                            $student_id = $application['student_id'];
+                            $club_id = $application['club_id'];
 
-                        $stmt_insert_onboarding = $conn->prepare("INSERT INTO onboarding (student_id, club_id) VALUES (?, ?)");
-                        if ($stmt_insert_onboarding) {
-                            $stmt_insert_onboarding->bind_param("ii", $student_id, $club_id);
-                            if (!$stmt_insert_onboarding->execute()) {
-                                error_log("Error inserting into onboarding table: " . $stmt_insert_onboarding->error);
-                                $_SESSION['message'] = "Error moving application to onboarding.";
+                            $stmt_insert_onboarding = $conn->prepare("INSERT INTO onboarding (student_id, club_id) VALUES (?, ?)");
+                            if ($stmt_insert_onboarding) {
+                                $stmt_insert_onboarding->bind_param("ii", $student_id, $club_id);
+                                if (!$stmt_insert_onboarding->execute()) {
+                                    error_log("Error inserting into onboarding table: " . $stmt_insert_onboarding->error);
+                                    $_SESSION['message'] = "Error moving application to onboarding.";
+                                }
+                                $stmt_insert_onboarding->close();
+                            } else {
+                                error_log("Prepare failed: " . $conn->error);
                             }
-                            $stmt_insert_onboarding->close();
-                        } else {
-                            error_log("Prepare failed: " . $conn->error);
                         }
+                        $stmt_fetch_application_details->close();
+                    } else {
+                        error_log("Prepare failed: " . $conn->error);
                     }
-                    $stmt_fetch_application_details->close();
-                } else {
-                    error_log("Prepare failed: " . $conn->error);
                 }
-            }
-            // Remove the application from the applications table
-            $stmt_delete_application = $conn->prepare("DELETE FROM applications WHERE id = ?");
-            if ($stmt_delete_application) {
-                $stmt_delete_application->bind_param("i", $application_id);
-                if (!$stmt_delete_application->execute()) {
-                    error_log("Error deleting application: " . $stmt_delete_application->error);
-                    $_SESSION['message'] = "Error removing application.";
-                }
-                $stmt_delete_application->close();
+                $_SESSION['message'] = "Application status updated successfully.";
             } else {
-                error_log("Prepare failed: " . $conn->error);
+                error_log("Execute failed: " . $stmt_update_application_status->error);
+                $_SESSION['message'] = "Error updating application status.";
             }
-            $_SESSION['message'] = "Application status updated successfully.";
+            $stmt_update_application_status->close();
         } else {
-            error_log("Execute failed: " . $stmt_update_application_status->error);
-            $_SESSION['message'] = "Error updating application status.";
+            error_log("Prepare failed: " . $conn->error);
         }
-        $stmt_update_application_status->close();
-    } else {
-        error_log("Prepare failed: " . $conn->error);
     }
 
     // Redirect to avoid form resubmission
@@ -179,11 +168,9 @@ elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'
 
 
 
-
 // Fetch events, recruitments, applications, and onboarding data for the logged-in club
 $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
 $recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
-$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
 $onboardingResult = $conn->prepare("SELECT o.id, s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
 
 if ($eventsResult) {
@@ -202,13 +189,7 @@ if ($recruitmentsResult) {
     error_log("Prepare failed: " . $conn->error);
 }
 
-if ($applicationsResult) {
-    $applicationsResult->bind_param("i", $club_id);
-    $applicationsResult->execute();
-    $applicationsResult = $applicationsResult->get_result();
-} else {
-    error_log("Prepare failed: " . $conn->error);
-}
+
 
 if ($onboardingResult) {
     $onboardingResult->bind_param("i", $club_id);
@@ -216,6 +197,20 @@ if ($onboardingResult) {
     $onboardingResult = $onboardingResult->get_result();
 } else {
     error_log("Prepare failed: " . $conn->error);
+}
+// Fetch pending applications
+$stmt_fetch_pending_applications = $conn->prepare("SELECT a.id, s.name AS student_name, s.email, a.resume_path
+    FROM applications a
+    JOIN students s ON a.student_id = s.id
+    WHERE a.status = 'pending' AND a.club_id = ?");
+if ($stmt_fetch_pending_applications) {
+    $stmt_fetch_pending_applications->bind_param("i", $club_id); // Assuming $club_id is set correctly
+    $stmt_fetch_pending_applications->execute();
+    $applicationsResult = $stmt_fetch_pending_applications->get_result();
+    $stmt_fetch_pending_applications->close();
+} else {
+    error_log("Prepare failed: " . $conn->error);
+    $_SESSION['message'] = "Error fetching applications.";
 }
 
 // Close the database connection
@@ -459,7 +454,6 @@ $conn->close();
         </div>
     </div>
 <?php } ?>
-
 
 <?php
 // Ensure this code is placed within your PHP script where it handles different update types
