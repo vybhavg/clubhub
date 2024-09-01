@@ -376,7 +376,7 @@ $conn->close();
             <!-- Existing Recruitments List -->
             <section id="faq" class="faq section light-background">
                 <div class="container section-title" data-aos="fade-up">
-                    <h2>Current Recruitments</h2>
+                    <h2>Current Recruitmentsssssssssssssssssss</h2>
                     <p>Here are the current recruitment opportunities.</p>
                 </div>
                 <div class="container">
