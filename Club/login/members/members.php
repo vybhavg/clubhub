@@ -216,9 +216,11 @@ if ($onboardingResult) {
     error_log("Prepare failed: " . $conn->error);
 }
 
-// Close the database connection
+// Do not close the connection here if you plan to reuse it below this point.
+// If this is the last database interaction, close it:
 $conn->close();
 ?>
+
 
 
 
