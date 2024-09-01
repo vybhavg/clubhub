@@ -140,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     error_log("Error inserting into onboarding table: " . $stmt->error);
                                     $_SESSION['message'] = "Error moving application to onboarding.";
                                 }
-                                $stmt->close();
                             } else {
                                 error_log("Prepare failed: " . $conn->error);
                             }
@@ -175,8 +174,7 @@ $onboardingResult = $conn->prepare("SELECT o.id, s.name as student_name, s.email
 if ($eventsResult) {
     $eventsResult->bind_param("i", $club_id);
     $eventsResult->execute();
-    $events = $eventsResult->get_result();
-    $eventsResult->close();
+    $eventsResult = $eventsResult->get_result();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -184,8 +182,7 @@ if ($eventsResult) {
 if ($recruitmentsResult) {
     $recruitmentsResult->bind_param("i", $club_id);
     $recruitmentsResult->execute();
-    $recruitments = $recruitmentsResult->get_result();
-    $recruitmentsResult->close();
+    $recruitmentsResult = $recruitmentsResult->get_result();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -193,8 +190,7 @@ if ($recruitmentsResult) {
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
-    $applications = $applicationsResult->get_result();
-    $applicationsResult->close();
+    $applicationsResult = $applicationsResult->get_result();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -202,8 +198,7 @@ if ($applicationsResult) {
 if ($onboardingResult) {
     $onboardingResult->bind_param("i", $club_id);
     $onboardingResult->execute();
-    $onboarding = $onboardingResult->get_result();
-    $onboardingResult->close();
+    $onboardingResult = $onboardingResult->get_result();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -211,7 +206,6 @@ if ($onboardingResult) {
 // Close the database connection
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
