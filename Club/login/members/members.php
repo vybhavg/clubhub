@@ -228,8 +228,8 @@ $conn->close();
   <meta name="keywords" content="">
 
   <!-- Favicons -->
-  <link href="Club/assets/img/favic.ico" rel="icon">
-  <link href="Club/assets/img/favic.ico" rel="apple-touch-icon">
+  <link href="/Club/assets/img/favic.ico" rel="icon">
+  <link href="/Club/assets/img/favic.ico" rel="apple-touch-icon">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
