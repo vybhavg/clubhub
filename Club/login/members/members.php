@@ -223,13 +223,13 @@ $conn->close();
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - Squadfree Bootstrap Template</title>
+  <title>Club Members Portal</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="Club/assets/img/favic.ico" rel="icon">
+  <link href="Club/assets/img/favic.ico" rel="apple-touch-icon">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -505,7 +505,7 @@ if ($updateType == 'onboarding') { ?>
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Contact</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        <p>If you have any concerns or queries regarding this platform feel free to contact us.</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -519,7 +519,7 @@ if ($updateType == 'onboarding') { ?>
                 <i class="bi bi-geo-alt flex-shrink-0"></i>
                 <div>
                   <h3>Address</h3>
-                  <p>A108 Adam Street, New York, NY 535022</p>
+                   <p>Gitam School of Science, Gandhi Nagar, Rushikonda, Visakhapatnam, Andhra Pradesh, India 530045</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -527,7 +527,7 @@ if ($updateType == 'onboarding') { ?>
                 <i class="bi bi-telephone flex-shrink-0"></i>
                 <div>
                   <h3>Call Us</h3>
-                  <p>+1 5589 55488 55</p>
+                  <p>+91 63054 85269</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -535,11 +535,11 @@ if ($updateType == 'onboarding') { ?>
                 <i class="bi bi-envelope flex-shrink-0"></i>
                 <div>
                   <h3>Email Us</h3>
-                  <p>info@example.com</p>
+                  <p>clubhub@gmail.com</p>
                 </div>
               </div><!-- End Info Item -->
 
-              <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus" frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3799.243749179112!2d83.37449957391598!3d17.780237891371655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a395b1e12cab301%3A0x6ee2b3b00e71f727!2sGitam%20School%20Of%20Science!5e0!3m2!1sen!2sin!4v1716714867507!5m2!1sen!2sin" frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </div>
 
@@ -593,13 +593,13 @@ if ($updateType == 'onboarding') { ?>
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
           <a href="index.html" class="logo d-flex align-items-center">
-            <span class="sitename">Squadfree</span>
+            <span class="sitename">ClubHub</span>
           </a>
           <div class="footer-contact pt-3">
-            <p>A108 Adam Street</p>
-            <p>New York, NY 535022</p>
-            <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-            <p><strong>Email:</strong> <span>info@example.com</span></p>
+            <p>Gitam School of Science, Gandhi nagar, Rushikonda</p>
+            <p>Visakhapatnam, Andhra Pradesh, India 530045</p>
+            <p class="mt-3"><strong>Phone:</strong> <span>+91 63054 85269</span></p>
+            <p><strong>Email:</strong> <span>clubhub@gmail.com</span></p>
           </div>
           <div class="social-links d-flex mt-4">
             <a href=""><i class="bi bi-twitter-x"></i></a>
@@ -614,20 +614,20 @@ if ($updateType == 'onboarding') { ?>
           <ul>
             <li><a href="#">Home</a></li>
             <li><a href="#">About us</a></li>
-            <li><a href="#">Services</a></li>
+            <li><a href="#">Clubs</a></li>
             <li><a href="#">Terms of service</a></li>
             <li><a href="#">Privacy policy</a></li>
           </ul>
         </div>
 
         <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Our Services</h4>
+          <h4>Club Branches</h4>
           <ul>
-            <li><a href="#">Web Design</a></li>
-            <li><a href="#">Web Development</a></li>
-            <li><a href="#">Product Management</a></li>
-            <li><a href="#">Marketing</a></li>
-            <li><a href="#">Graphic Design</a></li>
+            <li><a href="https://www.gitam.edu/gitam-school-science-visakhapatnam">School of Science</a></li>
+            <li> <a href="https://www.gitam.edu/gitam-school-pharmacy-visakhapatnam">School of Pharmacy</a></li>
+            <li><a href="https://www.gitam.edu/gitam-school-of-technology-visakhapatnam">School of Technology</a></li>
+            <li> <a href="https://www.gitam.edu/gitam-school-law-visakhapatnam">School of Law</a></li>
+            <li><a href="https://www.gitam.edu/gitam-school-business-visakhapatnam">School of Business</a></li>
           </ul>
         </div>
 
@@ -646,13 +646,13 @@ if ($updateType == 'onboarding') { ?>
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Squadfree</strong> <span>All Rights Reserved</span></p>
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">ClubHub</strong> <span>All Rights Reserved</span></p>
       <div class="credits">
         <!-- All the links in the footer should remain intact. -->
         <!-- You can delete the links only if you've purchased the pro version. -->
         <!-- Licensing information: https://bootstrapmade.com/license/ -->
         <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+        Designed by <a href="https://bootstrapmade.com/">Vybhav</a>
       </div>
     </div>
 
