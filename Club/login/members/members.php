@@ -355,7 +355,7 @@ $conn->close();
             </div>
         </section><!-- /Recruitments Section -->
 
-        <div class="form-container">
+        <div class="form-container"> 
             <form method="post" class="mb-4">
                 <div class="form-group">
                     <label for="role">Role:</label>
