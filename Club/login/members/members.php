@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt->execute()) {
                 if ($status == 'accepted') {
                     // Move accepted application to onboarding table
-                    $stmt = $conn->prepare("SELECT student_id, club_id FROM applications WHERE id = ?");
+                    $stmt = $conn->prepare("SELECT student_id FROM applications WHERE id = ?");
                     if ($stmt) {
                         $stmt->bind_param("i", $application_id);
                         $stmt->execute();
@@ -131,7 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         if ($result->num_rows > 0) {
                             $application = $result->fetch_assoc();
                             $student_id = $application['student_id'];
-                            $club_id = $application['club_id'];
 
                             $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) VALUES (?, ?)");
                             if ($stmt) {
@@ -205,10 +204,10 @@ if ($onboardingResult) {
     error_log("Prepare failed: " . $conn->error);
 }
 
-
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
