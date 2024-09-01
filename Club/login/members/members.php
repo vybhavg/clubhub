@@ -544,9 +544,6 @@ $conn->close();
 <?php } ?>
 
 
-<?php
-// Ensure this code is placed within your PHP script where it handles different update types
-
 <?php if ($updateType == 'onboarding') { ?>
     <!-- Onboarding Section -->
     <section id="onboarding" class="about section">
