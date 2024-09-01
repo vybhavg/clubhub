@@ -451,17 +451,15 @@ $conn->close();
                     </thead>
                     <tbody>
                         <?php 
-                        if (count($applications) > 0) {
-                            foreach ($applications as $application) { ?>
+                        if ($applicationsResult && $applicationsResult->num_rows > 0) {
+                            while ($application = $applicationsResult->fetch_assoc()) { ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($application['email'] ?? 'N/A'); ?></td>
-                                    <td>
-                                        <a href="<?php echo htmlspecialchars($application['resume_path'] ?? '#'); ?>" class="btn btn-info" target="_blank">View Resume</a>
-                                    </td>
+                                    <td><?php echo htmlspecialchars($applications['student_name'] ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars($applications['email'] ?? 'N/A'); ?></td>
+                                    <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path'] ?? ''); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
                                     <td>
                                         <form method="POST" action="">
-                                            <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id'] ?? ''); ?>">
+                                            <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($applications['id'] ?? ''); ?>">
                                             <button type="submit" name="accept_application" class="btn btn-success">Accept</button>
                                             <button type="submit" name="reject_application" class="btn btn-danger">Reject</button>
                                         </form>
