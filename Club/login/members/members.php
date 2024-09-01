@@ -434,7 +434,18 @@ $conn->close();
                     </thead>
                     <tbody>
                         <?php 
-                        if (isset($applicationsResult) && $applicationsResult->num_rows > 0) {
+                        // Modify your query to only select applications where status is 'pending'
+                        $query = "SELECT applications.id, students.name AS student_name, students.email, applications.resume_path 
+                                  FROM applications 
+                                  INNER JOIN students ON applications.student_id = students.id 
+                                  WHERE applications.club_id = ? AND applications.status = 'pending'";
+
+                        $stmt = $conn->prepare($query);
+                        $stmt->bind_param("i", $club_id); // Assuming $club_id is defined based on the logged-in club
+                        $stmt->execute();
+                        $applicationsResult = $stmt->get_result();
+
+                        if ($applicationsResult->num_rows > 0) {
                             while ($application = $applicationsResult->fetch_assoc()) { ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
