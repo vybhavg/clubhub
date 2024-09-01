@@ -466,7 +466,6 @@ if ($updateType == 'onboarding') { ?>
                         <tr>
                             <th>Student Name</th>
                             <th>Email</th>
-                            <th>Resume</th>
                         </tr>
                     </thead>
                     <tbody>
