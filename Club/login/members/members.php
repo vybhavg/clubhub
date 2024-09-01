@@ -448,45 +448,7 @@ $conn->close();
     </div>
 <?php } ?>
 
-    <?php } elseif ($updateType == 'onboarding') { ?>
-    <!-- Onboarding Section -->
-    <section id="onboarding" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Onboarding</h2>
-            <p>View the members who have been onboarded to your club here.</p>
-        </div>
-    </section><!-- /Onboarding Section -->
-
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h3>Onboarded Members for Your Club</h3>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        if ($onboardingResult && $onboardingResult->num_rows > 0) {
-                            while ($member = $onboardingResult->fetch_assoc()) { ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($member['student_name'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($member['email'] ?? 'N/A'); ?></td>
-                                </tr>
-                            <?php }
-                        } else {
-                            echo "<tr><td colspan='2'>No onboarded members available</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-<?php } ?>
+ 
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
