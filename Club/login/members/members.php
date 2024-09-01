@@ -167,38 +167,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 
-if ($updateType == 'onboarding') {
-    // Existing code for displaying the onboarding section
-
-    // Handle Send Email action
-    if (isset($_POST['send_email'])) {
-        $to = $_POST['student_email'];
-        $student_name = $_POST['student_name'];
-        $club_name = htmlspecialchars($onboardingResult->fetch_assoc()['club_name']); // Fetch club name if needed
-
-        $subject = "Welcome to the $club_name Club!";
-        $message = "Dear " . htmlspecialchars($student_name) . ",\n\n";
-        $message .= "Congratulations! You have been successfully onboarded to the $club_name club.\n";
-        $message .= "We look forward to your active participation.\n\n";
-        $message .= "Best regards,\n";
-        $message .= "The Club Team";
-        
-        $headers = "From: no-reply@yourdomain.com\r\n";
-        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        
-        if (mail($to, $subject, $message, $headers)) {
-            $_SESSION['message'] = "Email sent to " . htmlspecialchars($student_name);
-        } else {
-            error_log("Failed to send email to: " . $to);
-            $_SESSION['message'] = "Failed to send email.";
-        }
-        
-        // Redirect to avoid form resubmission and preserve the current state
-        header("Location: " . $_SERVER['PHP_SELF'] . "?update_type=onboarding");
-        exit;
-    }
-}
-
 // Fetch events, recruitments, applications, and onboarding data for the logged-in club
 $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
 $recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
