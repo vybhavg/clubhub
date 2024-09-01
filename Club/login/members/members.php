@@ -140,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     error_log("Error inserting into onboarding table: " . $stmt->error);
                                     $_SESSION['message'] = "Error moving application to onboarding.";
                                 }
+                                $stmt->close();
                             } else {
                                 error_log("Prepare failed: " . $conn->error);
                             }
@@ -158,13 +159,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
- 
+
         // Redirect to avoid form resubmission
         header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
         exit;
     }
 }
-
 
 // Fetch events, recruitments, applications, and onboarding data for the logged-in club
 $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
@@ -175,7 +175,8 @@ $onboardingResult = $conn->prepare("SELECT o.id, s.name as student_name, s.email
 if ($eventsResult) {
     $eventsResult->bind_param("i", $club_id);
     $eventsResult->execute();
-    $eventsResult = $eventsResult->get_result();
+    $events = $eventsResult->get_result();
+    $eventsResult->close();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -183,7 +184,8 @@ if ($eventsResult) {
 if ($recruitmentsResult) {
     $recruitmentsResult->bind_param("i", $club_id);
     $recruitmentsResult->execute();
-    $recruitmentsResult = $recruitmentsResult->get_result();
+    $recruitments = $recruitmentsResult->get_result();
+    $recruitmentsResult->close();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -191,7 +193,8 @@ if ($recruitmentsResult) {
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
-    $applicationsResult = $applicationsResult->get_result();
+    $applications = $applicationsResult->get_result();
+    $applicationsResult->close();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -199,7 +202,8 @@ if ($applicationsResult) {
 if ($onboardingResult) {
     $onboardingResult->bind_param("i", $club_id);
     $onboardingResult->execute();
-    $onboardingResult = $onboardingResult->get_result();
+    $onboarding = $onboardingResult->get_result();
+    $onboardingResult->close();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
@@ -207,6 +211,7 @@ if ($onboardingResult) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
