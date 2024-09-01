@@ -53,6 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
+        header("Location: ".$_SERVER['PHP_SELF']."?update_type=events");
+        exit;
     }
     // Add Recruitment
     elseif (isset($_POST['add_recruitment'])) {
@@ -73,6 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
+        header("Location: ".$_SERVER['PHP_SELF']."?update_type=recruitments");
+        exit;
     }
     // Delete Event
     elseif (isset($_POST['delete_event'])) {
@@ -91,6 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
+        header("Location: ".$_SERVER['PHP_SELF']."?update_type=events");
+        exit;
     }
     // Delete Recruitment
     elseif (isset($_POST['delete_recruitment'])) {
@@ -109,6 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
+        header("Location: ".$_SERVER['PHP_SELF']."?update_type=recruitments");
+        exit;
     }
     // Handle Application Accept/Reject
     elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
@@ -453,6 +461,7 @@ $conn->close();
         </div>
     </div>
 <?php } ?>
+
 
 
 <?php if ($updateType == 'onboarding') { ?>
