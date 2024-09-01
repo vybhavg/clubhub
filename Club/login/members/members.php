@@ -448,53 +448,6 @@ $conn->close();
 <?php } ?>
 
 
-// Check if the update type is onboarding
-if ($updateType == 'onboarding') {
-?>
-    <!-- onboarding Section -->
-    <section id="onboarding" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Onboarding</h2>
-                <p>View and manage Onboarded students here.</p>
-        </div>
-    </section><!-- /onboarding Section -->
-
-<div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h3>Onboarded for Your Club</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Student Name</th>
-                <th>Email</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($onboardingResult && $onboardingResult->num_rows > 0) {
-                while ($row = $onboardingResult->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . htmlspecialchars($row['id']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['student_name']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['email']) . "</td>";
-                    echo "<td>
-                        <!-- Here you can add more actions like removing or updating onboarding status -->
-                    </td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='4'>No onboarding students found.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
-            </div></div></div>
-<?php
-}
-?> 
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
