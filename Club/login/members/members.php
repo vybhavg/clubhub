@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 if (!isset($_SESSION['club_id'])) {
     header('Location: login.php'); // Redirect to login if not logged in
     exit;
-}
+}  
 
 // Get session variables
 $club_id = $_SESSION['club_id'];
