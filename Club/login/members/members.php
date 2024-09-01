@@ -445,19 +445,22 @@ $conn->close();
     </div>
 <?php } ?>
 
-<?php } elseif ($updateType == 'onboarding') { ?>
-    <!-- Applications Section -->
+<?php
+// Ensure this code is placed within your PHP script where it handles different update types
+
+if ($updateType == 'onboarding') { ?>
+    <!-- Onboarding Section -->
     <section id="onboarding" class="about section">
         <div class="container section-title" data-aos="fade-up">
-            <h2>onboarding</h2>
-            <p>View and manage student applications here.</p>
+            <h2>Onboarding</h2>
+            <p>View and manage students who have been onboarded to your club.</p>
         </div>
-    </section><!-- /Applications Section -->
+    </section><!-- /Onboarding Section -->
 
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <h3>Applications for Your Club</h3>
+                <h3>Onboarded Students for Your Club</h3>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -473,12 +476,10 @@ $conn->close();
                                 <tr>
                                     <td><?php echo htmlspecialchars($onboarded['student_name'] ?? 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($onboarded['email'] ?? 'N/A'); ?></td>
-                                    <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($onboarded['resume_path'] ?? ''); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
-                                   
                                 </tr>
                             <?php }
                         } else {
-                            echo "<tr><td colspan='4'>No onboarded available</td></tr>";
+                            echo "<tr><td colspan='3'>No onboarded students available</td></tr>";
                         }
                         ?>
                     </tbody>
