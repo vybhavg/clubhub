@@ -195,6 +195,17 @@ if ($applicationsResult) {
     error_log("Prepare failed: " . $conn->error);
 }
 
+// Fetch onboarding data for the logged-in club
+$onboardingResult = $conn->prepare("SELECT o.id, s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
+if ($onboardingResult) {
+    $onboardingResult->bind_param("i", $club_id);
+    $onboardingResult->execute();
+    $onboardingResult = $onboardingResult->get_result();
+} else {
+    error_log("Prepare failed: " . $conn->error);
+}
+
+
 // Close the database connection
 $conn->close();
 ?>
@@ -251,6 +262,7 @@ $conn->close();
                 <li><a href="?update_type=events#events" class="scroll-link" data-scroll="events">Events</a></li>
                 <li><a href="?update_type=recruitments#recruitments" class="scroll-link" data-scroll="recruitments">Recruitments</a></li>
                 <li><a href="?update_type=applications#applications" class="scroll-link" data-scroll="applications">Applications</a></li>
+                <li><a href="?update_type=onboarding#onboarding" class="scroll-link" data-scroll="onboarding">Onboarding</a></li>                
                 <li><a href="#contact" class="scroll-link" data-scroll="contact">Contact</a></li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -427,6 +439,46 @@ $conn->close();
                             <?php }
                         } else {
                             echo "<tr><td colspan='4'>No applications available</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<?php } ?>
+
+    <?php } elseif ($updateType == 'onboarding') { ?>
+    <!-- Onboarding Section -->
+    <section id="onboarding" class="about section">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Onboarding</h2>
+            <p>View the members who have been onboarded to your club here.</p>
+        </div>
+    </section><!-- /Onboarding Section -->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>Onboarded Members for Your Club</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        if ($onboardingResult && $onboardingResult->num_rows > 0) {
+                            while ($member = $onboardingResult->fetch_assoc()) { ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($member['student_name'] ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars($member['email'] ?? 'N/A'); ?></td>
+                                </tr>
+                            <?php }
+                        } else {
+                            echo "<tr><td colspan='2'>No onboarded members available</td></tr>";
                         }
                         ?>
                     </tbody>
