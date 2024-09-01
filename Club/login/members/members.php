@@ -454,8 +454,6 @@ $conn->close();
     </div>
 <?php } ?>
 
-<?php
-// Ensure this code is placed within your PHP script where it handles different update types
 
 <?php
 // Ensure this code is placed within your PHP script where it handles different update types
