@@ -158,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
-
+ 
         // Redirect to avoid form resubmission
         header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
         exit;
