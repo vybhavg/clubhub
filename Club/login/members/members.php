@@ -4,7 +4,7 @@ include('/var/www/html/db_connect.php'); // Ensure this file connects to your da
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
+//hiii
 // Check if the user is logged in and has a valid club_id
 if (!isset($_SESSION['club_id'])) {
     header('Location: login.php'); // Redirect to login if not logged in
