@@ -166,38 +166,95 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit;
 }
 //hiiiiiiiiiiiii
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-if ($updateType == 'onboarding') {
-    // Existing code for displaying the onboarding section
+require 'vendor/autoload.php';
 
-    // Handle Send Email action
-    if (isset($_POST['send_email'])) {
-        $to = $_POST['student_email'];
-        $student_name = $_POST['student_name'];
-        $club_name = htmlspecialchars($onboardingResult->fetch_assoc()['club_name']); // Fetch club name if needed
+// Ensure you have a valid database connection in $conn
+// and a valid $club_id from your context
 
-        $subject = "Welcome to the $club_name Club!";
-        $message = "Dear " . htmlspecialchars($student_name) . ",\n\n";
-        $message .= "Congratulations! You have been successfully onboarded to the $club_name club.\n";
-        $message .= "We look forward to your active participation.\n\n";
-        $message .= "Best regards,\n";
-        $message .= "The Club Team";
-        
-        $headers = "From: no-reply@yourdomain.com\r\n";
-        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        
-        if (mail($to, $subject, $message, $headers)) {
-            $_SESSION['message'] = "Email sent to " . htmlspecialchars($student_name);
-        } else {
-            error_log("Failed to send email to: " . $to);
-            $_SESSION['message'] = "Failed to send email.";
-        }
-        
-        // Redirect to avoid form resubmission and preserve the current state
-        header("Location: " . $_SERVER['PHP_SELF'] . "?update_type=onboarding");
-        exit;
-    }
+// Fetch onboarded members and their club names
+$query = "SELECT s.name AS student_name, s.email, c.club_name, o.student_id
+          FROM onboarding o
+          JOIN students s ON o.student_id = s.id
+          JOIN clubs c ON o.club_id = c.id
+          WHERE o.club_id = ?";
+$stmt = $conn->prepare($query);
+
+if ($stmt) {
+    $stmt->bind_param("i", $club_id);
+    $stmt->execute();
+    $onboardingResult = $stmt->get_result();
+    $stmt->close();
+} else {
+    error_log("Prepare failed: " . $conn->error);
+    $_SESSION['message'] = "Error fetching onboarding data.";
 }
+
+// Handle Send Email action
+if (isset($_POST['send_email'])) {
+    $to = $_POST['student_email'];
+    $student_name = $_POST['student_name'];
+    $student_id = $_POST['student_id'];
+
+    // Fetch club name
+    $stmt_club = $conn->prepare("SELECT c.club_name FROM onboarding o JOIN clubs c ON o.club_id = c.id WHERE o.student_id = ?");
+    if ($stmt_club) {
+        $stmt_club->bind_param("i", $student_id);
+        $stmt_club->execute();
+        $result_club = $stmt_club->get_result();
+        if ($result_club->num_rows > 0) {
+            $club_name = $result_club->fetch_assoc()['club_name'];
+        } else {
+            $club_name = 'the club'; // Default value
+        }
+        $stmt_club->close();
+    } else {
+        error_log("Prepare failed: " . $conn->error);
+        $_SESSION['message'] = "Error fetching club data.";
+    }
+
+    // Create a new PHPMailer instance
+    $mail = new PHPMailer(true);
+
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com'; // Set the SMTP server to send through
+        $mail->SMTPAuth   = true; // Enable SMTP authentication
+        $mail->Username   = 'vybhavguttula@gmail.com'; // SMTP username
+        $mail->Password   = 'Gvbh@1781'; // SMTP password (use App Password if 2FA is enabled)
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` also accepted
+        $mail->Port       = 587; // TCP port to connect to
+
+        // Recipients
+        $mail->setFrom('vybhavguttula@gmail.com', 'The Club Team');
+        $mail->addAddress($to, $student_name); // Add a recipient
+
+        // Content
+        $mail->isHTML(false); // Set email format to plain text
+        $mail->Subject = "Welcome to the $club_name Club!";
+        $mail->Body    = "Dear " . htmlspecialchars($student_name) . ",\n\n"
+                         . "Congratulations! You have been successfully onboarded to the $club_name club.\n"
+                         . "We look forward to your active participation.\n\n"
+                         . "Best regards,\n"
+                         . "The Club Team";
+
+        $mail->send();
+        $_SESSION['message'] = "Email sent to " . htmlspecialchars($student_name);
+    } catch (Exception $e) {
+        error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        $_SESSION['message'] = "Failed to send email.";
+    }
+
+    // Redirect to avoid form resubmission and preserve the current state
+    header("Location: " . $_SERVER['PHP_SELF'] . "?update_type=onboarding");
+    exit;
+}
+
+
+
 
 // Fetch events, recruitments, applications, and onboarding data for the logged-in club
 $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
@@ -490,7 +547,7 @@ $conn->close();
 <?php
 // Ensure this code is placed within your PHP script where it handles different update types
 
-if ($updateType == 'onboarding') { ?>
+<?php if ($updateType == 'onboarding') { ?>
     <!-- Onboarding Section -->
     <section id="onboarding" class="about section">
         <div class="container section-title" data-aos="fade-up">
@@ -522,6 +579,7 @@ if ($updateType == 'onboarding') { ?>
                                         <form method="POST" action="">
                                             <input type="hidden" name="student_email" value="<?php echo htmlspecialchars($onboarded['email']); ?>">
                                             <input type="hidden" name="student_name" value="<?php echo htmlspecialchars($onboarded['student_name']); ?>">
+                                            <input type="hidden" name="student_id" value="<?php echo htmlspecialchars($onboarded['student_id']); ?>">
                                             <button type="submit" name="send_email" class="btn btn-primary">Send Email</button>
                                         </form>
                                     </td>
