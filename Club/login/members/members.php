@@ -13,16 +13,11 @@ if (!isset($_SESSION['club_id'])) {
 
 // Get session variables
 $club_id = $_SESSION['club_id'];
+$branch_id = $_SESSION['branch_id'];
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 
 // Initialize $club_name
 $club_name = 'Club'; // Default value
-
-// Initialize arrays to hold data
-$events = [];
-$recruitments = [];
-$applications = [];
-$onboarding = [];
 
 // Fetch club name from the database
 $stmt = $conn->prepare("SELECT club_name FROM clubs WHERE id = ?");
@@ -59,8 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
-        header("Location: ".$_SERVER['PHP_SELF']."?update_type=events");
-        exit;
     }
     // Add Recruitment
     elseif (isset($_POST['add_recruitment'])) {
@@ -81,8 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
-        header("Location: ".$_SERVER['PHP_SELF']."?update_type=recruitments");
-        exit;
     }
     // Delete Event
     elseif (isset($_POST['delete_event'])) {
@@ -101,8 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
-        header("Location: ".$_SERVER['PHP_SELF']."?update_type=events");
-        exit;
     }
     // Delete Recruitment
     elseif (isset($_POST['delete_recruitment'])) {
@@ -121,8 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             error_log("Prepare failed: " . $conn->error);
         }
-        header("Location: ".$_SERVER['PHP_SELF']."?update_type=recruitments");
-        exit;
     }
     // Handle Application Accept/Reject
     elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
@@ -135,37 +122,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param("si", $status, $application_id);
             if ($stmt->execute()) {
                 if ($status == 'accepted') {
-                    // Move to onboarding table
-                    $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
+                    // Move accepted application to onboarding table
+                    $stmt = $conn->prepare("SELECT student_id, club_id FROM applications WHERE id = ?");
                     if ($stmt) {
                         $stmt->bind_param("i", $application_id);
                         $stmt->execute();
-                        $stmt->close();
-                    } else {
-                        error_log("Prepare failed: " . $conn->error);
-                    }
-                } else {
-                    // Move to rejected table
-                    $stmt = $conn->prepare("INSERT INTO rejected (student_id, club_id) SELECT student_id, club_id FROM applications WHERE id = ?");
-                    if ($stmt) {
-                        $stmt->bind_param("i", $application_id);
-                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        if ($result->num_rows > 0) {
+                            $application = $result->fetch_assoc();
+                            $student_id = $application['student_id'];
+                            $club_id = $application['club_id'];
+
+                            $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) VALUES (?, ?)");
+                            if ($stmt) {
+                                $stmt->bind_param("ii", $student_id, $club_id);
+                                if (!$stmt->execute()) {
+                                    error_log("Error inserting into onboarding table: " . $stmt->error);
+                                    $_SESSION['message'] = "Error moving application to onboarding.";
+                                }
+                            } else {
+                                error_log("Prepare failed: " . $conn->error);
+                            }
+                        }
                         $stmt->close();
                     } else {
                         error_log("Prepare failed: " . $conn->error);
                     }
                 }
-
-                // Delete the application from the applications table
-                $stmt = $conn->prepare("DELETE FROM applications WHERE id = ?");
-                if ($stmt) {
-                    $stmt->bind_param("i", $application_id);
-                    $stmt->execute();
-                    $stmt->close();
-                } else {
-                    error_log("Prepare failed: " . $conn->error);
-                }
-
                 $_SESSION['message'] = "Application status updated successfully.";
             } else {
                 error_log("Execute failed: " . $stmt->error);
@@ -182,63 +165,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Fetch data for the logged-in club
-$eventsStmt = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
-$recruitmentsStmt = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
-$applicationsStmt = $conn->prepare("SELECT a.id, s.name AS student_name, s.email AS email, a.resume_path AS resume_path FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ? AND a.status IS NULL");
-$onboardingStmt = $conn->prepare("SELECT s.name AS student_name, s.email AS email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
+// Fetch events and recruitments for the logged-in club
+$eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
+$recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
 
-if ($eventsStmt) {
-    $eventsStmt->bind_param("i", $club_id);
-    $eventsStmt->execute();
-    $eventsResult = $eventsStmt->get_result();
-    while ($event = $eventsResult->fetch_assoc()) {
-        $events[] = $event;
-    }
-    $eventsStmt->close();
+if ($eventsResult) {
+    $eventsResult->bind_param("i", $club_id);
+    $eventsResult->execute();
+    $eventsResult = $eventsResult->get_result();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
 
-if ($recruitmentsStmt) {
-    $recruitmentsStmt->bind_param("i", $club_id);
-    $recruitmentsStmt->execute();
-    $recruitmentsResult = $recruitmentsStmt->get_result();
-    while ($recruitment = $recruitmentsResult->fetch_assoc()) {
-        $recruitments[] = $recruitment;
-    }
-    $recruitmentsStmt->close();
+if ($recruitmentsResult) {
+    $recruitmentsResult->bind_param("i", $club_id);
+    $recruitmentsResult->execute();
+    $recruitmentsResult = $recruitmentsResult->get_result();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
 
-if ($applicationsStmt) {
-    $applicationsStmt->bind_param("i", $club_id);
-    $applicationsStmt->execute();
-    $applicationsResult = $applicationsStmt->get_result();
-    while ($application = $applicationsResult->fetch_assoc()) {
-        $applications[] = $application;
-    }
-    $applicationsStmt->close();
+// Fetch applications for the logged-in club
+$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+if ($applicationsResult) {
+    $applicationsResult->bind_param("i", $club_id);
+    $applicationsResult->execute();
+    $applicationsResult = $applicationsResult->get_result();
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
 
-if ($onboardingStmt) {
-    $onboardingStmt->bind_param("i", $club_id);
-    $onboardingStmt->execute();
-    $onboardingResult = $onboardingStmt->get_result();
-    while ($onboarded = $onboardingResult->fetch_assoc()) {
-        $onboarding[] = $onboarded;
-    }
-    $onboardingStmt->close();
-} else {
-    error_log("Prepare failed: " . $conn->error);
-}
-
+// Close the database connection
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -292,7 +251,6 @@ $conn->close();
                 <li><a href="?update_type=events#events" class="scroll-link" data-scroll="events">Events</a></li>
                 <li><a href="?update_type=recruitments#recruitments" class="scroll-link" data-scroll="recruitments">Recruitments</a></li>
                 <li><a href="?update_type=applications#applications" class="scroll-link" data-scroll="applications">Applications</a></li>
-                <li><a href="?update_type=onboarding#onboarding" class="scroll-link" data-scroll="applications">Onboarding</a></li>
                 <li><a href="#contact" class="scroll-link" data-scroll="contact">Contact</a></li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -427,6 +385,7 @@ $conn->close();
                 </div>
             </section><!-- /Faq Section -->
         </div>
+
 <?php } elseif ($updateType == 'applications') { ?>
     <!-- Applications Section -->
     <section id="applications" class="about section">
@@ -454,12 +413,12 @@ $conn->close();
                         if ($applicationsResult && $applicationsResult->num_rows > 0) {
                             while ($application = $applicationsResult->fetch_assoc()) { ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($applications['student_name'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($applications['email'] ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars($application['email'] ?? 'N/A'); ?></td>
                                     <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path'] ?? ''); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
                                     <td>
                                         <form method="POST" action="">
-                                            <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($applications['id'] ?? ''); ?>">
+                                            <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id'] ?? ''); ?>">
                                             <button type="submit" name="accept_application" class="btn btn-success">Accept</button>
                                             <button type="submit" name="reject_application" class="btn btn-danger">Reject</button>
                                         </form>
@@ -468,48 +427,6 @@ $conn->close();
                             <?php }
                         } else {
                             echo "<tr><td colspan='4'>No applications available</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-<?php } ?>
-
-
-
-<?php if ($updateType == 'onboarding') { ?>
-    <!-- Onboarding Section -->
-    <section id="onboarding" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Onboarding</h2>
-            <p>View the list of students who have been onboarded here.</p>
-        </div>
-    </section><!-- /Onboarding Section -->
-
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h3>Onboarded Students for Your Club</h3>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        if ($onboardingResult->num_rows > 0) {
-                            while ($student = $onboardingResult->fetch_assoc()) { ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($student['student_name'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($student['email'] ?? 'N/A'); ?></td>
-                                </tr>
-                            <?php }
-                        } else {
-                            echo "<tr><td colspan='2'>No students onboarded</td></tr>";
                         }
                         ?>
                     </tbody>
