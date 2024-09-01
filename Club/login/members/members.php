@@ -14,7 +14,7 @@ if (!isset($_SESSION['club_id'])) {
 // Get session variables
 $club_id = $_SESSION['club_id'];
 $branch_id = $_SESSION['branch_id'];
-$updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
+$updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events'; // Default to 'events'
 
 // Initialize $club_name
 $club_name = 'Club'; // Default value
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt->execute()) {
                 if ($status == 'accepted') {
                     // Move accepted application to onboarding table
-                    $stmt = $conn->prepare("SELECT student_id FROM applications WHERE id = ?");
+                    $stmt = $conn->prepare("SELECT student_id, club_id FROM applications WHERE id = ?");
                     if ($stmt) {
                         $stmt->bind_param("i", $application_id);
                         $stmt->execute();
@@ -131,6 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         if ($result->num_rows > 0) {
                             $application = $result->fetch_assoc();
                             $student_id = $application['student_id'];
+                            $club_id = $application['club_id'];
 
                             $stmt = $conn->prepare("INSERT INTO onboarding (student_id, club_id) VALUES (?, ?)");
                             if ($stmt) {
@@ -164,9 +165,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Fetch events and recruitments for the logged-in club
+// Fetch events, recruitments, applications, and onboarding data for the logged-in club
 $eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
 $recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
+$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
+$onboardingResult = $conn->prepare("SELECT o.id, s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
 
 if ($eventsResult) {
     $eventsResult->bind_param("i", $club_id);
@@ -184,8 +187,6 @@ if ($recruitmentsResult) {
     error_log("Prepare failed: " . $conn->error);
 }
 
-// Fetch applications for the logged-in club
-$applicationsResult = $conn->prepare("SELECT a.id, s.name as student_name, s.email as email, a.resume_path as resume_path, a.status FROM applications a INNER JOIN students s ON a.student_id = s.id WHERE a.club_id = ?");
 if ($applicationsResult) {
     $applicationsResult->bind_param("i", $club_id);
     $applicationsResult->execute();
@@ -194,8 +195,6 @@ if ($applicationsResult) {
     error_log("Prepare failed: " . $conn->error);
 }
 
-// Fetch onboarding data for the logged-in club
-$onboardingResult = $conn->prepare("SELECT o.id, s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
 if ($onboardingResult) {
     $onboardingResult->bind_param("i", $club_id);
     $onboardingResult->execute();
@@ -207,7 +206,6 @@ if ($onboardingResult) {
 // Close the database connection
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -470,12 +468,12 @@ $conn->close();
                     </thead>
                     <tbody>
                         <?php 
-                        if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                            while ($application = $applicationsResult->fetch_assoc()) { ?>
+                        if ($onboardingResult && $onboardingResult->num_rows > 0) {
+                            while ($onboarded = $onboardingResult->fetch_assoc()) { ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($application['email'] ?? 'N/A'); ?></td>
-                                    <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path'] ?? ''); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
+                                    <td><?php echo htmlspecialchars($onboarded['student_name'] ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars($onboarded['email'] ?? 'N/A'); ?></td>
+                                    <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($onboarded['resume_path'] ?? ''); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
                                    
                                 </tr>
                             <?php }
