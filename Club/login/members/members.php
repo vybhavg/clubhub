@@ -447,7 +447,49 @@ $conn->close();
     </div>
 <?php } ?>
 
- 
+
+// Check if the update type is onboarding
+if ($updateType == 'onboarding') {
+?>
+    <h2>Onboarding Students</h2>
+    <?php
+    if (isset($_SESSION['message'])) {
+        echo "<p>" . htmlspecialchars($_SESSION['message']) . "</p>";
+        unset($_SESSION['message']);
+    }
+    ?>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            if ($onboardingResult && $onboardingResult->num_rows > 0) {
+                while ($row = $onboardingResult->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($row['id']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['student_name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['email']) . "</td>";
+                    echo "<td>
+                        <!-- Here you can add more actions like removing or updating onboarding status -->
+                    </td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='4'>No onboarding students found.</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+<?php
+}
+?> 
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
