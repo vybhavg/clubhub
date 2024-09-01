@@ -451,14 +451,18 @@ $conn->close();
 // Check if the update type is onboarding
 if ($updateType == 'onboarding') {
 ?>
-    <h2>Onboarding Students</h2>
-    <?php
-    if (isset($_SESSION['message'])) {
-        echo "<p>" . htmlspecialchars($_SESSION['message']) . "</p>";
-        unset($_SESSION['message']);
-    }
-    ?>
+    <!-- onboarding Section -->
+    <section id="onboarding" class="about section">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Onboarding</h2>
+                <p>View and manage Onboarded students here.</p>
+        </div>
+    </section><!-- /onboarding Section -->
 
+<div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>Onboarded for Your Club</h3>
     <table>
         <thead>
             <tr>
@@ -487,6 +491,7 @@ if ($updateType == 'onboarding') {
             ?>
         </tbody>
     </table>
+            </div></div></div>
 <?php
 }
 ?> 
