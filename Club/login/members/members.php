@@ -144,6 +144,8 @@ elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'
                         } else {
                             error_log("Prepare failed: " . $conn->error);
                         }
+                    } else {
+                        error_log("No application found with id: " . $application_id);
                     }
                     $selectStmt->close();
                 } else {
@@ -164,6 +166,7 @@ elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'
     header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
     exit;
 }
+
 
 
 // Fetch events, recruitments, applications, and onboarding data for the logged-in club
