@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 // Handle Application Accept/Reject
-elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
+if (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
     $application_id = $_POST['application_id'];
     $status = isset($_POST['accept_application']) ? 'accepted' : 'rejected';
 
@@ -143,11 +143,15 @@ elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'
                             $stmt3->close();
                         } else {
                             error_log("Prepare failed: " . $conn->error);
+                            $_SESSION['message'] = "Error preparing query for onboarding.";
                         }
+                    } else {
+                        $_SESSION['message'] = "No matching application found.";
                     }
                     $stmt2->close();
                 } else {
                     error_log("Prepare failed: " . $conn->error);
+                    $_SESSION['message'] = "Error preparing query for application details.";
                 }
             }
             $_SESSION['message'] = "Application status updated successfully.";
@@ -158,6 +162,7 @@ elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'
         $stmt1->close();
     } else {
         error_log("Prepare failed: " . $conn->error);
+        $_SESSION['message'] = "Error preparing query for status update.";
     }
 
     // Redirect to avoid form resubmission
