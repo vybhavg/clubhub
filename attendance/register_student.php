@@ -32,13 +32,21 @@ if ($latitude && $longitude && $name && $email && $event_id) {
     $stmt->fetch();
     $stmt->close();
 
-    // Convert event start time to local time (IST)
-    $event_start_time_utc = new DateTime($event_start_time, new DateTimeZone('UTC'));
-    $event_start_time_local = $event_start_time_utc->setTimezone(new DateTimeZone('Asia/Kolkata'));
-    $event_start_timestamp = $event_start_time_local->getTimestamp();
+    // Convert event start time from IST to UTC
+    $event_start_time_ist = new DateTime($event_start_time, new DateTimeZone('Asia/Kolkata'));
+    $event_start_time_utc = $event_start_time_ist->setTimezone(new DateTimeZone('UTC'));
+    $event_start_timestamp = $event_start_time_utc->getTimestamp();
 
     // Calculate event end time
     $event_end_timestamp = $event_start_timestamp + ($event_duration * 60); // duration in minutes converted to seconds
+
+    // Get current server time in UTC
+    $current_timestamp = time(); // Current time in UTC
+    
+    // Debug output for server time and event times
+    error_log("Server Time (UTC): " . date('Y-m-d H:i:s', $current_timestamp));
+    error_log("Event Start Time (UTC): " . date('Y-m-d H:i:s', $event_start_timestamp));
+    error_log("Event End Time (UTC): " . date('Y-m-d H:i:s', $event_end_timestamp));
 
     // Check if the student is within the geofence
     $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
@@ -51,7 +59,6 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
         if ($stmt->execute()) {
             // Output the event end time for the countdown timer
-            $current_timestamp = time();
             $remaining_time = max(0, $event_end_timestamp - $current_timestamp);
 
             $minutes = floor($remaining_time / 60);
@@ -73,37 +80,3 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
 $conn->close();
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Status</title>
-    <script>
-        function updateCountdown() {
-            var eventEndTime = window.eventEndTime; // In milliseconds
-            var currentTime = new Date().getTime(); // Current time in milliseconds
-            
-            var remainingTime = eventEndTime - currentTime;
-            
-            if (remainingTime <= 0) {
-                document.getElementById('timer').textContent = "Final registration link is now available!";
-                clearInterval(timerInterval);
-                return;
-            }
-            
-            var minutes = Math.floor(remainingTime / (1000 * 60));
-            var seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-            
-            document.getElementById('timer').textContent = `Final registration link will be available in ${minutes} minutes ${seconds} seconds`;
-        }
-        
-        // Update the countdown every second
-        var timerInterval = setInterval(updateCountdown, 1000);
-    </script>
-</head>
-<body>
-    <h1>Registration Status</h1>
-    <p id="status">Calculating time...</p>
-</body>
-</html>
