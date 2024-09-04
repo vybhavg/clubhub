@@ -50,6 +50,7 @@ if ($latitude && $longitude && $name && $email && $event_id) {
             $event_start_time = strtotime($event_start_time);
             $event_end_time = $event_start_time + ($event_duration * 60); // Event duration in seconds
             $time_left = $event_start_time - $current_time;
+            $time_elapsed = $current_time - $event_start_time;
 
             // Prepare data to be sent to the frontend
             $data = [
@@ -78,16 +79,21 @@ if ($latitude && $longitude && $name && $email && $event_id) {
                 function updateTimer() {
                     var now = new Date().getTime();
                     var timeLeft = eventStartTime - now;
-                    var timePassed = now - eventStartTime;
-                    
-                    if (timeLeft > 0) {
-                        document.getElementById('countdown-timer').innerText = 'Final registration link will be available in ' + formatTime(timeLeft);
-                    } else if (timePassed <= (eventEndTime.getTime() - eventStartTime.getTime())) {
-                        document.getElementById('countdown-timer').innerText = 'Final registration link is available now!';
-                        document.getElementById('final-registration-link').innerHTML = '<a href=\"final_registration.php?student_id=' + registrationId + '&event_id=' + eventId + '\">Complete Final Registration</a>';
-                        document.getElementById('final-registration-link').classList.remove('hidden');
-                    } else {
+                    var timeElapsed = now - eventStartTime;
+
+                    if (now > eventEndTime.getTime()) {
                         document.getElementById('countdown-timer').innerText = 'The event has ended.';
+                        if (timeElapsed > (eventEndTime.getTime() - eventStartTime.getTime())) {
+                            document.getElementById('final-registration-link').innerHTML = '<a href=\"final_registration.php?student_id=' + registrationId + '&event_id=' + eventId + '\">Complete Final Registration</a>';
+                            document.getElementById('final-registration-link').classList.remove('hidden');
+                        } else {
+                            document.getElementById('final-registration-link').innerHTML = '';
+                            document.getElementById('final-registration-link').classList.add('hidden');
+                        }
+                    } else {
+                        document.getElementById('countdown-timer').innerText = 'Final registration link will be available in ' + formatTime(timeLeft);
+                        document.getElementById('final-registration-link').innerHTML = '';
+                        document.getElementById('final-registration-link').classList.add('hidden');
                     }
                 }
 
