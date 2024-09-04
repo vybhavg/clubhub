@@ -4,29 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Input Event Location</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        .form-container {
+            margin: 50px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+        }
         #map {
-            height: 400px;
-            width: 100%;
+            height: 200px; /* Decrease height */
+            width: 100%; /* Adjust width as needed */
         }
     </style>
 </head>
 <body>
-    <h2>Input Event Location</h2>
-    <form id="locationForm" action="save_event_location.php" method="POST">
-        <label for="event_name">Event Name:</label>
-        <input type="text" id="event_name" name="event_name" required><br><br>
+    <div class="form-container">
+        <h2>Input Event Location</h2>
+        <form id="locationForm" action="save_event_location.php" method="POST">
+            <label for="event_name">Event Name:</label>
+            <input type="text" id="event_name" name="event_name" required><br><br>
 
-        <label for="event_duration">Event Duration (minutes):</label>
-        <input type="number" id="event_duration" name="event_duration" required><br><br>
+            <label for="event_duration">Event Duration (minutes):</label>
+            <input type="number" id="event_duration" name="event_duration" required><br><br>
 
-        <div id="map"></div><br>
+            <div id="map"></div><br>
 
-        <input type="hidden" id="latitude" name="latitude">
-        <input type="hidden" id="longitude" name="longitude">
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
 
-        <button type="submit">Save Location</button>
-    </form>
+            <button type="submit">Save Location</button>
+        </form>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
