@@ -1,75 +1,35 @@
 <?php
-include('/var/www/html/db_connect.php'); // Include your database connection
+require 'db_connect.php';
 
-function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000) {
-    // Convert from degrees to radians
-    $latFrom = deg2rad($latitudeFrom);
-    $lonFrom = deg2rad($longitudeFrom);
-    $latTo = deg2rad($latitudeTo);
-    $lonTo = deg2rad($longitudeTo);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $event_id = $_POST['event_id'];
+    $student_name = $_POST['student_name'];
+    $student_id = $_POST['student_id'];
+    $geofence_status = $_POST['geofence_status'];
+    $total_time_in_geofence = $_POST['total_time_in_geofence'];
 
-    $latDelta = $latTo - $latFrom;
-    $lonDelta = $lonTo - $lonFrom;
-
-    $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
-      cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
-    return $angle * $earthRadius;
-}
-
-$name = $_POST['name'];
-$email = $_POST['email'];
-$latitude = $_POST['latitude'];
-$longitude = $_POST['longitude'];
-
-if ($latitude && $longitude && $name && $email) {
-    $stmt = $conn->prepare("SELECT title, latitude, longitude, event_start_time, event_duration FROM forms");
+    // Fetch event details from the database
+    $stmt = $conn->prepare("SELECT event_start_time, event_duration FROM events WHERE id = ?");
+    $stmt->bind_param("i", $event_id);
     $stmt->execute();
-    $stmt->bind_result($title, $eventLatitude, $eventLongitude, $eventStartTime, $eventDuration);
-
-    $isWithinGeofence = false;
-    $geofenceRadius = 1000; // Geofence radius in meters
-
-    $currentTime = new DateTime("now", new DateTimeZone('UTC')); // Current server time in UTC
-    $currentTimeStr = $currentTime->format('Y-m-d H:i:s');
-    $currentTimeUnix = $currentTime->getTimestamp();
-
-    while ($stmt->fetch()) {
-        if ($eventStartTime && $eventDuration !== null) {
-            $eventStartTimeUTC = new DateTime($eventStartTime, new DateTimeZone('Asia/Kolkata')); // Convert IST to UTC
-            $eventEndTimeUTC = clone $eventStartTimeUTC;
-            $eventEndTimeUTC->add(new DateInterval("PT{$eventDuration}M"));
-
-            $eventStartTimeStr = $eventStartTimeUTC->format('Y-m-d H:i:s');
-            $eventEndTimeStr = $eventEndTimeUTC->format('Y-m-d H:i:s');
-
-            $eventStartUnix = $eventStartTimeUTC->getTimestamp();
-            $eventEndUnix = $eventEndTimeUTC->getTimestamp();
-
-            $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
-            if ($distance <= $geofenceRadius && $currentTimeUnix >= $eventStartUnix && $currentTimeUnix <= $eventEndUnix) {
-                $isWithinGeofence = true;
-                break;
-            }
-        }
-    }
-
+    $stmt->bind_result($event_start_time, $event_duration);
+    $stmt->fetch();
     $stmt->close();
 
-    if ($isWithinGeofence) {
-        // Calculate the time until the final registration link appears
-        $finalRegistrationAvailableTime = clone $currentTime;
-        $finalRegistrationAvailableTime->add(new DateInterval("PT{$eventDuration}M"));
+    $event_end_time = new DateTime($event_start_time);
+    $event_end_time->add(new DateInterval("PT{$event_duration}M"));
+    
+    $current_time = new DateTime("now", new DateTimeZone("UTC"));
+    
+    // Calculate remaining time for event completion
+    $time_left = $current_time->diff($event_end_time);
 
-        $interval = $finalRegistrationAvailableTime->diff($currentTime);
-        $remainingTime = $interval->format('%h hours %i minutes %s seconds');
-
-        echo "Registration successful! Final registration link will be available in $remainingTime.";
+    // Check if the student has spent the required time in the geofence area
+    if ($total_time_in_geofence >= $event_duration) {
+        echo "Registration successful! The final registration link will be available after the event completes.";
+        // Here you would typically insert the registration record into the database
     } else {
-        echo "You are not within the geofenced area for any event.";
+        echo "You have not spent enough time within the geofence to qualify for final registration.";
     }
-} else {
-    echo "Invalid data!";
 }
-
-$conn->close();
 ?>
