@@ -31,14 +31,18 @@ if ($latitude && $longitude && $name && $email && $event_id) {
     $stmt->fetch();
     $stmt->close();
 
+    // Convert event_start_time from UTC to the local time zone (IST)
     $event_start_time_utc = new DateTime($event_start_time, new DateTimeZone('UTC'));
+    $event_start_time_ist = $event_start_time_utc->setTimezone(new DateTimeZone('Asia/Kolkata'));
+
+    // Calculate event end time
     $event_end_time = $event_start_time_utc->getTimestamp() + ($event_duration * 60); // Event duration in seconds
-    $current_time = time();
+    $current_time = time(); // Current time in UTC
 
     // Debugging information
-    error_log("Event Start Time: " . $event_start_time_utc->format('Y-m-d H:i:s'));
-    error_log("Event End Time: " . date("Y-m-d H:i:s", $event_end_time));
-    error_log("Current Time: " . date("Y-m-d H:i:s", $current_time));
+    error_log("Event Start Time (UTC): " . $event_start_time_utc->format('Y-m-d H:i:s'));
+    error_log("Event End Time (UTC): " . date("Y-m-d H:i:s", $event_end_time));
+    error_log("Current Time (UTC): " . date("Y-m-d H:i:s", $current_time));
 
     // Check if the student is within geofence
     $isWithinGeofence = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude) <= 1000;
