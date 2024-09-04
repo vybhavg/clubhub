@@ -25,13 +25,18 @@
             <label for="event_name">Event Name:</label>
             <input type="text" id="event_name" name="event_name" required><br><br>
 
+            <label for="event_start_time">Event Start Time:</label>
+            <input type="datetime-local" id="event_start_time" name="event_start_time" required><br><br>
+
+            <label for="event_duration">Event Duration (minutes):</label>
+            <input type="number" id="event_duration" name="event_duration" required><br><br>
+
             <div id="map"></div><br>
 
             <input type="hidden" id="latitude" name="latitude">
             <input type="hidden" id="longitude" name="longitude">
 
             <button type="submit">Save Location</button>
-            <button type="button" onclick="alert('Latitude: ' + document.getElementById('latitude').value + ', Longitude: ' + document.getElementById('longitude').value)">Check Coordinates</button>
         </form>
     </div>
 
@@ -52,11 +57,9 @@
             var marker = L.marker(defaultLocation, {draggable: true}).addTo(map);
 
             marker.on('dragend', function(e) {
-                var latlng = e.target.getLatLng(); // Correct way to get latlng from the marker
+                var latlng = e.target.getLatLng();
                 var lat = latlng.lat.toFixed(8);
                 var lng = latlng.lng.toFixed(8);
-
-                console.log('Latitude: ' + lat + ', Longitude: ' + lng);
 
                 document.getElementById('latitude').value = lat;
                 document.getElementById('longitude').value = lng;
