@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Location Tracking</title>
+    <script>
+        var eventLocation = {
+            lat: 17.782067586690925,
+            lng: 83.37835326649015
+        };
+        var allowedRadius = 50; // meters
+        var checkInterval = 60000; // 1 minute
+
+        function getDistance(lat1, lng1, lat2, lng2) {
+            var R = 6371e3; // Earth radius in meters
+            var φ1 = lat1 * Math.PI / 180;
+            var φ2 = lat2 * Math.PI / 180;
+            var Δφ = (lat2 - lat1) * Math.PI / 180;
+            var Δλ = (lng2 - lng1) * Math.PI / 180;
+
+            var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; // in meters
+        }
+
+        function checkLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var studentLat = position.coords.latitude;
+                    var studentLng = position.coords.longitude;
+
+                    var distance = getDistance(eventLocation.lat, eventLocation.lng, studentLat, studentLng);
+
+                    if (distance <= allowedRadius) {
+                        // Within allowed radius
+                        console.log('You are within the event location.');
+                        // Start or continue tracking time
+                    } else {
+                        // Outside allowed radius
+                        console.log('You are outside the event location.');
+                        // Reset tracking time
+                    }
+                }, function(error) {
+                    console.error('Error retrieving location: ', error);
+                });
+            } else {
+                console.error('Geolocation is not supported by this browser.');
+            }
+        }
+
+        setInterval(checkLocation, checkInterval);
+    </script>
+</head>
+<body>
+    <h1>Student Location Tracking</h1>
+</body>
+</html>
