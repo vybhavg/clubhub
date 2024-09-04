@@ -53,10 +53,11 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
             // Prepare data to be sent to the frontend
             $data = [
-                'event_start_time' => $event_start_time,
-                'event_end_time' => $event_end_time,
+                'event_start_time' => $event_start_time * 1000, // Convert to milliseconds
+                'event_end_time' => $event_end_time * 1000, // Convert to milliseconds
                 'registration_id' => $registration_id,
-                'event_id' => $event_id
+                'event_id' => $event_id,
+                'current_time' => $current_time * 1000 // Convert to milliseconds
             ];
 
             // Output JSON data for the frontend
@@ -68,10 +69,11 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
             echo "<script>
                 var data = " . json_encode($data) . ";
-                var eventStartTime = new Date(data.event_start_time * 1000);
-                var eventEndTime = new Date(data.event_end_time * 1000);
+                var eventStartTime = new Date(data.event_start_time);
+                var eventEndTime = new Date(data.event_end_time);
                 var registrationId = data.registration_id;
                 var eventId = data.event_id;
+                var currentTime = new Date(data.current_time);
 
                 function updateTimer() {
                     var now = new Date().getTime();
@@ -118,4 +120,3 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
 $conn->close();
 ?>
-
