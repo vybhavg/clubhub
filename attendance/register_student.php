@@ -34,20 +34,22 @@ if ($latitude && $longitude && $name && $email) {
     $currentTimeUnix = $currentTime->getTimestamp();
 
     while ($stmt->fetch()) {
-        $eventStartTimeUTC = new DateTime($eventStartTime, new DateTimeZone('Asia/Kolkata')); // Convert IST to UTC
-        $eventEndTimeUTC = clone $eventStartTimeUTC;
-        $eventEndTimeUTC->add(new DateInterval("PT{$eventDuration}M"));
+        if ($eventStartTime && $eventDuration !== null) {
+            $eventStartTimeUTC = new DateTime($eventStartTime, new DateTimeZone('Asia/Kolkata')); // Convert IST to UTC
+            $eventEndTimeUTC = clone $eventStartTimeUTC;
+            $eventEndTimeUTC->add(new DateInterval("PT{$eventDuration}M"));
 
-        $eventStartTimeStr = $eventStartTimeUTC->format('Y-m-d H:i:s');
-        $eventEndTimeStr = $eventEndTimeUTC->format('Y-m-d H:i:s');
+            $eventStartTimeStr = $eventStartTimeUTC->format('Y-m-d H:i:s');
+            $eventEndTimeStr = $eventEndTimeUTC->format('Y-m-d H:i:s');
 
-        $eventStartUnix = $eventStartTimeUTC->getTimestamp();
-        $eventEndUnix = $eventEndTimeUTC->getTimestamp();
+            $eventStartUnix = $eventStartTimeUTC->getTimestamp();
+            $eventEndUnix = $eventEndTimeUTC->getTimestamp();
 
-        $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
-        if ($distance <= $geofenceRadius && $currentTimeUnix >= $eventStartUnix && $currentTimeUnix <= $eventEndUnix) {
-            $isWithinGeofence = true;
-            break;
+            $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
+            if ($distance <= $geofenceRadius && $currentTimeUnix >= $eventStartUnix && $currentTimeUnix <= $eventEndUnix) {
+                $isWithinGeofence = true;
+                break;
+            }
         }
     }
 
@@ -55,10 +57,10 @@ if ($latitude && $longitude && $name && $email) {
 
     if ($isWithinGeofence) {
         // Calculate the time until the final registration link appears
-        $finalRegistrationAvailableTime = new DateTime("now", new DateTimeZone('UTC'));
-        $finalRegistrationAvailableTime->add(new DateInterval("PT" . $eventDuration . "M"));
+        $finalRegistrationAvailableTime = clone $currentTime;
+        $finalRegistrationAvailableTime->add(new DateInterval("PT{$eventDuration}M"));
 
-        $interval = $finalRegistrationAvailableTime->diff(new DateTime("now", new DateTimeZone('UTC')));
+        $interval = $finalRegistrationAvailableTime->diff($currentTime);
         $remainingTime = $interval->format('%h hours %i minutes %s seconds');
 
         echo "Registration successful! Final registration link will be available in $remainingTime.";
