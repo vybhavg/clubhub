@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        #map {
-            height: 400px;
-            width: 100%;
+        .form-container {
+            margin: 50px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
         }
         .hidden {
             display: none;
@@ -16,46 +18,41 @@
     </style>
 </head>
 <body>
-    <h2>Event Registration</h2>
-    <div id="map"></div>
-    <div id="registration" class="hidden">
-        <h3>Register for Event</h3>
-        <form id="registrationForm" action="submit_registration.php" method="POST">
-            <input type="hidden" id="event_id" name="event_id">
-            <input type="hidden" id="student_id" name="student_id" value="<!-- Your PHP Code to Inject Student ID -->">
-            <button type="submit">Register</button>
-        </form>
+    <div class="form-container">
+        <h2>Event Registration</h2>
+        <div id="registration">
+            <h3>Register for Event</h3>
+            <form id="registrationForm" action="submit_registration.php" method="POST">
+                <input type="hidden" id="event_id" name="event_id" value="<!-- Your PHP Code to Inject Event ID -->">
+                <input type="hidden" id="student_id" name="student_id" value="<!-- Your PHP Code to Inject Student ID -->">
+                <button type="submit">Register</button>
+            </form>
+        </div>
+        <div id="event-link" class="hidden">
+            <p>Event registration link: <a href="<!-- Your Link Here -->">Register Here</a></p>
+        </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             fetch('get_event_details.php') // Fetch event details from server
                 .then(response => response.json())
                 .then(data => {
-                    const eventLocation = [data.latitude, data.longitude];
                     const eventDuration = data.duration * 60 * 1000; // Convert minutes to milliseconds
-
-                    const map = L.map('map').setView(eventLocation, 15);
-
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(map);
-
-                    const marker = L.marker(eventLocation, { draggable: false }).addTo(map);
-
                     const startTime = Date.now();
-
+                    
                     if (navigator.geolocation) {
                         navigator.geolocation.watchPosition(
                             position => {
                                 const userLocation = [position.coords.latitude, position.coords.longitude];
-
+                                const eventLocation = [data.latitude, data.longitude];
+                                
                                 const distance = getDistance(userLocation, eventLocation);
-
+                                
                                 if (distance < 50) { // 50 meters radius
                                     if (Date.now() - startTime > eventDuration) {
                                         document.getElementById('registration').classList.remove('hidden');
+                                        document.getElementById('event-link').classList.remove('hidden');
                                     }
                                 }
                             },
