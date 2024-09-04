@@ -32,13 +32,13 @@ if ($latitude && $longitude && $name && $email && $event_id) {
     $stmt->fetch();
     $stmt->close();
 
-    // Convert event start time to a timestamp
+    // Convert event start time to local time (IST)
     $event_start_time_utc = new DateTime($event_start_time, new DateTimeZone('UTC'));
-    $event_start_time_local = $event_start_time_utc->setTimezone(new DateTimeZone('Asia/Kolkata')); // Adjust for IST
+    $event_start_time_local = $event_start_time_utc->setTimezone(new DateTimeZone('Asia/Kolkata'));
     $event_start_timestamp = $event_start_time_local->getTimestamp();
 
     // Calculate event end time
-    $event_end_timestamp = $event_start_timestamp + ($event_duration * 60);
+    $event_end_timestamp = $event_start_timestamp + ($event_duration * 60); // duration in minutes converted to seconds
 
     // Check if the student is within the geofence
     $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
@@ -50,15 +50,15 @@ if ($latitude && $longitude && $name && $email && $event_id) {
         $stmt->bind_param("ssddsi", $name, $email, $latitude, $longitude, $_SERVER['REMOTE_ADDR'], $event_id);
 
         if ($stmt->execute()) {
-            // Calculate remaining time for final registration link
+            // Output the event end time for the countdown timer
             $current_timestamp = time();
             $remaining_time = max(0, $event_end_timestamp - $current_timestamp);
 
             $minutes = floor($remaining_time / 60);
             $seconds = $remaining_time % 60;
 
-            echo "Registration successful! Final registration link will be available in $minutes minutes $seconds seconds.";
-            echo "<script>var eventEndTime = $event_end_timestamp; var currentTime = $current_timestamp;</script>";
+            echo "Registration successful! Final registration link will be available in <span id='timer'>$minutes minutes $seconds seconds</span>.";
+            echo "<script>var eventEndTime = $event_end_timestamp * 1000; var currentTime = " . ($current_timestamp * 1000) . ";</script>";
         } else {
             echo "Error: " . $stmt->error;
         }
@@ -81,28 +81,29 @@ $conn->close();
     <title>Registration Status</title>
     <script>
         function updateCountdown() {
-            var eventEndTime = window.eventEndTime; // The end time from PHP
-            var currentTime = window.currentTime; // The current time from PHP
-
-            var countdownElement = document.getElementById('countdown');
+            var eventEndTime = window.eventEndTime; // In milliseconds
+            var currentTime = new Date().getTime(); // Current time in milliseconds
             
             var remainingTime = eventEndTime - currentTime;
-            var minutes = Math.floor(remainingTime / 60);
-            var seconds = remainingTime % 60;
-
-            countdownElement.textContent = `Final registration link will be available in ${minutes} minutes ${seconds} seconds`;
-
+            
             if (remainingTime <= 0) {
-                countdownElement.textContent = "Final registration link is now available!";
+                document.getElementById('timer').textContent = "Final registration link is now available!";
                 clearInterval(timerInterval);
+                return;
             }
+            
+            var minutes = Math.floor(remainingTime / (1000 * 60));
+            var seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+            
+            document.getElementById('timer').textContent = `Final registration link will be available in ${minutes} minutes ${seconds} seconds`;
         }
-
-        var timerInterval = setInterval(updateCountdown, 1000); // Update every second
+        
+        // Update the countdown every second
+        var timerInterval = setInterval(updateCountdown, 1000);
     </script>
 </head>
 <body>
     <h1>Registration Status</h1>
-    <p id="countdown">Calculating time...</p>
+    <p id="status">Calculating time...</p>
 </body>
 </html>
