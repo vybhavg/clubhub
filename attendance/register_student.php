@@ -1,8 +1,8 @@
 <?php
-include('/var/www/html/db_connect.php');
+include('/var/www/html/db_connect.php'); // Include your database connection
 
-// Helper function to calculate the Haversine distance
 function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000) {
+    // Convert from degrees to radians
     $latFrom = deg2rad($latitudeFrom);
     $lonFrom = deg2rad($longitudeFrom);
     $latTo = deg2rad($latitudeTo);
@@ -16,63 +16,54 @@ function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo
     return $angle * $earthRadius;
 }
 
-// Get POST parameters
 $name = $_POST['name'];
 $email = $_POST['email'];
-$event_id = $_POST['event_id'];
 $latitude = $_POST['latitude'];
 $longitude = $_POST['longitude'];
 
-if ($latitude && $longitude && $name && $email && $event_id) {
-    // Get event details
-    $stmt = $conn->prepare("SELECT latitude, longitude, event_start_time, event_duration FROM forms WHERE id = ?");
-    $stmt->bind_param("i", $event_id);
+if ($latitude && $longitude && $name && $email) {
+    $stmt = $conn->prepare("SELECT title, latitude, longitude, event_start_time, event_duration FROM forms");
     $stmt->execute();
-    $stmt->bind_result($eventLatitude, $eventLongitude, $event_start_time, $event_duration);
-    $stmt->fetch();
+    $stmt->bind_result($title, $eventLatitude, $eventLongitude, $eventStartTime, $eventDuration);
+
+    $isWithinGeofence = false;
+    $geofenceRadius = 1000; // Geofence radius in meters
+
+    $currentTime = new DateTime("now", new DateTimeZone('UTC')); // Current server time in UTC
+    $currentTimeStr = $currentTime->format('Y-m-d H:i:s');
+    $currentTimeUnix = $currentTime->getTimestamp();
+
+    while ($stmt->fetch()) {
+        $eventStartTimeUTC = new DateTime($eventStartTime, new DateTimeZone('Asia/Kolkata')); // Convert IST to UTC
+        $eventEndTimeUTC = clone $eventStartTimeUTC;
+        $eventEndTimeUTC->add(new DateInterval("PT{$eventDuration}M"));
+
+        $eventStartTimeStr = $eventStartTimeUTC->format('Y-m-d H:i:s');
+        $eventEndTimeStr = $eventEndTimeUTC->format('Y-m-d H:i:s');
+
+        $eventStartUnix = $eventStartTimeUTC->getTimestamp();
+        $eventEndUnix = $eventEndTimeUTC->getTimestamp();
+
+        $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
+        if ($distance <= $geofenceRadius && $currentTimeUnix >= $eventStartUnix && $currentTimeUnix <= $eventEndUnix) {
+            $isWithinGeofence = true;
+            break;
+        }
+    }
+
     $stmt->close();
 
-    // Convert event start time from IST to UTC
-    $event_start_time_ist = new DateTime($event_start_time, new DateTimeZone('Asia/Kolkata'));
-    $event_start_time_utc = $event_start_time_ist->setTimezone(new DateTimeZone('UTC'));
-    $event_start_timestamp = $event_start_time_utc->getTimestamp();
+    if ($isWithinGeofence) {
+        // Calculate the time until the final registration link appears
+        $finalRegistrationAvailableTime = new DateTime("now", new DateTimeZone('UTC'));
+        $finalRegistrationAvailableTime->add(new DateInterval("PT" . $eventDuration . "M"));
 
-    // Calculate event end time
-    $event_end_timestamp = $event_start_timestamp + ($event_duration * 60); // duration in minutes converted to seconds
+        $interval = $finalRegistrationAvailableTime->diff(new DateTime("now", new DateTimeZone('UTC')));
+        $remainingTime = $interval->format('%h hours %i minutes %s seconds');
 
-    // Get current server time in UTC
-    $current_timestamp = time(); // Current time in UTC
-    
-    // Debug output for server time and event times
-    error_log("Server Time (UTC): " . date('Y-m-d H:i:s', $current_timestamp));
-    error_log("Event Start Time (UTC): " . date('Y-m-d H:i:s', $event_start_timestamp));
-    error_log("Event End Time (UTC): " . date('Y-m-d H:i:s', $event_end_timestamp));
-
-    // Check if the student is within the geofence
-    $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
-    $geofence_radius = 1000; // 1000 meters
-
-    if ($distance <= $geofence_radius) {
-        // Save registration details
-        $stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, ip_address, event_id) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssddsi", $name, $email, $latitude, $longitude, $_SERVER['REMOTE_ADDR'], $event_id);
-
-        if ($stmt->execute()) {
-            // Output the event end time for the countdown timer
-            $remaining_time = max(0, $event_end_timestamp - $current_timestamp);
-
-            $minutes = floor($remaining_time / 60);
-            $seconds = $remaining_time % 60;
-
-            echo "Registration successful! Final registration link will be available in <span id='timer'>$minutes minutes $seconds seconds</span>.";
-            echo "<script>var eventEndTime = $event_end_timestamp * 1000; var currentTime = " . ($current_timestamp * 1000) . ";</script>";
-        } else {
-            echo "Error: " . $stmt->error;
-        }
-
-        $stmt->close();
+        echo "Registration successful! Final registration link will be available in $remainingTime.";
     } else {
-        echo "You are not within the geofenced area for the event.";
+        echo "You are not within the geofenced area for any event.";
     }
 } else {
     echo "Invalid data!";
