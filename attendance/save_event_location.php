@@ -22,3 +22,4 @@ if ($latitude && $longitude && $event_name) {
 
 $conn->close();
 ?>
+ 
