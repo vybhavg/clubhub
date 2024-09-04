@@ -49,7 +49,13 @@ if ($latitude && $longitude && $name && $email && $event_id) {
             $current_time = time();
             $event_start_time = strtotime($event_start_time);
             $event_end_time = $event_start_time + ($event_duration * 60); // Event duration in seconds
-            $time_left = $event_start_time - $current_time;
+
+            // Debugging information
+            error_log("Event Start Time: " . date("Y-m-d H:i:s", $event_start_time));
+            error_log("Event End Time: " . date("Y-m-d H:i:s", $event_end_time));
+            error_log("Current Time: " . date("Y-m-d H:i:s", $current_time));
+
+            $time_left = $event_end_time - $current_time;
             $time_elapsed = $current_time - $event_start_time;
 
             // Prepare data to be sent to the frontend
@@ -78,12 +84,19 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
                 function updateTimer() {
                     var now = new Date().getTime();
-                    var timeLeft = eventStartTime - now;
+                    var timeLeft = eventEndTime - now;
                     var timeElapsed = now - eventStartTime;
 
-                    if (now > eventEndTime.getTime()) {
+                    // Debugging information
+                    console.log('Event Start Time:', eventStartTime);
+                    console.log('Event End Time:', eventEndTime);
+                    console.log('Current Time:', now);
+                    console.log('Time Left:', timeLeft);
+                    console.log('Time Elapsed:', timeElapsed);
+
+                    if (now > eventEndTime) {
                         document.getElementById('countdown-timer').innerText = 'The event has ended.';
-                        if (timeElapsed > (eventEndTime.getTime() - eventStartTime.getTime())) {
+                        if (timeElapsed > (eventEndTime - eventStartTime)) {
                             document.getElementById('final-registration-link').innerHTML = '<a href=\"final_registration.php?student_id=' + registrationId + '&event_id=' + eventId + '\">Complete Final Registration</a>';
                             document.getElementById('final-registration-link').classList.remove('hidden');
                         } else {
