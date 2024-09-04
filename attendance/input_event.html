@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Location Input</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         .form-container {
             margin: 50px;
@@ -35,10 +34,13 @@
         </form>
     </div>
 
+    <!-- Include Leaflet JS and CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <script>
         function initMap() {
-            var defaultLocation = [17.78216974932131, 83.37762370566557]; // Default location (New York)
+            var defaultLocation = [17.782067586690925, 83.37835326649015];
 
             var map = L.map('map').setView(defaultLocation, 13);
 
@@ -54,6 +56,8 @@
 
                 document.getElementById('latitude').value = lat;
                 document.getElementById('longitude').value = lng;
+
+                console.log('Latitude: ' + lat + ', Longitude: ' + lng);
             });
         }
 
