@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         #map {
             height: 400px;
@@ -26,67 +27,63 @@
         </form>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Replace these with your actual event coordinates and duration
-        const eventLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Example coordinates
-        const eventDuration = 60 * 1000; // 1 minute in milliseconds
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('get_event_details.php') // Fetch event details from server
+                .then(response => response.json())
+                .then(data => {
+                    const eventLocation = [data.latitude, data.longitude];
+                    const eventDuration = data.duration * 60 * 1000; // Convert minutes to milliseconds
 
-        let startTime = Date.now();
+                    const map = L.map('map').setView(eventLocation, 15);
 
-        function initMap() {
-            const map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 15,
-                center: eventLocation
-            });
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
 
-            const marker = new google.maps.Marker({
-                position: eventLocation,
-                map: map
-            });
+                    const marker = L.marker(eventLocation, { draggable: false }).addTo(map);
 
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(
-                    position => {
-                        const userLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
+                    const startTime = Date.now();
 
-                        const distance = getDistance(userLocation, eventLocation);
+                    if (navigator.geolocation) {
+                        navigator.geolocation.watchPosition(
+                            position => {
+                                const userLocation = [position.coords.latitude, position.coords.longitude];
 
-                        if (distance < 50) { // 50 meters radius
-                            if (Date.now() - startTime > eventDuration) {
-                                document.getElementById('registration').classList.remove('hidden');
-                            }
-                        }
-                    },
-                    error => {
-                        console.error('Geolocation error:', error);
-                    },
-                    { enableHighAccuracy: true }
-                );
-            } else {
-                console.error('Geolocation not supported');
-            }
-        }
+                                const distance = getDistance(userLocation, eventLocation);
 
-        function getDistance(loc1, loc2) {
-            const R = 6371e3; // meters
-            const φ1 = loc1.lat * Math.PI / 180;
-            const φ2 = loc2.lat * Math.PI / 180;
-            const Δφ = (loc2.lat - loc1.lat) * Math.PI / 180;
-            const Δλ = (loc2.lng - loc1.lng) * Math.PI / 180;
+                                if (distance < 50) { // 50 meters radius
+                                    if (Date.now() - startTime > eventDuration) {
+                                        document.getElementById('registration').classList.remove('hidden');
+                                    }
+                                }
+                            },
+                            error => {
+                                console.error('Geolocation error:', error);
+                            },
+                            { enableHighAccuracy: true }
+                        );
+                    } else {
+                        console.error('Geolocation not supported');
+                    }
 
-            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    function getDistance(loc1, loc2) {
+                        const R = 6371e3; // meters
+                        const φ1 = loc1[0] * Math.PI / 180;
+                        const φ2 = loc2[0] * Math.PI / 180;
+                        const Δφ = (loc2[0] - loc1[0]) * Math.PI / 180;
+                        const Δλ = (loc2[1] - loc1[1]) * Math.PI / 180;
 
-            return R * c;
-        }
+                        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                            Math.cos(φ1) * Math.cos(φ2) *
+                            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        initMap();
+                        return R * c;
+                    }
+                });
+        });
     </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
 </body>
 </html>
