@@ -31,13 +31,17 @@ if ($latitude && $longitude && $name && $email && $event_id) {
     $stmt->fetch();
     $stmt->close();
 
-    $isWithinGeofence = false;
-    $geofenceRadius = 1000; // Geofence radius in meters
-    $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
+    $event_start_time_utc = new DateTime($event_start_time, new DateTimeZone('UTC'));
+    $event_end_time = $event_start_time_utc->getTimestamp() + ($event_duration * 60); // Event duration in seconds
+    $current_time = time();
 
-    if ($distance <= $geofenceRadius) {
-        $isWithinGeofence = true;
-    }
+    // Debugging information
+    error_log("Event Start Time: " . $event_start_time_utc->format('Y-m-d H:i:s'));
+    error_log("Event End Time: " . date("Y-m-d H:i:s", $event_end_time));
+    error_log("Current Time: " . date("Y-m-d H:i:s", $current_time));
+
+    // Check if the student is within geofence
+    $isWithinGeofence = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude) <= 1000;
 
     if ($isWithinGeofence) {
         // Save the registration details to the database
@@ -46,92 +50,24 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
         if ($stmt->execute()) {
             $registration_id = $stmt->insert_id;
-            $current_time = time();
-            $event_start_time = strtotime($event_start_time);
-            $event_end_time = $event_start_time + ($event_duration * 60); // Event duration in seconds
+            
+            // Calculate remaining time for final registration link
+            $remaining_time = $event_end_time - $current_time;
+            $remaining_minutes = floor($remaining_time / 60);
+            $remaining_seconds = $remaining_time % 60;
 
-            // Debugging information
-            error_log("Event Start Time: " . date("Y-m-d H:i:s", $event_start_time));
-            error_log("Event End Time: " . date("Y-m-d H:i:s", $event_end_time));
-            error_log("Current Time: " . date("Y-m-d H:i:s", $current_time));
-
-            $time_left = $event_end_time - $current_time;
-            $time_elapsed = $current_time - $event_start_time;
-
-            // Prepare data to be sent to the frontend
-            $data = [
-                'event_start_time' => $event_start_time * 1000, // Convert to milliseconds
-                'event_end_time' => $event_end_time * 1000, // Convert to milliseconds
-                'registration_id' => $registration_id,
-                'event_id' => $event_id,
-                'current_time' => $current_time * 1000 // Convert to milliseconds
-            ];
-
-            // Output JSON data for the frontend
-            echo "<div id='registration-status'>";
-            echo "<p>Registration successful!</p>";
-            echo "<p id='countdown-timer'></p>";
-            echo "<p id='final-registration-link' class='hidden'></p>";
-            echo "</div>";
-
-            echo "<script>
-                var data = " . json_encode($data) . ";
-                var eventStartTime = new Date(data.event_start_time);
-                var eventEndTime = new Date(data.event_end_time);
-                var registrationId = data.registration_id;
-                var eventId = data.event_id;
-                var currentTime = new Date(data.current_time);
-
-                function updateTimer() {
-                    var now = new Date().getTime();
-                    var timeLeft = eventEndTime - now;
-                    var timeElapsed = now - eventStartTime;
-
-                    // Debugging information
-                    console.log('Event Start Time:', eventStartTime);
-                    console.log('Event End Time:', eventEndTime);
-                    console.log('Current Time:', now);
-                    console.log('Time Left:', timeLeft);
-                    console.log('Time Elapsed:', timeElapsed);
-
-                    if (now > eventEndTime) {
-                        document.getElementById('countdown-timer').innerText = 'The event has ended.';
-                        if (timeElapsed > (eventEndTime - eventStartTime)) {
-                            document.getElementById('final-registration-link').innerHTML = '<a href=\"final_registration.php?student_id=' + registrationId + '&event_id=' + eventId + '\">Complete Final Registration</a>';
-                            document.getElementById('final-registration-link').classList.remove('hidden');
-                        } else {
-                            document.getElementById('final-registration-link').innerHTML = '';
-                            document.getElementById('final-registration-link').classList.add('hidden');
-                        }
-                    } else {
-                        document.getElementById('countdown-timer').innerText = 'Final registration link will be available in ' + formatTime(timeLeft);
-                        document.getElementById('final-registration-link').innerHTML = '';
-                        document.getElementById('final-registration-link').classList.add('hidden');
-                    }
-                }
-
-                function formatTime(ms) {
-                    var seconds = Math.floor(ms / 1000);
-                    var minutes = Math.floor(seconds / 60);
-                    var hours = Math.floor(minutes / 60);
-                    var days = Math.floor(hours / 24);
-                    hours = hours % 24;
-                    minutes = minutes % 60;
-                    seconds = seconds % 60;
-                    return (days > 0 ? days + 'd ' : '') + (hours > 0 ? hours + 'h ' : '') + (minutes > 0 ? minutes + 'm ' : '') + seconds + 's';
-                }
-
-                setInterval(updateTimer, 1000);
-                updateTimer();
-            </script>";
-
+            if ($remaining_time > 0) {
+                echo "Final registration link will be available in " . $remaining_minutes . "m " . $remaining_seconds . "s.";
+            } else {
+                echo "The event has ended.";
+            }
         } else {
             echo "Error: " . $stmt->error;
         }
 
         $stmt->close();
     } else {
-        echo "You are not within the geofenced area for this event.";
+        echo "You are not within the geofenced area for the event.";
     }
 } else {
     echo "Invalid data!";
