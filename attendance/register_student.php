@@ -9,7 +9,7 @@ function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo
     $lonTo = deg2rad($longitudeTo);
 
     $latDelta = $latTo - $latFrom;
-    $lonDelta = $lonTo - $longitudeFrom;
+    $lonDelta = $lonTo - $lonFrom;
 
     $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
       cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
@@ -24,10 +24,10 @@ $longitude = $_POST['longitude'];
 
 if ($latitude && $longitude && $name && $email && $event_id) {
     // Get event details
-    $stmt = $conn->prepare("SELECT latitude, longitude, start_time, duration FROM forms WHERE id = ?");
+    $stmt = $conn->prepare("SELECT latitude, longitude, event_start_time, event_duration FROM forms WHERE id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
-    $stmt->bind_result($eventLatitude, $eventLongitude, $start_time, $duration);
+    $stmt->bind_result($eventLatitude, $eventLongitude, $event_start_time, $event_duration);
     $stmt->fetch();
     $stmt->close();
 
@@ -49,12 +49,12 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
             // Timer Logic
             $current_time = time();
-            $event_start_time = strtotime($start_time);
-            $event_end_time = $event_start_time + ($duration * 60);
+            $event_start_time = strtotime($event_start_time);
+            $event_end_time = $event_start_time + ($event_duration * 60); // Event duration in seconds
             $time_left = $event_start_time - $current_time;
 
             if ($current_time >= $event_start_time && $current_time <= $event_end_time) {
-                echo "<p>The final registration link will be available now:</p>";
+                echo "<p>The final registration link is available now:</p>";
                 echo "<a href='final_registration.php?student_id={$stmt->insert_id}&event_id=$event_id'>Complete Final Registration</a>";
             } elseif ($time_left > 0) {
                 echo "<p>The final registration link will be available in " . gmdate("H:i:s", $time_left) . "</p>";
