@@ -21,37 +21,46 @@
     <div class="form-container">
         <h2>Event Registration</h2>
         <form id="registrationForm" action="register_student.php" method="POST">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required><br><br>
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="event_id">Select Event:</label>
+                <select id="event_id" name="event_id" required>
+                    <?php
+                    include('/var/www/html/db_connect.php');
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required><br><br>
+                    $stmt = $conn->prepare("SELECT id, title FROM forms");
+                    $stmt->execute();
+                    $stmt->bind_result($id, $title);
 
-            <label for="event_id">Select Event:</label>
-            <select id="event_id" name="event_id" required>
-                <!-- Event options will be populated by PHP -->
-                <?php
-                include('/var/www/html/db_connect.php');
-                $result = $conn->query("SELECT id, title FROM events");
+                    while ($stmt->fetch()) {
+                        echo "<option value='{$id}'>{$title}</option>";
+                    }
 
-                while ($row = $result->fetch_assoc()) {
-                    echo "<option value='{$row['id']}'>{$row['title']}</option>";
-                }
-
-                $result->close();
-                $conn->close();
-                ?>
-            </select><br><br>
-
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-
+                    $stmt->close();
+                    $conn->close();
+                    ?>
+                </select>
+            </div>
+            <div>
+                <label for="latitude">Latitude:</label>
+                <input type="text" id="latitude" name="latitude" required>
+            </div>
+            <div>
+                <label for="longitude">Longitude:</label>
+                <input type="text" id="longitude" name="longitude" required>
+            </div>
             <button type="submit">Register</button>
         </form>
+        <div id="event-link" class="hidden">
+            <p>Event registration link: <a href="<!-- Your Link Here -->">Register Here</a></p>
+        </div>
     </div>
-
-    <script>
-        // Optional: You can include a map or other JavaScript for geolocation here
-    </script>
 </body>
 </html>
