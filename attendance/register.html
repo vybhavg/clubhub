@@ -23,8 +23,10 @@
         <div id="registration">
             <h3>Register for Event</h3>
             <form id="registrationForm" action="submit_registration.php" method="POST">
-                <input type="hidden" id="event_id" name="event_id" value="<!-- Your PHP Code to Inject Event ID -->">
-                <input type="hidden" id="student_id" name="student_id" value="<!-- Your PHP Code to Inject Student ID -->">
+                <input type="hidden" id="event_id" name="event_id" value="<?php echo $event_id; ?>">
+                <input type="hidden" id="student_id" name="student_id" value="<?php echo $student_id; ?>">
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
                 <button type="submit">Register</button>
             </form>
         </div>
@@ -38,22 +40,34 @@
             fetch('get_event_details.php') // Fetch event details from server
                 .then(response => response.json())
                 .then(data => {
-                    const eventDuration = data.duration * 60 * 1000; // Convert minutes to milliseconds
-                    const startTime = Date.now();
+                    const eventDuration = data.event_duration * 60 * 1000; // Convert minutes to milliseconds
+                    const eventStartTime = new Date(data.event_start_time).getTime();
+                    const eventEndTime = eventStartTime + eventDuration;
                     
                     if (navigator.geolocation) {
                         navigator.geolocation.watchPosition(
                             position => {
-                                const userLocation = [position.coords.latitude, position.coords.longitude];
-                                const eventLocation = [data.latitude, data.longitude];
-                                
-                                const distance = getDistance(userLocation, eventLocation);
-                                
-                                if (distance < 50) { // 50 meters radius
-                                    if (Date.now() - startTime > eventDuration) {
+                                const userLatitude = position.coords.latitude;
+                                const userLongitude = position.coords.longitude;
+
+                                document.getElementById('latitude').value = userLatitude;
+                                document.getElementById('longitude').value = userLongitude;
+
+                                const distance = getDistance([userLatitude, userLongitude], [data.latitude, data.longitude]);
+
+                                if (distance <= 50) { // 50 meters radius
+                                    const currentTime = Date.now();
+                                    if (currentTime >= eventStartTime && currentTime <= eventEndTime) {
                                         document.getElementById('registration').classList.remove('hidden');
+                                        document.getElementById('event-link').classList.add('hidden');
+                                    } else {
+                                        document.getElementById('registration').classList.add('hidden');
                                         document.getElementById('event-link').classList.remove('hidden');
                                     }
+                                } else {
+                                    document.getElementById('registration').classList.add('hidden');
+                                    document.getElementById('event-link').classList.add('hidden');
+                                    alert("You are not within the geofenced area for this event.");
                                 }
                             },
                             error => {
@@ -79,6 +93,9 @@
 
                         return R * c;
                     }
+                })
+                .catch(error => {
+                    console.error('Error fetching event details:', error);
                 });
         });
     </script>
