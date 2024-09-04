@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Location Input</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         .form-container {
             margin: 50px;
@@ -34,28 +35,29 @@
         </form>
     </div>
 
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         function initMap() {
-            var defaultLocation = {lat: 40.7128, lng: -74.0060}; // Default location (New York)
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 10,
-                center: defaultLocation
-            });
+            var defaultLocation = [40.7128, -74.0060]; // Default location (New York)
 
-            var marker = new google.maps.Marker({
-                position: defaultLocation,
-                map: map,
-                draggable: true // Allow marker to be dragged
-            });
+            var map = L.map('map').setView(defaultLocation, 13);
 
-            google.maps.event.addListener(marker, 'dragend', function(evt){
-                document.getElementById('latitude').value = evt.latLng.lat().toFixed(8);
-                document.getElementById('longitude').value = evt.latLng.lng().toFixed(8);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker = L.marker(defaultLocation, {draggable: true}).addTo(map);
+
+            marker.on('dragend', function(e) {
+                var lat = e.latlng.lat.toFixed(8);
+                var lng = e.latlng.lng.toFixed(8);
+
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
             });
         }
-    </script>
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+
+        window.onload = initMap;
     </script>
 </body>
 </html>
