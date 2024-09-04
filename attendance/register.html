@@ -12,91 +12,54 @@
             border-radius: 5px;
             width: 300px;
         }
-        .hidden {
-            display: none;
-        }
     </style>
 </head>
 <body>
     <div class="form-container">
         <h2>Event Registration</h2>
-        <div id="registration">
-            <h3>Register for Event</h3>
-            <form id="registrationForm" action="submit_registration.php" method="POST">
-                <input type="hidden" id="event_id" name="event_id" value="<?php echo $event_id; ?>">
-                <input type="hidden" id="student_id" name="student_id" value="<?php echo $student_id; ?>">
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
-                <button type="submit">Register</button>
-            </form>
-        </div>
-        <div id="event-link" class="hidden">
-            <p>Event registration link: <a href="<!-- Your Link Here -->">Register Here</a></p>
-        </div>
+        <form id="registrationForm" action="register_student.php" method="POST">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" required><br><br>
+
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br><br>
+
+            <label for="event_id">Select Event:</label><br>
+            <select id="event_id" name="event_id" required>
+                <!-- PHP code to populate event options -->
+                <?php
+                include('/var/www/html/db_connect.php');
+                $stmt = $conn->prepare("SELECT id, title FROM events");
+                $stmt->execute();
+                $stmt->bind_result($id, $title);
+                while ($stmt->fetch()) {
+                    echo "<option value=\"$id\">$title</option>";
+                }
+                $stmt->close();
+                $conn->close();
+                ?>
+            </select><br><br>
+
+            <label for="latitude">Latitude:</label><br>
+            <input type="text" id="latitude" name="latitude" required><br><br>
+
+            <label for="longitude">Longitude:</label><br>
+            <input type="text" id="longitude" name="longitude" required><br><br>
+
+            <button type="submit">Register</button>
+        </form>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            fetch('get_event_details.php') // Fetch event details from server
-                .then(response => response.json())
-                .then(data => {
-                    const eventDuration = data.event_duration * 60 * 1000; // Convert minutes to milliseconds
-                    const eventStartTime = new Date(data.event_start_time).getTime();
-                    const eventEndTime = eventStartTime + eventDuration;
-                    
-                    if (navigator.geolocation) {
-                        navigator.geolocation.watchPosition(
-                            position => {
-                                const userLatitude = position.coords.latitude;
-                                const userLongitude = position.coords.longitude;
-
-                                document.getElementById('latitude').value = userLatitude;
-                                document.getElementById('longitude').value = userLongitude;
-
-                                const distance = getDistance([userLatitude, userLongitude], [data.latitude, data.longitude]);
-
-                                if (distance <= 50) { // 50 meters radius
-                                    const currentTime = Date.now();
-                                    if (currentTime >= eventStartTime && currentTime <= eventEndTime) {
-                                        document.getElementById('registration').classList.remove('hidden');
-                                        document.getElementById('event-link').classList.add('hidden');
-                                    } else {
-                                        document.getElementById('registration').classList.add('hidden');
-                                        document.getElementById('event-link').classList.remove('hidden');
-                                    }
-                                } else {
-                                    document.getElementById('registration').classList.add('hidden');
-                                    document.getElementById('event-link').classList.add('hidden');
-                                    alert("You are not within the geofenced area for this event.");
-                                }
-                            },
-                            error => {
-                                console.error('Geolocation error:', error);
-                            },
-                            { enableHighAccuracy: true }
-                        );
-                    } else {
-                        console.error('Geolocation not supported');
-                    }
-
-                    function getDistance(loc1, loc2) {
-                        const R = 6371e3; // meters
-                        const φ1 = loc1[0] * Math.PI / 180;
-                        const φ2 = loc2[0] * Math.PI / 180;
-                        const Δφ = (loc2[0] - loc1[0]) * Math.PI / 180;
-                        const Δλ = (loc2[1] - loc1[1]) * Math.PI / 180;
-
-                        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                            Math.cos(φ1) * Math.cos(φ2) *
-                            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-                        return R * c;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching event details:', error);
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
                 });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
         });
     </script>
 </body>
