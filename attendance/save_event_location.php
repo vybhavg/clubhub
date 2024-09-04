@@ -1,25 +1,34 @@
 <?php
 include('/var/www/html/db_connect.php'); // Include your database connection
 
-$event_name = $_POST['event_name'];
-$latitude = $_POST['latitude'];
-$longitude = $_POST['longitude'];
+// Debugging: Check if the POST data is being received correctly
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $event_name = isset($_POST['event_name']) ? $_POST['event_name'] : '';
+    $latitude = isset($_POST['latitude']) ? $_POST['latitude'] : '';
+    $longitude = isset($_POST['longitude']) ? $_POST['longitude'] : '';
 
-if ($latitude && $longitude && $event_name) {
-    $stmt = $conn->prepare("INSERT INTO forms (title, latitude, longitude) VALUES (?, ?, ?)");
-    $stmt->bind_param("sdd", $event_name, $latitude, $longitude);
+    // Debugging: Print received data
+    echo "<pre>";
+    print_r($_POST);
+    echo "</pre>";
 
-    if ($stmt->execute()) {
-        echo "Event location saved successfully!";
+    if ($latitude && $longitude && $event_name) {
+        $stmt = $conn->prepare("INSERT INTO forms (title, latitude, longitude) VALUES (?, ?, ?)");
+        $stmt->bind_param("sdd", $event_name, $latitude, $longitude);
+
+        if ($stmt->execute()) {
+            echo "Event location saved successfully!";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+
+        $stmt->close();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Invalid data!";
     }
 
-    $stmt->close();
+    $conn->close();
 } else {
-    echo "Invalid data!";
+    echo "Invalid request method!";
 }
-
-$conn->close();
 ?>
- 
