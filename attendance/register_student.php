@@ -9,7 +9,7 @@ function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo
     $lonTo = deg2rad($longitudeTo);
 
     $latDelta = $latTo - $latFrom;
-    $lonDelta = $lonTo - $lonFrom;
+    $lonDelta = $lonTo - $longitudeFrom;
 
     $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
       cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
@@ -18,27 +18,26 @@ function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo
 
 $name = $_POST['name'];
 $email = $_POST['email'];
+$event_id = $_POST['event_id'];
 $latitude = $_POST['latitude'];
 $longitude = $_POST['longitude'];
-$event_id = $_POST['event_id'];
 
 if ($latitude && $longitude && $name && $email && $event_id) {
-    $stmt = $conn->prepare("SELECT latitude, longitude FROM forms WHERE id = ?");
+    // Get event details
+    $stmt = $conn->prepare("SELECT latitude, longitude, start_time, duration FROM forms WHERE id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
-    $stmt->bind_result($eventLatitude, $eventLongitude);
+    $stmt->bind_result($eventLatitude, $eventLongitude, $start_time, $duration);
+    $stmt->fetch();
+    $stmt->close();
 
     $isWithinGeofence = false;
     $geofenceRadius = 1000; // Geofence radius in meters
+    $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
 
-    if ($stmt->fetch()) {
-        $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
-        if ($distance <= $geofenceRadius) {
-            $isWithinGeofence = true;
-        }
+    if ($distance <= $geofenceRadius) {
+        $isWithinGeofence = true;
     }
-
-    $stmt->close();
 
     if ($isWithinGeofence) {
         // Save the registration details to the database
@@ -47,6 +46,21 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
         if ($stmt->execute()) {
             echo "Registration successful!";
+
+            // Timer Logic
+            $current_time = time();
+            $event_start_time = strtotime($start_time);
+            $event_end_time = $event_start_time + ($duration * 60);
+            $time_left = $event_start_time - $current_time;
+
+            if ($current_time >= $event_start_time && $current_time <= $event_end_time) {
+                echo "<p>The final registration link will be available now:</p>";
+                echo "<a href='final_registration.php?student_id={$stmt->insert_id}&event_id=$event_id'>Complete Final Registration</a>";
+            } elseif ($time_left > 0) {
+                echo "<p>The final registration link will be available in " . gmdate("H:i:s", $time_left) . "</p>";
+            } else {
+                echo "<p>The event has ended.</p>";
+            }
         } else {
             echo "Error: " . $stmt->error;
         }
