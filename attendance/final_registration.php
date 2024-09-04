@@ -10,7 +10,7 @@ if (!$event_id || !$student_id) {
 }
 
 // Fetch event details from the database
-$stmt = $conn->prepare("SELECT title, latitude, longitude, start_time, duration FROM events WHERE id = ?");
+$stmt = $conn->prepare("SELECT title, latitude, longitude, start_time, duration FROM forms WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
 $stmt->bind_result($title, $event_lat, $event_lng, $start_time, $duration);
@@ -30,3 +30,4 @@ if ($current_time >= strtotime($start_time) && $current_time <= $event_end_time)
 
 $conn->close();
 ?>
+
