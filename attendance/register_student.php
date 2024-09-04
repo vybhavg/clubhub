@@ -20,20 +20,21 @@ $name = $_POST['name'];
 $email = $_POST['email'];
 $latitude = $_POST['latitude'];
 $longitude = $_POST['longitude'];
+$event_id = $_POST['event_id'];
 
-if ($latitude && $longitude && $name && $email) {
-    $stmt = $conn->prepare("SELECT latitude, longitude FROM forms");
+if ($latitude && $longitude && $name && $email && $event_id) {
+    $stmt = $conn->prepare("SELECT latitude, longitude FROM forms WHERE id = ?");
+    $stmt->bind_param("i", $event_id);
     $stmt->execute();
     $stmt->bind_result($eventLatitude, $eventLongitude);
 
     $isWithinGeofence = false;
     $geofenceRadius = 1000; // Geofence radius in meters
 
-    while ($stmt->fetch()) {
+    if ($stmt->fetch()) {
         $distance = haversineGreatCircleDistance($latitude, $longitude, $eventLatitude, $eventLongitude);
         if ($distance <= $geofenceRadius) {
             $isWithinGeofence = true;
-            break;
         }
     }
 
@@ -41,8 +42,8 @@ if ($latitude && $longitude && $name && $email) {
 
     if ($isWithinGeofence) {
         // Save the registration details to the database
-        $stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, ip_address) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssdds", $name, $email, $latitude, $longitude, $_SERVER['REMOTE_ADDR']);
+        $stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, ip_address, event_id) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssddsi", $name, $email, $latitude, $longitude, $_SERVER['REMOTE_ADDR'], $event_id);
 
         if ($stmt->execute()) {
             echo "Registration successful!";
@@ -52,7 +53,7 @@ if ($latitude && $longitude && $name && $email) {
 
         $stmt->close();
     } else {
-        echo "You are not within the geofenced area for any event.";
+        echo "You are not within the geofenced area for this event.";
     }
 } else {
     echo "Invalid data!";
