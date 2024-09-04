@@ -31,6 +31,7 @@
             <input type="hidden" id="longitude" name="longitude">
 
             <button type="submit">Save Location</button>
+            <button type="button" onclick="alert('Latitude: ' + document.getElementById('latitude').value + ', Longitude: ' + document.getElementById('longitude').value)">Check Coordinates</button>
         </form>
     </div>
 
@@ -51,13 +52,14 @@
             var marker = L.marker(defaultLocation, {draggable: true}).addTo(map);
 
             marker.on('dragend', function(e) {
-                var lat = e.latlng.lat.toFixed(8);
-                var lng = e.latlng.lng.toFixed(8);
+                var latlng = e.target.getLatLng(); // Correct way to get latlng from the marker
+                var lat = latlng.lat.toFixed(8);
+                var lng = latlng.lng.toFixed(8);
+
+                console.log('Latitude: ' + lat + ', Longitude: ' + lng);
 
                 document.getElementById('latitude').value = lat;
                 document.getElementById('longitude').value = lng;
-
-                console.log('Latitude: ' + lat + ', Longitude: ' + lng);
             });
         }
 
