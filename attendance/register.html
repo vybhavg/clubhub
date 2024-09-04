@@ -12,55 +12,46 @@
             border-radius: 5px;
             width: 300px;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="form-container">
         <h2>Event Registration</h2>
         <form id="registrationForm" action="register_student.php" method="POST">
-            <label for="name">Name:</label><br>
+            <label for="name">Name:</label>
             <input type="text" id="name" name="name" required><br><br>
 
-            <label for="email">Email:</label><br>
+            <label for="email">Email:</label>
             <input type="email" id="email" name="email" required><br><br>
 
-            <label for="event_id">Select Event:</label><br>
+            <label for="event_id">Select Event:</label>
             <select id="event_id" name="event_id" required>
-                <!-- PHP code to populate event options -->
+                <!-- Event options will be populated by PHP -->
                 <?php
                 include('/var/www/html/db_connect.php');
-                $stmt = $conn->prepare("SELECT id, title FROM events");
-                $stmt->execute();
-                $stmt->bind_result($id, $title);
-                while ($stmt->fetch()) {
-                    echo "<option value=\"$id\">$title</option>";
+                $result = $conn->query("SELECT id, title FROM events");
+
+                while ($row = $result->fetch_assoc()) {
+                    echo "<option value='{$row['id']}'>{$row['title']}</option>";
                 }
-                $stmt->close();
+
+                $result->close();
                 $conn->close();
                 ?>
             </select><br><br>
 
-            <label for="latitude">Latitude:</label><br>
-            <input type="text" id="latitude" name="latitude" required><br><br>
-
-            <label for="longitude">Longitude:</label><br>
-            <input type="text" id="longitude" name="longitude" required><br><br>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
 
             <button type="submit">Register</button>
         </form>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    document.getElementById('latitude').value = position.coords.latitude;
-                    document.getElementById('longitude').value = position.coords.longitude;
-                });
-            } else {
-                alert('Geolocation is not supported by this browser.');
-            }
-        });
+        // Optional: You can include a map or other JavaScript for geolocation here
     </script>
 </body>
 </html>
