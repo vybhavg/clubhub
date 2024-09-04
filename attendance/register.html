@@ -3,70 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Registration</title>
+    <title>Event Registration</title>
     <style>
-        .form-container {
-            margin: 50px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 300px;
+        #map {
+            height: 400px;
+            width: 100%;
         }
-        .error {
-            color: red;
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Student Registration</h2>
-        <form id="registrationForm" action="register_student.php" method="POST">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required><br><br>
-
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required><br><br>
-
-            <button type="button" onclick="getLocation()">Check Location & Register</button>
-
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-
-            <p id="locationStatus" class="error"></p>
+    <h2>Event Registration</h2>
+    <div id="map"></div>
+    <div id="registration" class="hidden">
+        <h3>Register for Event</h3>
+        <form id="registrationForm" action="submit_registration.php" method="POST">
+            <input type="hidden" id="event_id" name="event_id">
+            <input type="hidden" id="student_id" name="student_id" value="<!-- Your PHP Code to Inject Student ID -->">
+            <button type="submit">Register</button>
         </form>
     </div>
 
     <script>
-        function getLocation() {
+        // Replace these with your actual event coordinates and duration
+        const eventLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Example coordinates
+        const eventDuration = 60 * 1000; // 1 minute in milliseconds
+
+        let startTime = Date.now();
+
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: eventLocation
+            });
+
+            const marker = new google.maps.Marker({
+                position: eventLocation,
+                map: map
+            });
+
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
+                navigator.geolocation.watchPosition(
+                    position => {
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+
+                        const distance = getDistance(userLocation, eventLocation);
+
+                        if (distance < 50) { // 50 meters radius
+                            if (Date.now() - startTime > eventDuration) {
+                                document.getElementById('registration').classList.remove('hidden');
+                            }
+                        }
+                    },
+                    error => {
+                        console.error('Geolocation error:', error);
+                    },
+                    { enableHighAccuracy: true }
+                );
             } else {
-                document.getElementById('locationStatus').innerHTML = "Geolocation is not supported by this browser.";
+                console.error('Geolocation not supported');
             }
         }
 
-        function showPosition(position) {
-            document.getElementById('latitude').value = position.coords.latitude;
-            document.getElementById('longitude').value = position.coords.longitude;
-            document.getElementById('registrationForm').submit();
+        function getDistance(loc1, loc2) {
+            const R = 6371e3; // meters
+            const φ1 = loc1.lat * Math.PI / 180;
+            const φ2 = loc2.lat * Math.PI / 180;
+            const Δφ = (loc2.lat - loc1.lat) * Math.PI / 180;
+            const Δλ = (loc2.lng - loc1.lng) * Math.PI / 180;
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c;
         }
 
-        function showError(error) {
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    document.getElementById('locationStatus').innerHTML = "User denied the request for Geolocation.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    document.getElementById('locationStatus').innerHTML = "Location information is unavailable.";
-                    break;
-                case error.TIMEOUT:
-                    document.getElementById('locationStatus').innerHTML = "The request to get user location timed out.";
-                    break;
-                case error.UNKNOWN_ERROR:
-                    document.getElementById('locationStatus').innerHTML = "An unknown error occurred.";
-                    break;
-            }
-        }
+        initMap();
     </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
 </body>
 </html>
