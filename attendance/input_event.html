@@ -3,15 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Location Input</title>
+    <title>Input Event Location</title>
     <style>
-        .form-container {
-            margin: 50px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 300px;
-        }
         #map {
             height: 400px;
             width: 100%;
@@ -19,48 +12,37 @@
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Input Event Location</h2>
-        <form id="locationForm" action="save_event_location.php" method="POST">
-            <label for="event_name">Event Name:</label>
-            <input type="text" id="event_name" name="event_name" required><br><br>
+    <h2>Input Event Location</h2>
+    <form id="locationForm" action="save_event_location.php" method="POST">
+        <label for="event_name">Event Name:</label>
+        <input type="text" id="event_name" name="event_name" required><br><br>
 
-            <label for="event_start_time">Event Start Time:</label>
-            <input type="datetime-local" id="event_start_time" name="event_start_time" required><br><br>
+        <label for="event_duration">Event Duration (minutes):</label>
+        <input type="number" id="event_duration" name="event_duration" required><br><br>
 
-            <label for="event_duration">Event Duration (minutes):</label>
-            <input type="number" id="event_duration" name="event_duration" required><br><br>
+        <div id="map"></div><br>
 
-            <div id="map"></div><br>
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
 
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
+        <button type="submit">Save Location</button>
+    </form>
 
-            <button type="submit">Save Location</button>
-        </form>
-    </div>
-
-    <!-- Include Leaflet JS and CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         function initMap() {
-            var defaultLocation = [17.782067586690925, 83.37835326649015];
-
-            var map = L.map('map').setView(defaultLocation, 13);
+            var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
+            var map = L.map('map').setView(defaultLocation, 15);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            var marker = L.marker(defaultLocation, {draggable: true}).addTo(map);
+            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
 
-            marker.on('dragend', function(e) {
-                var latlng = e.target.getLatLng();
-                var lat = latlng.lat.toFixed(8);
-                var lng = latlng.lng.toFixed(8);
-
+            marker.on('dragend', function (e) {
+                var lat = e.target.getLatLng().lat.toFixed(8);
+                var lng = e.target.getLatLng().lng.toFixed(8);
                 document.getElementById('latitude').value = lat;
                 document.getElementById('longitude').value = lng;
             });
