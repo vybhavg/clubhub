@@ -45,22 +45,65 @@ if ($latitude && $longitude && $name && $email && $event_id) {
         $stmt->bind_param("ssddsi", $name, $email, $latitude, $longitude, $_SERVER['REMOTE_ADDR'], $event_id);
 
         if ($stmt->execute()) {
-            echo "Registration successful!";
-
-            // Timer Logic
+            $registration_id = $stmt->insert_id;
             $current_time = time();
             $event_start_time = strtotime($event_start_time);
             $event_end_time = $event_start_time + ($event_duration * 60); // Event duration in seconds
             $time_left = $event_start_time - $current_time;
 
-            if ($current_time >= $event_start_time && $current_time <= $event_end_time) {
-                echo "<p>The final registration link is available now:</p>";
-                echo "<a href='final_registration.php?student_id={$stmt->insert_id}&event_id=$event_id'>Complete Final Registration</a>";
-            } elseif ($time_left > 0) {
-                echo "<p>The final registration link will be available in " . gmdate("H:i:s", $time_left) . "</p>";
-            } else {
-                echo "<p>The event has ended.</p>";
-            }
+            // Prepare data to be sent to the frontend
+            $data = [
+                'event_start_time' => $event_start_time,
+                'event_end_time' => $event_end_time,
+                'registration_id' => $registration_id,
+                'event_id' => $event_id
+            ];
+
+            // Output JSON data for the frontend
+            echo "<div id='registration-status'>";
+            echo "<p>Registration successful!</p>";
+            echo "<p id='countdown-timer'></p>";
+            echo "<p id='final-registration-link' class='hidden'></p>";
+            echo "</div>";
+
+            echo "<script>
+                var data = " . json_encode($data) . ";
+                var eventStartTime = new Date(data.event_start_time * 1000);
+                var eventEndTime = new Date(data.event_end_time * 1000);
+                var registrationId = data.registration_id;
+                var eventId = data.event_id;
+
+                function updateTimer() {
+                    var now = new Date().getTime();
+                    var timeLeft = eventStartTime - now;
+                    var timePassed = now - eventStartTime;
+                    
+                    if (timeLeft > 0) {
+                        document.getElementById('countdown-timer').innerText = 'Final registration link will be available in ' + formatTime(timeLeft);
+                    } else if (timePassed <= (eventEndTime.getTime() - eventStartTime.getTime())) {
+                        document.getElementById('countdown-timer').innerText = 'Final registration link is available now!';
+                        document.getElementById('final-registration-link').innerHTML = '<a href=\"final_registration.php?student_id=' + registrationId + '&event_id=' + eventId + '\">Complete Final Registration</a>';
+                        document.getElementById('final-registration-link').classList.remove('hidden');
+                    } else {
+                        document.getElementById('countdown-timer').innerText = 'The event has ended.';
+                    }
+                }
+
+                function formatTime(ms) {
+                    var seconds = Math.floor(ms / 1000);
+                    var minutes = Math.floor(seconds / 60);
+                    var hours = Math.floor(minutes / 60);
+                    var days = Math.floor(hours / 24);
+                    hours = hours % 24;
+                    minutes = minutes % 60;
+                    seconds = seconds % 60;
+                    return (days > 0 ? days + 'd ' : '') + (hours > 0 ? hours + 'h ' : '') + (minutes > 0 ? minutes + 'm ' : '') + seconds + 's';
+                }
+
+                setInterval(updateTimer, 1000);
+                updateTimer();
+            </script>";
+
         } else {
             echo "Error: " . $stmt->error;
         }
@@ -75,3 +118,4 @@ if ($latitude && $longitude && $name && $email && $event_id) {
 
 $conn->close();
 ?>
+
