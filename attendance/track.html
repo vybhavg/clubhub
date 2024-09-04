@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Location Tracking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #status {
+            font-size: 1.2em;
+            color: green;
+        }
+        #register-link {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
     <script>
         var eventLocation = {
             lat: 17.782067586690925,
@@ -11,6 +24,9 @@
         };
         var allowedRadius = 50; // meters
         var checkInterval = 60000; // 1 minute
+        var stayDuration = 5 * 60000; // 5 minutes
+        var enterTime = null;
+        var timer = null;
 
         function getDistance(lat1, lng1, lat2, lng2) {
             var R = 6371e3; // Earth radius in meters
@@ -35,26 +51,41 @@
                     var distance = getDistance(eventLocation.lat, eventLocation.lng, studentLat, studentLng);
 
                     if (distance <= allowedRadius) {
-                        // Within allowed radius
-                        console.log('You are within the event location.');
-                        // Start or continue tracking time
+                        document.getElementById('status').textContent = 'You are within the event location.';
+                        
+                        if (!enterTime) {
+                            enterTime = new Date();
+                        }
+
+                        var currentTime = new Date();
+                        if (currentTime - enterTime >= stayDuration) {
+                            // Provide access to registration form
+                            document.getElementById('status').textContent = 'You have stayed within the location for the required duration. You can now register for attendance.';
+                            document.getElementById('register-link').style.display = 'block';
+                        }
                     } else {
-                        // Outside allowed radius
-                        console.log('You are outside the event location.');
-                        // Reset tracking time
+                        document.getElementById('status').textContent = 'You are outside the event location.';
+                        enterTime = null;
                     }
                 }, function(error) {
                     console.error('Error retrieving location: ', error);
                 });
             } else {
                 console.error('Geolocation is not supported by this browser.');
+                document.getElementById('status').textContent = 'Geolocation is not supported by this browser.';
             }
         }
 
-        setInterval(checkLocation, checkInterval);
+        window.onload = function() {
+            timer = setInterval(checkLocation, checkInterval);
+        };
     </script>
 </head>
 <body>
-    <h1>Student Location Tracking</h1>
+    <div>
+        <h2>Track Your Location</h2>
+        <div id="status">Checking location...</div>
+        <a id="register-link" href="registration_form.html">Click here to register for attendance</a>
+    </div>
 </body>
 </html>
