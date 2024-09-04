@@ -16,8 +16,39 @@
             display: none;
         }
     </style>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(setPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function setPosition(position) {
+            document.getElementById('latitude').value = position.coords.latitude;
+            document.getElementById('longitude').value = position.coords.longitude;
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+    </script>
 </head>
-<body>
+<body onload="getLocation()">
     <div class="form-container">
         <h2>Event Registration</h2>
         <form id="registrationForm" action="register_student.php" method="POST">
@@ -49,12 +80,8 @@
                 </select>
             </div>
             <div>
-                <label for="latitude">Latitude:</label>
-                <input type="text" id="latitude" name="latitude" required>
-            </div>
-            <div>
-                <label for="longitude">Longitude:</label>
-                <input type="text" id="longitude" name="longitude" required>
+                <input type="hidden" id="latitude" name="latitude" required>
+                <input type="hidden" id="longitude" name="longitude" required>
             </div>
             <button type="submit">Register</button>
         </form>
