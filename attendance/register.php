@@ -5,7 +5,6 @@ include('/var/www/html/db_connect.php');
 $stmt = $conn->prepare("SELECT id, title FROM forms");
 $stmt->execute();
 $stmt->bind_result($event_id, $event_title);
-
 ?>
 
 <!DOCTYPE html>
@@ -13,9 +12,43 @@ $stmt->bind_result($event_id, $event_title);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Registration</title>
+    <title>Event Registration with Geofence</title>
+    <script>
+        // Function to get user's GPS location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Set the latitude and longitude input fields with user's GPS location
+        function showPosition(position) {
+            document.getElementById('latitude').value = position.coords.latitude;
+            document.getElementById('longitude').value = position.coords.longitude;
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+    </script>
 </head>
-<body>
+<body onload="getLocation()">
+
     <h2>Register for an Event</h2>
 
     <form action="register_student.php" method="POST">
@@ -35,11 +68,9 @@ $stmt->bind_result($event_id, $event_title);
             ?>
         </select><br><br>
 
-        <label for="latitude">Latitude:</label>
-        <input type="text" id="latitude" name="latitude" required><br><br>
-
-        <label for="longitude">Longitude:</label>
-        <input type="text" id="longitude" name="longitude" required><br><br>
+        <!-- Hidden latitude and longitude fields automatically filled by GPS -->
+        <input type="hidden" id="latitude" name="latitude" required>
+        <input type="hidden" id="longitude" name="longitude" required>
 
         <input type="submit" value="Register">
     </form>
