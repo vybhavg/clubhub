@@ -22,6 +22,11 @@ $stmt->bind_result($event_title, $event_start_time, $event_duration, $event_lati
 $stmt->fetch();
 $stmt->close();
 
+// Check if the event was fetched successfully
+if (!$event_title) {
+    die("Error: Event not found.");
+}
+
 // Geofence parameters
 $geofence_radius = 1.0; // 1 km radius
 
