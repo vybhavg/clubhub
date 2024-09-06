@@ -10,6 +10,7 @@ $event_id = $_POST['event_id'];
 
 // Get the user's IP address
 $ip_address = $_SERVER['REMOTE_ADDR'];
+<script src="track_geofence.js"></script>
 
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, latitude, longitude FROM forms WHERE id = ?");
