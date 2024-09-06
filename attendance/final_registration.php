@@ -1,18 +1,35 @@
 <?php
-// final_registration.php
 include('/var/www/html/db_connect.php');
 
-$event_id = $_GET['event_id'] ?? null;
-$student_id = $_GET['student_id'] ?? null;
+// Start the session
+session_start();
 
-if (!$event_id || !$student_id) {
-    die('Invalid access!');
+// Get data passed through the URL
+$name = $_GET['name'];
+$email = $_GET['email'];
+$event_id = $_GET['event_id'];
+
+// Ensure data is available
+if (!$name || !$email || !$event_id) {
+    echo "<p>Missing required data for final registration.</p>";
+    exit;
 }
 
-// Code to handle the final registration process
-echo "Final registration for event ID: $event_id and student ID: $student_id is complete!";
+// Fetch event (form) details
+$stmt = $conn->prepare("SELECT title, event_duration FROM forms WHERE id = ?");
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$stmt->bind_result($event_title, $event_duration);
+$stmt->fetch();
+$stmt->close();
 
-// Perform necessary registration logic here
+// Log final registration
+$final_registration_stmt = $conn->prepare("INSERT INTO final_registrations (name, email, event_id) VALUES (?, ?, ?)");
+$final_registration_stmt->bind_param("ssi", $name, $email, $event_id);
+$final_registration_stmt->execute();
+$final_registration_stmt->close();
+
+echo "<p>Thank you, $name! You have successfully completed the registration for the event: $event_title.</p>";
 
 $conn->close();
 ?>
