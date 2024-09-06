@@ -10,7 +10,6 @@ $event_id = $_POST['event_id'];
 
 // Get the user's IP address
 $ip_address = $_SERVER['REMOTE_ADDR'];
-<script src="track_geofence.js"></script>
 
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, latitude, longitude FROM forms WHERE id = ?");
@@ -20,65 +19,95 @@ $stmt->bind_result($event_title, $event_start_time, $event_duration, $event_lati
 $stmt->fetch();
 $stmt->close();
 
-// Geofence parameters (you can adjust the range if needed)
+// Geofence parameters
 $geofence_radius = 1.0; // 1 km radius
 
-// Function to calculate the distance between two GPS coordinates (Haversine formula)
+// Haversine formula to calculate the distance between two GPS coordinates
 function haversine_distance($lat1, $lon1, $lat2, $lon2) {
     $earth_radius = 6371;  // Earth radius in kilometers
-
-    // Convert degrees to radians
     $dLat = deg2rad($lat2 - $lat1);
     $dLon = deg2rad($lon2 - $lon1);
-
-    // Haversine formula
     $a = sin($dLat / 2) * sin($dLat / 2) +
          cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
     $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-    // Calculate the distance
     return $earth_radius * $c;
 }
 
 // Calculate the distance between the event location and the user's location
 $distance_to_event = haversine_distance($user_latitude, $user_longitude, $event_latitude, $event_longitude);
 
-// Time Zone conversion
+// Time Zone conversion (IST)
 $ist_timezone = new DateTimeZone('Asia/Kolkata');
-$us_east_timezone = new DateTimeZone('America/New_York');
+$current_time_ist = new DateTime('now', $ist_timezone);
 
-// Convert event start time from IST to US-East
-$event_start_time_ist = new DateTime($event_start_time, $ist_timezone);
-$event_start_time_us_east = $event_start_time_ist->setTimezone($us_east_timezone);
-
-// Add the event duration to the event start time (in US-East time zone)
-$event_end_time_us_east = clone $event_start_time_us_east;
-$event_end_time_us_east->add(new DateInterval('PT' . $event_duration . 'M')); // Add event duration in minutes
-
-// Get the current server time (in US-East time zone)
-$current_time_us_east = new DateTime('now', $us_east_timezone);
-
-// Check if the user is within the geofence radius
+// Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
-    if ($current_time_us_east >= $event_start_time_us_east && $current_time_us_east <= $event_end_time_us_east) {
-        // User is within the event duration and geofence
-        echo "<p>You are within the geofenced area and the event duration. Proceed with final registration.</p>";
-        echo "<a href='final_registration.php?name=$name&email=$email&event_id=$event_id'>Complete Final Registration</a>";
+    // Check if the user is entering the geofence
+    $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_event WHERE student_id = ? AND event_id = ? AND exit_time IS NULL");
+    $entry_check_stmt->bind_param("ii", $student_id, $event_id);
+    $entry_check_stmt->execute();
+    $entry_check_stmt->bind_result($log_id, $entry_time);
+    $entry_check_stmt->fetch();
+    $entry_check_stmt->close();
+
+    if (!$entry_time) {
+        // Log the entry time (user enters geofence)
+        $entry_time = $current_time_ist->getTimestamp();
+        $insert_entry_stmt = $conn->prepare("INSERT INTO student_event (student_id, event_id, entry_time) VALUES (?, ?, ?)");
+        $insert_entry_stmt->bind_param("iii", $student_id, $event_id, $entry_time);
+        $insert_entry_stmt->execute();
+        $insert_entry_stmt->close();
+
+        echo "<p>Welcome! Your entry time has been logged. Continue participating in the event.</p>";
     } else {
-        // Event has not started or has ended
-        $remaining_time = $event_start_time_us_east->getTimestamp() - $current_time_us_east->getTimestamp();
-        if ($remaining_time > 0) {
-            echo "<p>The event has not started yet. Please wait for " . gmdate("H:i:s", $remaining_time) . " until the event begins.</p>";
-        } else {
-            echo "<p>The event has ended. You cannot register now.</p>";
-        }
+        echo "<p>You are already within the geofence.</p>";
     }
 } else {
-    // User is outside the geofenced area
-    echo "<p>You are not within the geofenced area for the event. Please move closer to the event location to register.</p>";
+    // User is leaving the geofence, log exit time
+    $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_event WHERE student_id = ? AND event_id = ? AND exit_time IS NULL");
+    $exit_check_stmt->bind_param("ii", $student_id, $event_id);
+    $exit_check_stmt->execute();
+    $exit_check_stmt->bind_result($log_id, $entry_time);
+    $exit_check_stmt->fetch();
+    $exit_check_stmt->close();
+
+    if ($entry_time) {
+        // Calculate the time spent in this session
+        $exit_time = $current_time_ist->getTimestamp();
+        $time_spent = $exit_time - $entry_time;
+
+        // Update the log with the exit time
+        $update_exit_stmt = $conn->prepare("UPDATE student_event SET exit_time = ?, time_spent = ? WHERE id = ?");
+        $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
+        $update_exit_stmt->execute();
+        $update_exit_stmt->close();
+
+        // Calculate the total time spent in all sessions
+        $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_event WHERE student_id = ? AND event_id = ?");
+        $total_time_stmt->bind_param("ii", $student_id, $event_id);
+        $total_time_stmt->execute();
+        $total_time_stmt->bind_result($total_time_spent);
+        $total_time_stmt->fetch();
+        $total_time_stmt->close();
+
+        // Convert event duration from minutes to seconds
+        $required_time_spent = $event_duration * 60;
+
+        if ($total_time_spent >= $required_time_spent) {
+            // User has met the event duration requirement
+            echo "<p>You've completed the required time for this event. Proceed with final registration.</p>";
+            echo "<a href='final_registration.php?name=$name&email=$email&event_id=$event_id'>Complete Final Registration</a>";
+        } else {
+            // Notify user of remaining time to be completed
+            $remaining_time = $required_time_spent - $total_time_spent;
+            echo "<p>You've spent " . gmdate("H:i:s", $total_time_spent) . " in the event. You need to stay for " . gmdate("H:i:s", $remaining_time) . " more.</p>";
+        }
+    } else {
+        echo "<p>You are outside the geofenced area. Please enter the geofence to participate in the event.</p>";
+    }
 }
 
-// Insert the registration details into the 'registrations' table
+// Insert registration details into the 'registrations' table (only if the registration is completed)
 $insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
 $insert_stmt->bind_param("sssdis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
 $insert_stmt->execute();
