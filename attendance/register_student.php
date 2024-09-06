@@ -1,12 +1,19 @@
 <?php
 include('/var/www/html/db_connect.php');
+session_start();
 
-// Get data from the form
-$name = $_POST['name'];
-$email = $_POST['email'];
-$user_latitude = $_POST['latitude'];
-$user_longitude = $_POST['longitude'];
-$event_id = $_POST['event_id'];
+// Get data from the form or session
+$student_id = $_SESSION['student_id'] ?? $_POST['student_id'] ?? $_GET['student_id'] ?? null;
+$name = $_POST['name'] ?? null;
+$email = $_POST['email'] ?? null;
+$user_latitude = $_POST['latitude'] ?? null;
+$user_longitude = $_POST['longitude'] ?? null;
+$event_id = $_POST['event_id'] ?? $_GET['event_id'] ?? null;
+
+// Validate required fields
+if (!$student_id || !$event_id || !$name || !$email || !$user_latitude || !$user_longitude) {
+    die("Invalid access. Missing required parameters.");
+}
 
 // Get the user's IP address
 $ip_address = $_SERVER['REMOTE_ADDR'];
