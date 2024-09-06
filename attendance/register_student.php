@@ -78,7 +78,7 @@ if ($distance_to_event <= $geofence_radius) {
 
     if (!$entry_time) {
         // Log the entry time (user enters geofence)
-        $entry_time = $current_time_timestamp;
+        $entry_time = $current_time->getTimestamp();  // Convert to timestamp for logging
         $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_name, student_email, event_id, entry_time) VALUES (?, ?, ?, ?)");
         $insert_entry_stmt->bind_param("ssis", $name, $email, $event_id, $entry_time);
         $insert_entry_stmt->execute();
@@ -99,7 +99,7 @@ if ($distance_to_event <= $geofence_radius) {
 
     if ($entry_time) {
         // Calculate the time spent in this session
-        $exit_time = $current_time_timestamp;
+        $exit_time = $current_time->getTimestamp();  // Convert to timestamp for logging
         $time_spent = $exit_time - $entry_time;
 
         // Update the log with the exit time
@@ -120,7 +120,7 @@ if ($distance_to_event <= $geofence_radius) {
         $required_time_spent = $event_duration * 60;
 
         if ($total_time_spent >= $required_time_spent) {
-            // User has met the event duration requirement
+            // User has met the event duration requirement, show final registration link
             echo "<p>You've completed the required time for this event. Proceed with final registration.</p>";
             echo "<a href='final_registration.php?name=$name&email=$email&event_id=$event_id'>Complete Final Registration</a>";
         } else {
@@ -132,6 +132,7 @@ if ($distance_to_event <= $geofence_radius) {
         echo "<p>You are outside the geofenced area. Please enter the geofence to participate in the event.</p>";
     }
 }
+
 
 // Function to get the user's IP address
 function get_user_ip() {
