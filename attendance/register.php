@@ -1,3 +1,13 @@
+<?php
+include('/var/www/html/db_connect.php');
+
+// Fetch events from the database
+$stmt = $conn->prepare("SELECT id, title FROM forms");
+$stmt->execute();
+$stmt->bind_result($event_id, $event_title);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,25 +16,38 @@
     <title>Event Registration</title>
 </head>
 <body>
-    <h1>Register for Event</h1>
+    <h2>Register for an Event</h2>
 
-    <!-- Displaying the geofence status -->
-    <p id="status">Tracking location...</p>
+    <form action="register_student.php" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
 
-    <!-- Registration Form -->
-    <form action="register_student.php" method="post" id="registrationForm">
-        <input type="hidden" name="event_id" value="<?php echo $event_id; ?>"> <!-- Event ID -->
-        <input type="hidden" name="geofence_status" id="geofenceStatus" value="0">
-        <input type="hidden" name="total_time_in_geofence" id="totalTimeInGeofence" value="0">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
 
-        <!-- Student details fields -->
-        <input type="text" name="student_name" placeholder="Your Name" required><br>
-        <input type="text" name="student_id" placeholder="Your Student ID" required><br>
-        
-        <button type="submit">Register</button>
+        <label for="event">Select Event:</label>
+        <select id="event" name="event_id" required>
+            <option value="">Select an event</option>
+            <?php
+            while ($stmt->fetch()) {
+                echo "<option value=\"$event_id\">$event_title</option>";
+            }
+            ?>
+        </select><br><br>
+
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" required><br><br>
+
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" required><br><br>
+
+        <input type="submit" value="Register">
     </form>
 
-    <!-- Geofence Tracking Script -->
-    <script src="geofence.js"></script>
+<?php
+$stmt->close();
+$conn->close();
+?>
+
 </body>
 </html>
