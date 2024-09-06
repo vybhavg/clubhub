@@ -8,6 +8,9 @@ $user_latitude = $_POST['latitude'];
 $user_longitude = $_POST['longitude'];
 $event_id = $_POST['event_id'];
 
+// Get the user's IP address
+$ip_address = $_SERVER['REMOTE_ADDR'];
+
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, latitude, longitude FROM forms WHERE id = ?");
 $stmt->bind_param("i", $event_id);
@@ -66,11 +69,10 @@ if ($distance_to_event <= $geofence_radius) {
 }
 
 // Insert the registration details into the 'registrations' table
-$insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id) VALUES (?, ?, ?, ?, ?)");
-$insert_stmt->bind_param("sssdi", $name, $email, $user_latitude, $user_longitude, $event_id);
+$insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
+$insert_stmt->bind_param("sssdis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
 $insert_stmt->execute();
 $insert_stmt->close();
 
 $conn->close();
 ?>
-
