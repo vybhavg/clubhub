@@ -1,19 +1,12 @@
 <?php
 include('/var/www/html/db_connect.php');
-session_start();
 
-// Get data from the form or session
-$student_id = $_SESSION['student_id'] ?? $_POST['student_id'] ?? $_GET['student_id'] ?? null;
-$name = $_POST['name'] ?? null;
-$email = $_POST['email'] ?? null;
-$user_latitude = $_POST['latitude'] ?? null;
-$user_longitude = $_POST['longitude'] ?? null;
-$event_id = $_POST['event_id'] ?? $_GET['event_id'] ?? null;
-
-// Validate required fields
-if (!$student_id || !$event_id || !$name || !$email || !$user_latitude || !$user_longitude) {
-    die("Invalid access. Missing required parameters.");
-}
+// Get data from the form
+$name = $_POST['name'];
+$email = $_POST['email'];
+$user_latitude = $_POST['latitude'];
+$user_longitude = $_POST['longitude'];
+$event_id = $_POST['event_id'];
 
 // Get the user's IP address
 $ip_address = $_SERVER['REMOTE_ADDR'];
@@ -50,8 +43,8 @@ $current_time_ist = new DateTime('now', $ist_timezone);
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
     // Check if the user is entering the geofence
-    $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_event WHERE student_id = ? AND event_id = ? AND exit_time IS NULL");
-    $entry_check_stmt->bind_param("ii", $student_id, $event_id);
+    $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE student_name = ? AND student_email = ? AND event_id = ? AND exit_time IS NULL");
+    $entry_check_stmt->bind_param("ssi", $name, $email, $event_id);
     $entry_check_stmt->execute();
     $entry_check_stmt->bind_result($log_id, $entry_time);
     $entry_check_stmt->fetch();
@@ -60,8 +53,8 @@ if ($distance_to_event <= $geofence_radius) {
     if (!$entry_time) {
         // Log the entry time (user enters geofence)
         $entry_time = $current_time_ist->getTimestamp();
-        $insert_entry_stmt = $conn->prepare("INSERT INTO student_event (student_id, event_id, entry_time) VALUES (?, ?, ?)");
-        $insert_entry_stmt->bind_param("iii", $student_id, $event_id, $entry_time);
+        $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_name, student_email, event_id, entry_time) VALUES (?, ?, ?, ?)");
+        $insert_entry_stmt->bind_param("ssii", $name, $email, $event_id, $entry_time);
         $insert_entry_stmt->execute();
         $insert_entry_stmt->close();
 
@@ -71,8 +64,8 @@ if ($distance_to_event <= $geofence_radius) {
     }
 } else {
     // User is leaving the geofence, log exit time
-    $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_event WHERE student_id = ? AND event_id = ? AND exit_time IS NULL");
-    $exit_check_stmt->bind_param("ii", $student_id, $event_id);
+    $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE student_name = ? AND student_email = ? AND event_id = ? AND exit_time IS NULL");
+    $exit_check_stmt->bind_param("ssi", $name, $email, $event_id);
     $exit_check_stmt->execute();
     $exit_check_stmt->bind_result($log_id, $entry_time);
     $exit_check_stmt->fetch();
@@ -84,14 +77,14 @@ if ($distance_to_event <= $geofence_radius) {
         $time_spent = $exit_time - $entry_time;
 
         // Update the log with the exit time
-        $update_exit_stmt = $conn->prepare("UPDATE student_event SET exit_time = ?, time_spent = ? WHERE id = ?");
+        $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
         $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
         $update_exit_stmt->execute();
         $update_exit_stmt->close();
 
         // Calculate the total time spent in all sessions
-        $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_event WHERE student_id = ? AND event_id = ?");
-        $total_time_stmt->bind_param("ii", $student_id, $event_id);
+        $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_attendance WHERE student_name = ? AND student_email = ? AND event_id = ?");
+        $total_time_stmt->bind_param("ssi", $name, $email, $event_id);
         $total_time_stmt->execute();
         $total_time_stmt->bind_result($total_time_spent);
         $total_time_stmt->fetch();
