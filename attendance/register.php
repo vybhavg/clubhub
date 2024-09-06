@@ -71,7 +71,8 @@ $stmt->bind_result($event_id, $event_title);
         <!-- Hidden latitude and longitude fields automatically filled by GPS -->
         <input type="hidden" id="latitude" name="latitude" required>
         <input type="hidden" id="longitude" name="longitude" required>
-
+    <input type="hidden" name="student_id" value="<?php echo $student_id; ?>">
+    <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
         <input type="submit" value="Register">
     </form>
 
