@@ -7,8 +7,8 @@ session_start();
 // Get data from the form
 $name = $_POST['name'];
 $email = $_POST['email'];
-$user_latitude = $_POST['latitude'];
-$user_longitude = $_POST['longitude'];
+$user_latitude = (float) $_POST['latitude']; // Convert to float
+$user_longitude = (float) $_POST['longitude']; // Convert to float
 $event_id = $_POST['event_id'];
 
 // Get the user's IP address
@@ -22,10 +22,9 @@ $stmt->bind_result($event_title, $event_start_time, $event_duration, $event_lati
 $stmt->fetch();
 $stmt->close();
 
-// Check if the event was fetched successfully
-if (!$event_title) {
-    die("Error: Event not found.");
-}
+// Convert event latitude and longitude to floats
+$event_latitude = (float) $event_latitude;
+$event_longitude = (float) $event_longitude;
 
 // Geofence parameters
 $geofence_radius = 1.0; // 1 km radius
