@@ -46,8 +46,8 @@ $current_time_ist = new DateTime('now', $ist_timezone);
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
     // Check if the user is entering the geofence
-    $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND exit_time IS NULL");
-    $entry_check_stmt->bind_param("i", $event_id);
+    $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND exit_time IS NULL AND student_email = ?");
+    $entry_check_stmt->bind_param("is", $event_id, $email);
     $entry_check_stmt->execute();
     $entry_check_stmt->bind_result($log_id, $entry_time);
     $entry_check_stmt->fetch();
@@ -56,8 +56,8 @@ if ($distance_to_event <= $geofence_radius) {
     if (!$entry_time) {
         // Log the entry time (user enters geofence)
         $entry_time = $current_time_ist->getTimestamp();
-        $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (event_id, entry_time) VALUES (?, ?)");
-        $insert_entry_stmt->bind_param("ii", $event_id, $entry_time);
+        $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_name, student_email, event_id, entry_time) VALUES (?, ?, ?, ?)");
+        $insert_entry_stmt->bind_param("ssis", $name, $email, $event_id, $entry_time);
         $insert_entry_stmt->execute();
         $insert_entry_stmt->close();
 
@@ -67,8 +67,8 @@ if ($distance_to_event <= $geofence_radius) {
     }
 } else {
     // User is leaving the geofence, log exit time
-    $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND exit_time IS NULL");
-    $exit_check_stmt->bind_param("i", $event_id);
+    $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND exit_time IS NULL AND student_email = ?");
+    $exit_check_stmt->bind_param("is", $event_id, $email);
     $exit_check_stmt->execute();
     $exit_check_stmt->bind_result($log_id, $entry_time);
     $exit_check_stmt->fetch();
@@ -86,8 +86,8 @@ if ($distance_to_event <= $geofence_radius) {
         $update_exit_stmt->close();
 
         // Calculate the total time spent in all sessions
-        $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_attendance WHERE event_id = ?");
-        $total_time_stmt->bind_param("i", $event_id);
+        $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_attendance WHERE event_id = ? AND student_email = ?");
+        $total_time_stmt->bind_param("is", $event_id, $email);
         $total_time_stmt->execute();
         $total_time_stmt->bind_result($total_time_spent);
         $total_time_stmt->fetch();
