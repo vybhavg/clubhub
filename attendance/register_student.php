@@ -11,9 +11,6 @@ $user_latitude = $_POST['latitude'];
 $user_longitude = $_POST['longitude'];
 $event_id = $_POST['event_id'];
 
-// Get the user's IP address
-$ip_address = $_SERVER['REMOTE_ADDR'];
-
 // Fetch the event (form) details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, event_end_time, latitude, longitude FROM forms WHERE id = ?");
 $stmt->bind_param("i", $event_id);
@@ -39,20 +36,21 @@ function haversine_distance($lat1, $lon1, $lat2, $lon2) {
 // Calculate the distance between the event location and the user's location
 $distance_to_event = haversine_distance($user_latitude, $user_longitude, $event_latitude, $event_longitude);
 
-// Time Zone conversion (IST)
+// Set server time to IST
+$server_timezone = new DateTimeZone('UTC'); // Assuming server is in UTC
 $ist_timezone = new DateTimeZone('Asia/Kolkata');
-$current_time_ist = new DateTime('now', $ist_timezone);
-$current_time_timestamp = $current_time_ist->getTimestamp(); // Current time in seconds
 
-// Event start and end times (without @ symbol)
-$event_start_time_ist = new DateTime($event_start_time);
-$event_start_time_ist->setTimezone($ist_timezone);
+// Get current server time and convert to IST
+$current_time = new DateTime('now', $server_timezone);
+$current_time->setTimezone($ist_timezone);
 
-$event_end_time_ist = new DateTime($event_end_time);
-$event_end_time_ist->setTimezone($ist_timezone);
+// Convert event start and end times to IST
+$event_start_time_ist = new DateTime($event_start_time, $ist_timezone);
+$event_end_time_ist = new DateTime($event_end_time, $ist_timezone);
 
-$time_until_start = $event_start_time_ist->getTimestamp() - $current_time_timestamp;
-$time_until_end = $event_end_time_ist->getTimestamp() - $current_time_timestamp;
+// Calculate time differences
+$time_until_start = $event_start_time_ist->getTimestamp() - $current_time->getTimestamp();
+$time_until_end = $event_end_time_ist->getTimestamp() - $current_time->getTimestamp();
 
 function format_time($seconds) {
     $hours = floor($seconds / 3600);
@@ -61,12 +59,13 @@ function format_time($seconds) {
     return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
 }
 
-// Display the time remaining until the event starts or ends
-echo "<p>Event Start Time: " . $event_start_time_ist->format('Y-m-d H:i:s') . "</p>";
+// Display event times and time left
+echo "<p>Event Start Time (IST): " . $event_start_time_ist->format('Y-m-d H:i:s') . "</p>";
 echo "<p>Time until Event Starts: " . format_time(max($time_until_start, 0)) . "</p>";
 
-echo "<p>Event End Time: " . $event_end_time_ist->format('Y-m-d H:i:s') . "</p>";
+echo "<p>Event End Time (IST): " . $event_end_time_ist->format('Y-m-d H:i:s') . "</p>";
 echo "<p>Time until Event Ends: " . format_time(max($time_until_end, 0)) . "</p>";
+
 
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
