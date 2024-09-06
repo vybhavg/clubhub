@@ -47,6 +47,11 @@ $distance_to_event = haversine_distance($user_latitude, $user_longitude, $event_
 $ist_timezone = new DateTimeZone('Asia/Kolkata');
 $current_time_ist = new DateTime('now', $ist_timezone);
 
+// Calculate event end time
+$event_end_time = new DateTime($event_start_time, $ist_timezone);
+$event_end_time->modify('+' . $event_duration . ' minutes');
+$event_end_timestamp = $event_end_time->getTimestamp();
+
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
     // Check if the user is entering the geofence
@@ -81,7 +86,7 @@ if ($distance_to_event <= $geofence_radius) {
     if ($entry_time) {
         // Calculate the time spent in this session
         $exit_time = $current_time_ist->getTimestamp();
-        $time_spent = $exit_time - $entry_time;
+        $time_spent = min($exit_time, $event_end_timestamp) - $entry_time; // Ensure time does not exceed event end time
 
         // Update the log with the exit time
         $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
