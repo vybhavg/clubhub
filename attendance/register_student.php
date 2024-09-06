@@ -44,11 +44,11 @@ $ist_timezone = new DateTimeZone('Asia/Kolkata');
 $current_time_ist = new DateTime('now', $ist_timezone);
 $current_time_timestamp = $current_time_ist->getTimestamp(); // Current time in seconds
 
-// Event start and end times
-$event_start_time_ist = new DateTime("@$event_start_time");
+// Event start and end times (without @ symbol)
+$event_start_time_ist = new DateTime($event_start_time);
 $event_start_time_ist->setTimezone($ist_timezone);
 
-$event_end_time_ist = new DateTime("@$event_end_time");
+$event_end_time_ist = new DateTime($event_end_time);
 $event_end_time_ist->setTimezone($ist_timezone);
 
 $time_until_start = $event_start_time_ist->getTimestamp() - $current_time_timestamp;
