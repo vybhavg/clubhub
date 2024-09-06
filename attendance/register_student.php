@@ -1,14 +1,8 @@
 <?php
-session_start(); // Start the session
-
 include('/var/www/html/db_connect.php');
 
-// Check if student_id is set in the session
-if (!isset($_SESSION['student_id'])) {
-    die("Error: User not logged in.");
-}
-
-$student_id = $_SESSION['student_id']; // Retrieve student_id from session
+// Start the session
+session_start();
 
 // Get data from the form
 $name = $_POST['name'];
@@ -20,7 +14,7 @@ $event_id = $_POST['event_id'];
 // Get the user's IP address
 $ip_address = $_SERVER['REMOTE_ADDR'];
 
-// Fetch the event details from the 'forms' table
+// Fetch the event (form) details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, latitude, longitude FROM forms WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -28,17 +22,12 @@ $stmt->bind_result($event_title, $event_start_time, $event_duration, $event_lati
 $stmt->fetch();
 $stmt->close();
 
-if (!$event_title) {
-    // Event ID does not exist
-    die("Error: Event ID does not exist.");
-}
-
 // Geofence parameters
 $geofence_radius = 1.0; // 1 km radius
 
 // Haversine formula to calculate the distance between two GPS coordinates
 function haversine_distance($lat1, $lon1, $lat2, $lon2) {
-    $earth_radius = 6371; // Earth radius in kilometers
+    $earth_radius = 6371;  // Earth radius in kilometers
     $dLat = deg2rad($lat2 - $lat1);
     $dLon = deg2rad($lon2 - $lon1);
     $a = sin($dLat / 2) * sin($dLat / 2) +
@@ -57,8 +46,8 @@ $current_time_ist = new DateTime('now', $ist_timezone);
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
     // Check if the user is entering the geofence
-    $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_event WHERE student_id = ? AND event_id = ? AND exit_time IS NULL");
-    $entry_check_stmt->bind_param("ii", $student_id, $event_id);
+    $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND exit_time IS NULL");
+    $entry_check_stmt->bind_param("i", $event_id);
     $entry_check_stmt->execute();
     $entry_check_stmt->bind_result($log_id, $entry_time);
     $entry_check_stmt->fetch();
@@ -67,8 +56,8 @@ if ($distance_to_event <= $geofence_radius) {
     if (!$entry_time) {
         // Log the entry time (user enters geofence)
         $entry_time = $current_time_ist->getTimestamp();
-        $insert_entry_stmt = $conn->prepare("INSERT INTO student_event (student_id, event_id, entry_time) VALUES (?, ?, ?)");
-        $insert_entry_stmt->bind_param("iii", $student_id, $event_id, $entry_time);
+        $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (event_id, entry_time) VALUES (?, ?)");
+        $insert_entry_stmt->bind_param("ii", $event_id, $entry_time);
         $insert_entry_stmt->execute();
         $insert_entry_stmt->close();
 
@@ -78,8 +67,8 @@ if ($distance_to_event <= $geofence_radius) {
     }
 } else {
     // User is leaving the geofence, log exit time
-    $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_event WHERE student_id = ? AND event_id = ? AND exit_time IS NULL");
-    $exit_check_stmt->bind_param("ii", $student_id, $event_id);
+    $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND exit_time IS NULL");
+    $exit_check_stmt->bind_param("i", $event_id);
     $exit_check_stmt->execute();
     $exit_check_stmt->bind_result($log_id, $entry_time);
     $exit_check_stmt->fetch();
@@ -91,14 +80,14 @@ if ($distance_to_event <= $geofence_radius) {
         $time_spent = $exit_time - $entry_time;
 
         // Update the log with the exit time
-        $update_exit_stmt = $conn->prepare("UPDATE student_event SET exit_time = ?, time_spent = ? WHERE id = ?");
+        $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
         $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
         $update_exit_stmt->execute();
         $update_exit_stmt->close();
 
         // Calculate the total time spent in all sessions
-        $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_event WHERE student_id = ? AND event_id = ?");
-        $total_time_stmt->bind_param("ii", $student_id, $event_id);
+        $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_attendance WHERE event_id = ?");
+        $total_time_stmt->bind_param("i", $event_id);
         $total_time_stmt->execute();
         $total_time_stmt->bind_result($total_time_spent);
         $total_time_stmt->fetch();
