@@ -133,11 +133,24 @@ if ($distance_to_event <= $geofence_radius) {
     }
 }
 
-// Registration process (removed ip_address)
-$insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id) VALUES (?, ?, ?, ?, ?)");
-$insert_stmt->bind_param("sssdi", $name, $email, $user_latitude, $user_longitude, $event_id);
+// Function to get the user's IP address
+function get_user_ip() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
+// Get the user's IP address
+$ip_address = get_user_ip();
+
+// Insert registration details into the 'registrations' table (only if the registration is completed)
+$insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
+$insert_stmt->bind_param("sssdis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
 $insert_stmt->execute();
 $insert_stmt->close();
 
-$conn->close();
 ?>
