@@ -42,21 +42,30 @@ function haversine_distance($lat1, $lon1, $lat2, $lon2) {
 // Calculate the distance between the event location and the user's location
 $distance_to_event = haversine_distance($user_latitude, $user_longitude, $event_latitude, $event_longitude);
 
+// Time Zone conversion
+$ist_timezone = new DateTimeZone('Asia/Kolkata');
+$us_east_timezone = new DateTimeZone('America/New_York');
+
+// Convert event start time from IST to US-East
+$event_start_time_ist = new DateTime($event_start_time, $ist_timezone);
+$event_start_time_us_east = $event_start_time_ist->setTimezone($us_east_timezone);
+
+// Add the event duration to the event start time (in US-East time zone)
+$event_end_time_us_east = clone $event_start_time_us_east;
+$event_end_time_us_east->add(new DateInterval('PT' . $event_duration . 'M')); // Add event duration in minutes
+
+// Get the current server time (in US-East time zone)
+$current_time_us_east = new DateTime('now', $us_east_timezone);
+
 // Check if the user is within the geofence radius
 if ($distance_to_event <= $geofence_radius) {
-    // Check if the current time is within the event duration
-    $current_time = new DateTime();
-    $event_start_time = new DateTime($event_start_time);
-    $event_end_time = clone $event_start_time;
-    $event_end_time->add(new DateInterval('PT' . $event_duration . 'M')); // Add event duration in minutes
-
-    if ($current_time >= $event_start_time && $current_time <= $event_end_time) {
+    if ($current_time_us_east >= $event_start_time_us_east && $current_time_us_east <= $event_end_time_us_east) {
         // User is within the event duration and geofence
         echo "<p>You are within the geofenced area and the event duration. Proceed with final registration.</p>";
         echo "<a href='final_registration.php?name=$name&email=$email&event_id=$event_id'>Complete Final Registration</a>";
     } else {
-        // User is outside the event time
-        $remaining_time = $event_start_time->getTimestamp() - $current_time->getTimestamp();
+        // Event has not started or has ended
+        $remaining_time = $event_start_time_us_east->getTimestamp() - $current_time_us_east->getTimestamp();
         if ($remaining_time > 0) {
             echo "<p>The event has not started yet. Please wait for " . gmdate("H:i:s", $remaining_time) . " until the event begins.</p>";
         } else {
