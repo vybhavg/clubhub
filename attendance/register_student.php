@@ -43,14 +43,15 @@ $ist_timezone = new DateTimeZone('Asia/Kolkata');
 // Get current server time and convert to IST
 $current_time = new DateTime('now', $server_timezone);
 $current_time->setTimezone($ist_timezone);
+$current_time_timestamp = $current_time->getTimestamp(); // Use this timestamp for time calculations
 
 // Convert event start and end times to IST
 $event_start_time_ist = new DateTime($event_start_time, $ist_timezone);
 $event_end_time_ist = new DateTime($event_end_time, $ist_timezone);
 
 // Calculate time differences
-$time_until_start = $event_start_time_ist->getTimestamp() - $current_time->getTimestamp();
-$time_until_end = $event_end_time_ist->getTimestamp() - $current_time->getTimestamp();
+$time_until_start = $event_start_time_ist->getTimestamp() - $current_time_timestamp;
+$time_until_end = $event_end_time_ist->getTimestamp() - $current_time_timestamp;
 
 function format_time($seconds) {
     $hours = floor($seconds / 3600);
@@ -62,10 +63,8 @@ function format_time($seconds) {
 // Display event times and time left
 echo "<p>Event Start Time (IST): " . $event_start_time_ist->format('Y-m-d H:i:s') . "</p>";
 echo "<p>Time until Event Starts: " . format_time(max($time_until_start, 0)) . "</p>";
-
 echo "<p>Event End Time (IST): " . $event_end_time_ist->format('Y-m-d H:i:s') . "</p>";
 echo "<p>Time until Event Ends: " . format_time(max($time_until_end, 0)) . "</p>";
-
 
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
@@ -134,12 +133,11 @@ if ($distance_to_event <= $geofence_radius) {
     }
 }
 
-// Insert registration details into the 'registrations' table (only if the registration is completed)
-$insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
-$insert_stmt->bind_param("sssdis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
+// Registration process (removed ip_address)
+$insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id) VALUES (?, ?, ?, ?, ?)");
+$insert_stmt->bind_param("sssdi", $name, $email, $user_latitude, $user_longitude, $event_id);
 $insert_stmt->execute();
 $insert_stmt->close();
 
 $conn->close();
 ?>
- 
