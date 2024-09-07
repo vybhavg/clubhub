@@ -20,7 +20,7 @@ $stmt->fetch();
 $stmt->close();
 
 // Geofence parameters
-$geofence_radius = 0.2; // 1 km radius
+$geofence_radius = 0.1; // 1 km radius
 
 // Haversine formula to calculate the distance between two GPS coordinates
 function haversine_distance($lat1, $lon1, $lat2, $lon2) {
