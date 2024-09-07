@@ -146,11 +146,11 @@ if ($distance_to_event <= $geofence_radius) {
 
             // Display the link if the user has spent significant time at the event
             // After logging the exit and calculating time_spent
-            echo "Time spent: $time_spent, Event duration: $event_duration";  // Debugging statement
+           
 
     if ($time_spent >= $event_duration) {
         echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
-    
+         echo "Time spent: $time_spent, Event duration: $event_duration";  // Debugging statement
         // Insert the student into final_attendance if the duration is met
         $insert_final_attendance_stmt = $conn->prepare("INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) VALUES (?, ?, ?, ?, ?, ?)");
         $insert_final_attendance_stmt = $conn->prepare("INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) VALUES (?, ?, ?, ?, ?, ?)");
