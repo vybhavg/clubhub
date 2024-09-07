@@ -148,7 +148,7 @@ if ($distance_to_event <= $geofence_radius) {
             // After logging the exit and calculating time_spent
            
 
-   if ($time_spent >= $event_duration) {
+  if ($time_spent >= $event_duration) {
     echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
     
     // Debugging statement
