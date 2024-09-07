@@ -11,7 +11,7 @@ $user_latitude = $_POST['latitude'];
 $user_longitude = $_POST['longitude'];
 $event_id = $_POST['event_id'];
 
-// Fetch the event (form) details from the database
+// Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, event_end_time, latitude, longitude FROM forms WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -68,27 +68,18 @@ echo "<p>Time until Event Ends: " . format_time(max($time_until_end, 0)) . "</p>
 
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
-    // Check if the user is entering the geofence
-    $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND exit_time IS NULL AND student_email = ?");
+    // Check if the user has an existing entry
+    $entry_check_stmt = $conn->prepare("SELECT id, entry_time, exit_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
     $entry_check_stmt->bind_param("is", $event_id, $email);
     $entry_check_stmt->execute();
-    $entry_check_stmt->bind_result($log_id, $entry_time);
+    $entry_check_stmt->bind_result($log_id, $entry_time, $exit_time);
     $entry_check_stmt->fetch();
     $entry_check_stmt->close();
 
-    if (!$entry_time) {
-        // Log the entry time (user enters geofence)
-        $entry_time = $current_time->getTimestamp();  // Convert to timestamp for logging
-        $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_name, student_email, event_id, entry_time) VALUES (?, ?, ?, ?)");
-        $insert_entry_stmt->bind_param("ssis", $name, $email, $event_id, $entry_time);
-        $insert_entry_stmt->execute();
-        $insert_entry_stmt->close();
-
-        echo "<p>Welcome! Your entry time has been logged. Continue participating in the event.</p>";
-    } else {
-        // Check if the event has already ended
+    if ($entry_time && !$exit_time) {
+        // If exit time is not set, check if the event has ended
         if ($time_until_end <= 0) {
-            // Event has ended, but user is still inside the geofence
+            // Event has ended, log exit
             echo "<p>The event has ended. Logging your exit automatically.</p>";
             $exit_time = $event_end_time_ist->getTimestamp();  // Use event end time as exit time
             $time_spent = $exit_time - $entry_time;  // Calculate time spent
@@ -102,25 +93,44 @@ if ($distance_to_event <= $geofence_radius) {
             $update_exit_stmt->close();
 
             echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
+
+            // Display the link if the user has spent significant time at the event
+            if ($time_spent >= $event_duration) { // Check if time spent is at least the event duration
+                echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
+            }
+
             exit();  // Stop further processing
         } else {
             echo "<p>You are already within the geofence.</p>";
         }
+    } else {
+        // Log the entry time (user enters geofence)
+        if (!$entry_time) {
+            $entry_time = $current_time->getTimestamp();  // Convert to timestamp for logging
+            $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_name, student_email, event_id, entry_time) VALUES (?, ?, ?, ?)");
+            $insert_entry_stmt->bind_param("ssis", $name, $email, $event_id, $entry_time);
+            $insert_entry_stmt->execute();
+            $insert_entry_stmt->close();
+
+            echo "<p>Welcome! Your entry time has been logged. Continue participating in the event.</p>";
+        } else {
+            echo "<p>Entry time already logged.</p>";
+        }
     }
 } else {
-    // User is leaving the geofence, log exit time
-    $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND exit_time IS NULL AND student_email = ?");
+    // User is outside the geofence, check for exit
+    $exit_check_stmt = $conn->prepare("SELECT id, entry_time, exit_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
     $exit_check_stmt->bind_param("is", $event_id, $email);
     $exit_check_stmt->execute();
-    $exit_check_stmt->bind_result($log_id, $entry_time);
+    $exit_check_stmt->bind_result($log_id, $entry_time, $exit_time);
     $exit_check_stmt->fetch();
     $exit_check_stmt->close();
 
-    if ($entry_time) {
-        // Check if the event has ended
+    if ($entry_time && !$exit_time) {
+        // The user is leaving the geofence, log exit time
         if ($time_until_end <= 0) {
             // The event has ended
-            echo "Event ended. Logging exit."; // Debugging statement
+            echo "Event ended. Logging exit.";
             $exit_time = $current_time->getTimestamp();  // Convert to timestamp for logging
             $time_spent = $exit_time - $entry_time;
 
@@ -132,13 +142,19 @@ if ($distance_to_event <= $geofence_radius) {
             }
             $update_exit_stmt->close();
 
-            echo "Exit logged: $exit_time, Time spent: $time_spent"; // Debugging statement
+            echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
+
+            // Display the link if the user has spent significant time at the event
+            if ($time_spent >= $event_duration) { // Check if time spent is at least the event duration
+                echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
+            }
+
             exit();  // Stop further processing
         } else {
-            echo "Event not ended yet."; // Debugging statement
+            echo "Event not ended yet.";  // Debugging statement
         }
     } else {
-        echo "No entry_time found."; // Debugging statement
+        echo "No entry_time found.";  // Debugging statement
     }
 }
 
@@ -163,9 +179,9 @@ $check_registration_stmt->execute();
 $check_registration_stmt->store_result();
 
 if ($check_registration_stmt->num_rows == 0) {
-    // Insert registration only if the user has not registered yet
+    // Register the student for the event
     $insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
-    $insert_stmt->bind_param("sssdis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
+    $insert_stmt->bind_param("ssddis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
     $insert_stmt->execute();
     $insert_stmt->close();
 }
