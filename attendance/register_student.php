@@ -98,41 +98,24 @@ if ($distance_to_event <= $geofence_radius) {
     $exit_check_stmt->close();
 
     if ($entry_time) {
-        // Calculate the time spent in this session
-        $exit_time = $current_time->getTimestamp();  // Convert to timestamp for logging
-        $time_spent = $exit_time - $entry_time;
+        // Check if the event has ended
+        if ($time_until_end <= 0) {
+            // The event has ended
+            $exit_time = $current_time->getTimestamp();  // Convert to timestamp for logging
+            $time_spent = $exit_time - $entry_time;
 
-        // Update the log with the exit time
-        $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
-        $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
-        $update_exit_stmt->execute();
-        $update_exit_stmt->close();
+            // Update the log with the exit time
+            $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
+            $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
+            $update_exit_stmt->execute();
+            $update_exit_stmt->close();
 
-        // Calculate the total time spent in all sessions
-        $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_attendance WHERE event_id = ? AND student_email = ?");
-        $total_time_stmt->bind_param("is", $event_id, $email);
-        $total_time_stmt->execute();
-        $total_time_stmt->bind_result($total_time_spent);
-        $total_time_stmt->fetch();
-        $total_time_stmt->close();
-
-        // Convert event duration from minutes to seconds
-        $required_time_spent = $event_duration * 60;
-
-        if ($total_time_spent >= $required_time_spent) {
-            // User has met the event duration requirement, show final registration link
-            echo "<p>You've completed the required time for this event. Proceed with final registration.</p>";
-            echo "<a href='final_registration.php?name=$name&email=$email&event_id=$event_id'>Complete Final Registration</a>";
+            echo "<p>The event has ended. Your total time spent in the event has been logged.</p>";
         } else {
-            // Notify user of remaining time to be completed
-            $remaining_time = $required_time_spent - $total_time_spent;
-            echo "<p>You've spent " . gmdate("H:i:s", $total_time_spent) . " in the event. You need to stay for " . gmdate("H:i:s", $remaining_time) . " more.</p>";
+            echo "<p>You are outside the geofenced area. Please enter the geofence to participate in the event.</p>";
         }
-    } else {
-        echo "<p>You are outside the geofenced area. Please enter the geofence to participate in the event.</p>";
     }
 }
-
 
 // Function to get the user's IP address
 function get_user_ip() {
@@ -148,10 +131,23 @@ function get_user_ip() {
 // Get the user's IP address
 $ip_address = get_user_ip();
 
-// Insert registration details into the 'registrations' table (only if the registration is completed)
-$insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
-$insert_stmt->bind_param("sssdis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
-$insert_stmt->execute();
-$insert_stmt->close();
+// Check if the student has already registered for the event
+$check_registration_stmt = $conn->prepare("SELECT id FROM registrations WHERE email = ? AND event_id = ?");
+$check_registration_stmt->bind_param("si", $email, $event_id);
+$check_registration_stmt->execute();
+$check_registration_stmt->store_result();
+
+if ($check_registration_stmt->num_rows == 0) {
+    // Insert registration only if the user has not registered yet
+    $insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
+    $insert_stmt->bind_param("sssdis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
+    $insert_stmt->execute();
+    $insert_stmt->close();
+}
+
+$check_registration_stmt->close();
+
+// PRG pattern to prevent form resubmission
+exit();
 
 ?>
