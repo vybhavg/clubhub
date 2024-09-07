@@ -86,7 +86,25 @@ if ($distance_to_event <= $geofence_radius) {
 
         echo "<p>Welcome! Your entry time has been logged. Continue participating in the event.</p>";
     } else {
-        echo "<p>You are already within the geofence.</p>";
+        // Check if the event has already ended
+        if ($time_until_end <= 0) {
+            // Event has ended, but user is still inside the geofence
+            echo "<p>The event has ended. Logging your exit automatically.</p>";
+            $exit_time = $event_end_time_ist->getTimestamp();  // Use event end time as exit time
+            $time_spent = $exit_time - $entry_time;  // Calculate time spent
+
+            // Update the log with the exit time
+            $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
+            $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
+            if (!$update_exit_stmt->execute()) {
+                echo "Error updating exit_time: " . $update_exit_stmt->error;
+            }
+            $update_exit_stmt->close();
+
+            echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
+        } else {
+            echo "<p>You are already within the geofence.</p>";
+        }
     }
 } else {
     // User is leaving the geofence, log exit time
@@ -101,19 +119,24 @@ if ($distance_to_event <= $geofence_radius) {
         // Check if the event has ended
         if ($time_until_end <= 0) {
             // The event has ended
+            echo "Event ended. Logging exit."; // Debugging statement
             $exit_time = $current_time->getTimestamp();  // Convert to timestamp for logging
             $time_spent = $exit_time - $entry_time;
 
             // Update the log with the exit time
             $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
             $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
-            $update_exit_stmt->execute();
+            if (!$update_exit_stmt->execute()) {
+                echo "Error updating exit_time: " . $update_exit_stmt->error;
+            }
             $update_exit_stmt->close();
 
-            echo "<p>The event has ended. Your total time spent in the event has been logged.</p>";
+            echo "Exit logged: $exit_time, Time spent: $time_spent"; // Debugging statement
         } else {
-            echo "<p>You are outside the geofenced area. Please enter the geofence to participate in the event.</p>";
+            echo "Event not ended yet."; // Debugging statement
         }
+    } else {
+        echo "No entry_time found."; // Debugging statement
     }
 }
 
