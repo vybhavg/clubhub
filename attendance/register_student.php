@@ -20,7 +20,7 @@ $stmt->fetch();
 $stmt->close();
 
 // Geofence parameters
-$geofence_radius = 0.2; // 200 meters (0.2 km)
+$geofence_radius = 0.1; // 1 km radius
 
 // Haversine formula to calculate the distance between two GPS coordinates
 function haversine_distance($lat1, $lon1, $lat2, $lon2) {
@@ -92,18 +92,11 @@ if ($distance_to_event <= $geofence_radius) {
             }
             $update_exit_stmt->close();
 
-            // Check if the time spent meets the event duration
-            if ($time_spent >= $event_duration) {
-                // Insert into final_attendance table
-                $insert_final_attendance_stmt = $conn->prepare("INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) VALUES (?, ?, ?, ?, ?, ?)");
-                $insert_final_attendance_stmt->bind_param("ssiiii", $name, $email, $event_id, $entry_time, $exit_time, $time_spent);
-                $insert_final_attendance_stmt->execute();
-                $insert_final_attendance_stmt->close();
+            echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
 
-                // Display success message
-                echo "<p>Your attendance has been given.</p>";
-            } else {
-                echo "<p>You did not spend enough time at the event to record attendance.</p>";
+            // Display the link if the user has spent significant time at the event
+            if ($time_spent >= $event_duration) { // Check if time spent is at least the event duration
+                echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
             }
 
             exit();  // Stop further processing
@@ -149,22 +142,65 @@ if ($distance_to_event <= $geofence_radius) {
             }
             $update_exit_stmt->close();
 
-            // Check if the time spent meets the event duration
-            if ($time_spent >= $event_duration) {
-                // Insert into final_attendance table
-                $insert_final_attendance_stmt = $conn->prepare("INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) VALUES (?, ?, ?, ?, ?, ?)");
-                $insert_final_attendance_stmt->bind_param("ssiiii", $name, $email, $event_id, $entry_time, $exit_time, $time_spent);
-                $insert_final_attendance_stmt->execute();
-                $insert_final_attendance_stmt->close();
+            echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
 
-                // Display success message
-                echo "<p>Your attendance has been given.</p>";
-            } else {
-                echo "<p>You did not spend enough time at the event to record attendance.</p>";
-            }
+            // Display the link if the user has spent significant time at the event
+            // After logging the exit and calculating time_spent
+    if ($time_spent >= $event_duration) {
+        echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
+    
+        // Insert the student into final_attendance if the duration is met
+        $insert_final_attendance_stmt = $conn->prepare("INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) VALUES (?, ?, ?, ?, ?, ?)");
+        $insert_final_attendance_stmt->bind_param("ssiiii", $name, $email, $event_id, $entry_time, $exit_time, $time_spent);
+        
+        if (!$insert_final_attendance_stmt->execute()) {
+            echo "Error inserting into final_attendance: " . $insert_final_attendance_stmt->error;
+        }
+        
+        $insert_final_attendance_stmt->close();
+}
+
 
             exit();  // Stop further processing
+        } else {
+            echo "Event not ended yet.";  // Debugging statement
         }
+    } else {
+        echo "No entry_time found.";  // Debugging statement
     }
 }
+
+// Function to get the user's IP address
+function get_user_ip() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
+// Get the user's IP address
+$ip_address = get_user_ip();
+
+// Check if the student has already registered for the event
+$check_registration_stmt = $conn->prepare("SELECT id FROM registrations WHERE email = ? AND event_id = ?");
+$check_registration_stmt->bind_param("si", $email, $event_id);
+$check_registration_stmt->execute();
+$check_registration_stmt->store_result();
+
+if ($check_registration_stmt->num_rows == 0) {
+    // Register the student for the event
+    $insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
+    $insert_stmt->bind_param("ssddis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
+    $insert_stmt->execute();
+    $insert_stmt->close();
+}
+
+$check_registration_stmt->close();
+
+// PRG pattern to prevent form resubmission
+exit();
+
 ?>
