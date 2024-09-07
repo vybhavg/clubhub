@@ -86,12 +86,17 @@ if ($distance_to_event <= $geofence_radius) {
 
         echo "<p>Welcome! Your entry time has been logged. Continue participating in the event.</p>";
     } else {
-        // Check if the event has already ended
+        // Check if the event has ended
         if ($time_until_end <= 0) {
             // Event has ended, but user is still inside the geofence
             echo "<p>The event has ended. Logging your exit automatically.</p>";
-            $exit_time = $event_end_time_ist->getTimestamp();  // Use event end time as exit time
+
+            // Use current time for exit if event has ended
+            $exit_time = $current_time->getTimestamp();  // Get current server time as exit time
             $time_spent = $exit_time - $entry_time;  // Calculate time spent
+
+            // Ensure time_spent is not negative
+            $time_spent = max($time_spent, 0);
 
             // Update the log with the exit time
             $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
@@ -102,7 +107,6 @@ if ($distance_to_event <= $geofence_radius) {
             $update_exit_stmt->close();
 
             echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
-            exit();  // Stop further processing
         } else {
             echo "<p>You are already within the geofence.</p>";
         }
@@ -124,6 +128,9 @@ if ($distance_to_event <= $geofence_radius) {
             $exit_time = $current_time->getTimestamp();  // Convert to timestamp for logging
             $time_spent = $exit_time - $entry_time;
 
+            // Ensure time_spent is not negative
+            $time_spent = max($time_spent, 0);
+
             // Update the log with the exit time
             $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
             $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
@@ -133,7 +140,6 @@ if ($distance_to_event <= $geofence_radius) {
             $update_exit_stmt->close();
 
             echo "Exit logged: $exit_time, Time spent: $time_spent"; // Debugging statement
-            exit();  // Stop further processing
         } else {
             echo "Event not ended yet."; // Debugging statement
         }
@@ -162,17 +168,4 @@ $check_registration_stmt->bind_param("si", $email, $event_id);
 $check_registration_stmt->execute();
 $check_registration_stmt->store_result();
 
-if ($check_registration_stmt->num_rows == 0) {
-    // Insert registration only if the user has not registered yet
-    $insert_stmt = $conn->prepare("INSERT INTO registrations (name, email, latitude, longitude, event_id, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
-    $insert_stmt->bind_param("sssdis", $name, $email, $user_latitude, $user_longitude, $event_id, $ip_address);
-    $insert_stmt->execute();
-    $insert_stmt->close();
-}
-
-$check_registration_stmt->close();
-
-// PRG pattern to prevent form resubmission
-exit();
-
-?>
+if
