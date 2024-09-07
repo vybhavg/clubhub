@@ -178,7 +178,7 @@ if ($distance_to_event <= $geofence_radius) {
 }
 
 
-}
+
 
 
             exit();  // Stop further processing
