@@ -102,6 +102,7 @@ if ($distance_to_event <= $geofence_radius) {
             $update_exit_stmt->close();
 
             echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
+            exit();  // Stop further processing
         } else {
             echo "<p>You are already within the geofence.</p>";
         }
@@ -132,6 +133,7 @@ if ($distance_to_event <= $geofence_radius) {
             $update_exit_stmt->close();
 
             echo "Exit logged: $exit_time, Time spent: $time_spent"; // Debugging statement
+            exit();  // Stop further processing
         } else {
             echo "Event not ended yet."; // Debugging statement
         }
