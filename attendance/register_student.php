@@ -148,23 +148,35 @@ if ($distance_to_event <= $geofence_radius) {
             // After logging the exit and calculating time_spent
            
 
-    if ($time_spent >= $event_duration) {
-        echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
-         echo "Time spent: $time_spent, Event duration: $event_duration";  // Debugging statement
-        // Insert the student into final_attendance if the duration is met
-        $insert_final_attendance_stmt = $conn->prepare("INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) VALUES (?, ?, ?, ?, ?, ?)");
-        $insert_final_attendance_stmt = $conn->prepare("INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) VALUES (?, ?, ?, ?, ?, ?)");
-$insert_final_attendance_stmt->bind_param("ssiiii", $name, $email, $event_id, $entry_time, $exit_time, $time_spent);
+   if ($time_spent >= $event_duration) {
+    echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
+    
+    // Debugging statement
+    echo "Time spent: $time_spent, Event duration: $event_duration";  
 
-if (!$insert_final_attendance_stmt->execute()) {
-    echo "Error inserting into final_attendance: " . $insert_final_attendance_stmt->error;
-} else {
-    echo "Inserting student into final_attendance with details: Name = $name, Email = $email, Event ID = $event_id, Entry Time = $entry_time, Exit Time = $exit_time, Time Spent = $time_spent";
+    // Insert the student into final_attendance if the duration is met
+    $insert_final_attendance_stmt = $conn->prepare(
+        "INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) 
+         VALUES (?, ?, ?, ?, ?, ?)"
+    );
 
-    echo "Successfully inserted into final_attendance!";
+    // Bind parameters
+    $insert_final_attendance_stmt->bind_param("ssiiii", $name, $email, $event_id, $entry_time, $exit_time, $time_spent);
+
+    // Execute and check for errors
+    if (!$insert_final_attendance_stmt->execute()) {
+        // Display error message if execution fails
+        echo "Error inserting into final_attendance: " . $insert_final_attendance_stmt->error;
+    } else {
+        // Debugging statement for successful insertion
+        echo "Inserting student into final_attendance with details: Name = $name, Email = $email, Event ID = $event_id, Entry Time = $entry_time, Exit Time = $exit_time, Time Spent = $time_spent";
+        echo "Successfully inserted into final_attendance!";
+    }
+
+    // Close the prepared statement
+    $insert_final_attendance_stmt->close();
 }
 
-$insert_final_attendance_stmt->close();
 
 }
 
