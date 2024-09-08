@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['apply'])) {
         $_SESSION['message'] = "File upload failed.";
     }
 
-    header("Location: student.php"); // Redirect to avoid resubmission on refresh
+    header("Location: application.php"); // Redirect to avoid resubmission on refresh
     exit();
 }
 
@@ -132,12 +132,12 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apply for Recruitment</title>
-    <link rel="stylesheet" href="student.css">
+    <link rel="stylesheet" href="application.css">
 </head>
 <body>
     <div class="container">
         <h2>Apply for Recruitment</h2>
-        <form action="student.php" method="post" enctype="multipart/form-data">
+        <form action="application.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required>
