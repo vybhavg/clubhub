@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 
 // Check if student is logged in
 if (!isset($_SESSION['student_id'])) {
-    header('Location: login.php'); // Redirect to login page if not logged in
+    header('Location: student_login.php'); // Redirect to login page if not logged in
     exit();
 }
 
