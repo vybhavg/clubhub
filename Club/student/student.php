@@ -5,39 +5,16 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Check if the user is logged in and has a valid club_id
-if (!isset($_SESSION['club_id'])) {
-    header('Location: student_login.php'); // Redirect to login if not logged in
-    exit;
-}
+// Get the update type from the URL parameter, default to 'events'
+$updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 
-// Get session variables
-$club_id = $_SESSION['club_id'];
-$branch_id = $_SESSION['branch_id'];
-$updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events'; // Default to 'events'
+// Initialize variables
+$club_name = 'All Clubs'; // Displaying for all clubs
 
-// Initialize $club_name
-$club_name = 'Club'; // Default value
-
-// Fetch club name from the database
-$stmt = $conn->prepare("SELECT club_name FROM clubs WHERE id = ?");
-if ($stmt) {
-    $stmt->bind_param("i", $club_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        $club = $result->fetch_assoc();
-        $club_name = htmlspecialchars($club['club_name']); // Sanitize output
-    }
-    $stmt->close();
-} else {
-    error_log("Prepare failed: " . $conn->error);
-}
-
-// Fetch events for the logged-in club
-$stmt_fetch_events = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
+// Fetch all events from all clubs
+$stmt_fetch_events = $conn->prepare("SELECT e.*, c.club_name FROM events e
+    INNER JOIN clubs c ON e.club_id = c.id");
 if ($stmt_fetch_events) {
-    $stmt_fetch_events->bind_param("i", $club_id);
     $stmt_fetch_events->execute();
     $eventsResult = $stmt_fetch_events->get_result();
     $stmt_fetch_events->close();
@@ -46,12 +23,10 @@ if ($stmt_fetch_events) {
     $_SESSION['message'] = "Error fetching events.";
 }
 
-// Fetch recruitments for the logged-in club
+// Fetch all recruitments from all clubs
 $stmt_fetch_recruitments = $conn->prepare("SELECT r.*, c.club_name FROM recruitments r
-    INNER JOIN clubs c ON r.club_id = c.id
-    WHERE r.club_id = ?");
+    INNER JOIN clubs c ON r.club_id = c.id");
 if ($stmt_fetch_recruitments) {
-    $stmt_fetch_recruitments->bind_param("i", $club_id);
     $stmt_fetch_recruitments->execute();
     $recruitmentsResult = $stmt_fetch_recruitments->get_result();
     $stmt_fetch_recruitments->close();
@@ -138,7 +113,7 @@ $conn->close();
         </div>
     </section><!-- /Hero Section -->
 
-    <!-- Dynamic Content Sections -->
+<!-- Dynamic Content Sections -->
 <?php if ($updateType == 'events') { ?>
     <!-- Events Section -->
     <section id="events" class="about section">
@@ -155,7 +130,7 @@ $conn->close();
                         <h4><?php echo htmlspecialchars($event['title']); ?></h4>
                         <p><?php echo htmlspecialchars($event['description']); ?></p>
                         <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
-                        <a href="register_event.php?event_id=<?php echo $event['id']; ?>&club_id=<?php echo $event['club_id']; ?>" class="btn btn-primary">Register</a>
+                        <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>&club_id=<?php echo htmlspecialchars($event['club_id']); ?>" class="btn btn-primary">Register</a>
                     </div>
                 <?php endwhile; ?>
             <?php else: ?>
@@ -191,98 +166,6 @@ $conn->close();
     </section><!-- /Recruitments Section -->
 <?php } ?>
 
-<?php } elseif ($updateType == 'applications') { ?>
-    <!-- Applications Section -->
-    <section id="applications" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Applications</h2>
-            <p>View and manage student applications here.</p>
-        </div>
-    </section><!-- /Applications Section -->
-
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h3>Applications for Your Club</h3>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Email</th>
-                            <th>Resume</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        if ($applicationsResult && $applicationsResult->num_rows > 0) {
-                            while ($application = $applicationsResult->fetch_assoc()) { ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($application['student_name'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($application['email'] ?? 'N/A'); ?></td>
-                                    <td><a href="http://18.212.212.22/<?php echo htmlspecialchars($application['resume_path'] ?? ''); ?>" class="btn btn-info" target="_blank">View Resume</a></td>
-                                    <td>
-                                        <form method="POST" action="">
-                                            <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($application['id'] ?? ''); ?>">
-                                            <button type="submit" name="accept_application" class="btn btn-success">Accept</button>
-                                            <button type="submit" name="reject_application" class="btn btn-danger">Reject</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php }
-                        } else {
-                            echo "<tr><td colspan='4'>No applications available</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-<?php } ?>
-
-<?php
-// Ensure this code is placed within your PHP script where it handles different update types
-
-if ($updateType == 'onboarding') { ?>
-    <!-- Onboarding Section -->
-    <section id="onboarding" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Onboarding</h2>
-            <p>View and manage students who have been onboarded to your club.</p>
-        </div>
-    </section><!-- /Onboarding Section -->
-
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h3>Onboarded Students for Your Club</h3>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        if ($onboardingResult && $onboardingResult->num_rows > 0) {
-                            while ($onboarded = $onboardingResult->fetch_assoc()) { ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($onboarded['student_name'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($onboarded['email'] ?? 'N/A'); ?></td>
-                                </tr>
-                            <?php }
-                        } else {
-                            echo "<tr><td colspan='3'>No onboarded students available</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-<?php } ?>
 
 
     <!-- Contact Section -->
