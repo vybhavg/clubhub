@@ -11,9 +11,18 @@ $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 // Initialize variables
 $club_name = 'All Clubs'; // Displaying for all clubs
 
-// Fetch all events from all clubs
-$stmt_fetch_events = $conn->prepare("SELECT e.*, c.club_name FROM events e
-    INNER JOIN clubs c ON e.club_id = c.id");
+// Fetch all events that the student has not registered for
+$student_id = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : 0; // Ensure student_id is available
+
+$stmt_fetch_events = $conn->prepare("
+    SELECT e.*, c.club_name 
+    FROM events e
+    INNER JOIN clubs c ON e.club_id = c.id
+    LEFT JOIN event_registrations r ON e.id = r.event_id AND r.student_id = ?
+    WHERE r.event_id IS NULL
+");
+$stmt_fetch_events->bind_param("i", $student_id);
+
 if ($stmt_fetch_events) {
     $stmt_fetch_events->execute();
     $eventsResult = $stmt_fetch_events->get_result();
@@ -35,9 +44,7 @@ if ($stmt_fetch_recruitments) {
     $_SESSION['message'] = "Error fetching recruitments.";
 }
 
-// Fetch registered events for the current student (assuming student ID is available in session)
-$student_id = $_SESSION['student_id']; // Make sure this is set when the student logs in
-
+// Fetch registered events for the current student
 $stmt_fetch_registered_events = $conn->prepare("SELECT e.*, r.registration_date FROM events e
     INNER JOIN event_registrations r ON e.id = r.event_id
     WHERE r.student_id = ?");
@@ -54,6 +61,7 @@ if ($stmt_fetch_registered_events) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 <!DOCTYPE html>
@@ -130,57 +138,59 @@ $conn->close();
     </section><!-- /Hero Section -->
 
 
-<!-- Dynamic Content Sections -->
-<?php if ($updateType == 'events') { ?>
-    <!-- Events Section -->
-    <section id="events" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Events</h2>
-            <p>Here are the events available for registration.</p>
-        </div>
-        <div class="form-container">
-            <div class="upbox update-item filter-events active">
-                <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
-                    <?php while ($event = $eventsResult->fetch_assoc()): ?>
-                        <div class="update-entry">
-                            <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                            <p><?php echo htmlspecialchars($event['description']); ?></p>
-                            <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
-                            <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>&club_id=<?php echo htmlspecialchars($event['club_id']); ?>" class="btn btn-primary">Register</a>
-                        </div>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <p>No events available at the moment.</p>
-                <?php endif; ?>
+   <!-- Dynamic Content Sections -->
+    <?php if ($updateType == 'events') { ?>
+        <!-- Events Section -->
+        <section id="events" class="about section">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Events</h2>
+                <p>Here are the events available for registration.</p>
             </div>
-        </div>
-    </section><!-- /Events Section -->
-
-    <!-- Registered Events Section -->
-    <section id="registered-events" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Registered Events</h2>
-            <p>Here are the events you have registered for.</p>
-        </div>
-        <div class="form-container">
-            <div class="upbox update-item filter-registered-events">
-                <?php if ($registeredEventsResult && $registeredEventsResult->num_rows > 0): ?>
-                    <?php while ($event = $registeredEventsResult->fetch_assoc()): ?>
-                        <div class="update-entry">
-                            <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                            <p><?php echo htmlspecialchars($event['description']); ?></p>
-                            <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
-                            <p>Registered on: <?php echo htmlspecialchars($event['registration_date']); ?></p>
-                            <a href="geofence.php?event_id=<?php echo htmlspecialchars($event['id']); ?>" class="btn btn-primary">Attend</a>
-                        </div>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <p>You have not registered for any events yet.</p>
-                <?php endif; ?>
+            <div class="form-container">
+                <div class="upbox update-item filter-events active">
+                    <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
+                        <?php while ($event = $eventsResult->fetch_assoc()): ?>
+                            <div class="update-entry">
+                                <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+                                <p><?php echo htmlspecialchars($event['description']); ?></p>
+                                <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
+                                <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>&club_id=<?php echo htmlspecialchars($event['club_id']); ?>" class="btn btn-primary">Register</a>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p>No events available at the moment.</p>
+                    <?php endif; ?>
+                </div>
             </div>
-        </div>
-    </section><!-- /Registered Events Section -->
+        </section><!-- /Events Section -->
 
+        <!-- Registered Events Section -->
+        <section id="registered-events" class="about section">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Registered Events</h2>
+                <p>Here are the events you have registered for.</p>
+            </div>
+            <div class="form-container">
+                <div class="upbox update-item filter-registered-events">
+                    <?php if ($registeredEventsResult && $registeredEventsResult->num_rows > 0): ?>
+                        <?php while ($event = $registeredEventsResult->fetch_assoc()): ?>
+                            <div class="update-entry">
+                                <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+                                <p><?php echo htmlspecialchars($event['description']); ?></p>
+                                <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
+                                <p>Registered on: <?php echo htmlspecialchars($event['registration_date']); ?></p>
+                                <a href="geofence.php?event_id=<?php echo htmlspecialchars($event['id']); ?>" class="btn btn-primary">Attend</a>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p>You have not registered for any events yet.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section><!-- /Registered Events Section -->
+    <?php } ?>
+
+    
 <?php } elseif ($updateType == 'recruitments') { ?>
     <!-- Recruitments Section -->
     <section id="recruitments" class="about section">
