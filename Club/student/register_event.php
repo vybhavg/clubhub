@@ -31,5 +31,5 @@ if ($event_id) {
 }
 
 $conn->close();
-header('Location: index.php?update_type=events'); // Redirect back to events page
+header('Location: student.php?update_type=events#events'); // Redirect back to events page
 ?>
