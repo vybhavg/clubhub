@@ -12,7 +12,7 @@ $event_id = isset($_GET['event_id']) ? $_GET['event_id'] : 0;
 // Ensure both event_id and student_id are valid
 if ($student_id && $event_id) {
     // Fetch student name and email from student_login_details table
-    $stmt_fetch_student = $conn->prepare("SELECT student_name, college_email FROM student_login_details WHERE id = ?");
+    $stmt_fetch_student = $conn->prepare("SELECT name, email FROM student_login_details WHERE id = ?");
     $stmt_fetch_student->bind_param("i", $student_id);
     
     if ($stmt_fetch_student) {
@@ -32,7 +32,7 @@ if ($student_id && $event_id) {
                 $stmt_fetch_club->close();
 
                 if ($club_id) {
-                    // Insert registration into event_registrations table with club_id, student_name, and email
+                    // Insert registration into event_registrations table without latitude and longitude for now
                     $stmt_insert_registration = $conn->prepare("
                         INSERT INTO event_registrations (event_id, student_id, club_id, name, email, registration_date)
                         VALUES (?, ?, ?, ?, ?, NOW())
