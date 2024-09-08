@@ -923,6 +923,8 @@ section,
   color: var(--accent-color);
 }
 
+
+
 /*--------------------------------------------------------------
 # Services Section
 --------------------------------------------------------------*/
@@ -985,56 +987,65 @@ section,
   border-radius: 0px;
 }
 /*--------------------------------------------------------------
-# form Section
+# Form Section
 --------------------------------------------------------------*/
-    .form-container {
-        max-width: 600px;
-        margin: 20px auto;
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+.form-container {
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-    .form-container ul {
-        list-style-type: none;
-        padding: 0;
-    }
+.form-container ul {
+  list-style-type: none;
+  padding: 0;
+}
 
-    .form-container ul li {
-        margin-bottom: 10px;
-        background-color: #fff;
-        padding: 10px;
-        border: 1px solid #dee2e6;
-        border-radius: 5px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.form-container ul li {
+  margin-bottom: 10px;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .form-container ul li form {
-        margin: 0;
-    }
+.form-container ul li form {
+  margin: 0;
+}
 
-    .btn-custom {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+.btn-custom {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
-    .btn-custom:hover {
-        background-color: #0056b3;
-    }
+.btn-custom:hover {
+  background-color: #0056b3;
+}
 
-    .dropdown-menu {
-        max-height: 200px;
-        overflow-y: auto;
-    }
+.dropdown-menu {
+  max-height: 200px;
+  overflow-y: auto;
+}
 
+/* Align buttons to the right */
+.update-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align content to the left */
+}
 
+.update-entry .btn-primary {
+  margin-left: auto; /* Push the button to the right */
+}
 
 /*--------------------------------------------------------------
 # Faq Section
