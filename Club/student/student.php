@@ -46,16 +46,20 @@ if ($stmt_fetch_events) {
     $_SESSION['message'] = "Error fetching events.";
 }
 
-$recruitmentsResult = $conn->prepare("SELECT r.*, c.club_name FROM recruitments r
+// Fetch recruitments for the logged-in club
+$stmt_fetch_recruitments = $conn->prepare("SELECT r.*, c.club_name FROM recruitments r
     INNER JOIN clubs c ON r.club_id = c.id
     WHERE r.club_id = ?");
-if ($recruitmentsResult) {
-    $recruitmentsResult->bind_param("i", $club_id);
-    $recruitmentsResult->execute();
-    $recruitmentsResult = $recruitmentsResult->get_result();
+if ($stmt_fetch_recruitments) {
+    $stmt_fetch_recruitments->bind_param("i", $club_id);
+    $stmt_fetch_recruitments->execute();
+    $recruitmentsResult = $stmt_fetch_recruitments->get_result();
+    $stmt_fetch_recruitments->close();
 } else {
     error_log("Prepare failed: " . $conn->error);
+    $_SESSION['message'] = "Error fetching recruitments.";
 }
+
 // Close the database connection
 $conn->close();
 ?>
