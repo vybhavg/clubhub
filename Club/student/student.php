@@ -50,7 +50,7 @@ $stmt_fetch_registered_events = $conn->prepare("
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
-    INNER JOIN student_login_details s ON r.student_id = s.student_id
+    INNER JOIN student_login_details s ON r.student_id = s.id
     WHERE r.student_id = ?
 ");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
