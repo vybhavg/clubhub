@@ -44,8 +44,10 @@ if ($stmt_fetch_recruitments) {
     $_SESSION['message'] = "Error fetching recruitments.";
 }
 
-// Fetch registered events for the current student
-$stmt_fetch_registered_events = $conn->prepare("SELECT e.*, r.registration_date FROM events e
+// Fetch registered events for the current student including the club name
+$stmt_fetch_registered_events = $conn->prepare("SELECT e.*, c.club_name, r.registration_date 
+    FROM events e
+    INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
     WHERE r.student_id = ?");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
@@ -61,6 +63,7 @@ if ($stmt_fetch_registered_events) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 
