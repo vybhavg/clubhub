@@ -388,6 +388,25 @@ $conn->close();
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+    <!-- Include jQuery if not already included -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    // Smooth scrolling for navigation links
+    $('a[href^="#"]').on('click', function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+
+        var target = $(this.getAttribute('href'));
+
+        if (target.length) {
+            $('html, body').stop().animate({
+                scrollTop: target.offset().top
+            }, 1000); // Adjust the speed (1000ms) as needed
+        }
+    });
+});
+</script>
 
 </body>
 
