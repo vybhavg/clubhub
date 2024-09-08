@@ -46,7 +46,7 @@ if ($stmt_fetch_recruitments) {
 
 // Fetch registered events for the current student including the club name, registration date, and student details
 $stmt_fetch_registered_events = $conn->prepare("
-    SELECT e.id AS event_id, e.title, e.description, e.date, c.club_name, r.registration_date, r.student_id, s.studentName, s.studentEmail 
+    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, r.student_id, s.studentName, s.studentEmail 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
