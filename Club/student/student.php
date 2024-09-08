@@ -187,7 +187,7 @@ $conn->close();
         <?php endif; ?>
     </div>
 </section>
-    
+    <?php } ?>
 <?php } elseif ($updateType == 'applications') { ?>
     <!-- Applications Section -->
     <section id="applications" class="about section">
