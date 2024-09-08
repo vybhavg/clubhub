@@ -71,58 +71,82 @@ echo "<p>Event End Time (IST): " . $event_end_time_ist->format('Y-m-d H:i:s') . 
 echo "<p>Time until Event Ends: " . format_time(max($time_until_end, 0)) . "</p>";
 
 // Check if the user is within the geofence
-if ($distance_to_event <= $geofence_radius) {
-    // Check if the user has an existing entry
-    $entry_check_stmt = $conn->prepare("SELECT id, entry_time, exit_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
-    $entry_check_stmt->bind_param("is", $event_id, $email);
-    $entry_check_stmt->execute();
-    $entry_check_stmt->bind_result($log_id, $entry_time, $exit_time);
-    $entry_check_stmt->fetch();
-    $entry_check_stmt->close();
+// Check if there's an ongoing entry without an exit logged
+$check_stmt = $conn->prepare("SELECT id, entry_time, exit_time FROM student_attendance WHERE student_email = ? AND event_id = ? ORDER BY entry_time DESC LIMIT 1");
+$check_stmt->bind_param("si", $email, $event_id);
+$check_stmt->execute();
+$check_stmt->bind_result($log_id, $entry_time, $exit_time);
+$check_stmt->fetch();
+$check_stmt->close();
 
-    if ($entry_time && !$exit_time) {
-        // If the user entered before the event started
-        if ($entry_time < $event_start_time_ist->getTimestamp()) {
-            // Adjust entry time to event start time
-            $entry_time = $event_start_time_ist->getTimestamp();
-        }
+$current_time = time();  // Current time in timestamp format
+$total_time_spent = 0;
 
-        // Check if the event has ended
-        if ($time_until_end <= 0) {
-            // Event has ended, log exit
-            echo "<p>The event has ended. Logging your exit automatically.</p>";
-            $exit_time = $event_end_time_ist->getTimestamp();  // Use event end time as exit time
-            $time_spent = $exit_time - $entry_time;  // Calculate time spent from adjusted entry time
+// If the student has an active entry (without exit logged)
+if ($entry_time && !$exit_time) {
+    // If the user entered before the event started, adjust entry time
+    if ($entry_time < $event_start_time_ist->getTimestamp()) {
+        $entry_time = $event_start_time_ist->getTimestamp();
+    }
 
-            // Update the log with the exit time
-            $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
-            $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
-            if (!$update_exit_stmt->execute()) {
-                echo "Error updating exit_time: " . $update_exit_stmt->error;
-            }
-            $update_exit_stmt->close();
+    // If the event has ended, log the exit and calculate total time spent
+    if ($current_time >= $event_end_time_ist->getTimestamp()) {
+        $exit_time = $event_end_time_ist->getTimestamp();  // Exit time is the event end time
+        $time_spent = $exit_time - $entry_time;  // Time spent during this session
 
-            echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
+        // Update the log with exit time and time spent
+        $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
+        $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
+        $update_exit_stmt->execute();
+        $update_exit_stmt->close();
 
-            // Display the link if the user has spent significant time at the event
-            if ($time_spent >= $event_duration) {
-                echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
+        $total_time_spent += $time_spent;  // Accumulate time spent
+    } else {
+        // The student is still inside the event, no exit recorded yet
+        echo "<p>You are already within the event's geofence. Keep participating.</p>";
+    }
+} else {
+    // If no ongoing entry, check if the student has exited and re-entered
+    $total_time_stmt = $conn->prepare("SELECT SUM(time_spent) FROM student_attendance WHERE student_email = ? AND event_id = ?");
+    $total_time_stmt->bind_param("si", $email, $event_id);
+    $total_time_stmt->execute();
+    $total_time_stmt->bind_result($total_time_spent);
+    $total_time_stmt->fetch();
+    $total_time_stmt->close();
 
-                // Insert into final_attendance if the duration is met
-                $insert_final_attendance_stmt = $conn->prepare(
-                    "INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) 
-                     VALUES (?, ?, ?, ?, ?, ?)"
-                );
-                $insert_final_attendance_stmt->bind_param("ssiiii", $name, $email, $event_id, $entry_time, $exit_time, $time_spent);
-                
-                if (!$insert_final_attendance_stmt->execute()) {
-                    echo "Error inserting into final_attendance: " . $insert_final_attendance_stmt->error;
-                } else {
-                    echo "Successfully inserted into final_attendance!";
-                }
+    // Log the new entry time (handle early entry adjustment)
+    $entry_time = max($current_time, $event_start_time_ist->getTimestamp());  // Adjust entry time if early
+    $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_name, student_email, event_id, entry_time) VALUES (?, ?, ?, ?)");
+    $insert_entry_stmt->bind_param("ssis", $name, $email, $event_id, $entry_time);
+    $insert_entry_stmt->execute();
+    $insert_entry_stmt->close();
 
-                $insert_final_attendance_stmt->close();
-            }
+    echo "<p>Welcome back! Your re-entry time has been logged.</p>";
+}
+
+// Calculate the total time the student has spent so far, including current session
+$total_time_spent += ($exit_time ? $exit_time : $current_time) - $entry_time;
+
+// Check if the total time spent qualifies the student for attendance
+if ($total_time_spent >= $event_duration) {
+    // Log attendance in final_attendance
+    echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
+    
+    $insert_final_attendance_stmt = $conn->prepare(
+        "INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) 
+         VALUES (?, ?, ?, ?, ?, ?)"
+    );
+    $insert_final_attendance_stmt->bind_param("ssiiii", $name, $email, $event_id, $entry_time, $exit_time, $total_time_spent);
+    
+    if (!$insert_final_attendance_stmt->execute()) {
+        echo "Error inserting into final_attendance: " . $insert_final_attendance_stmt->error;
+    } else {
+        echo "Successfully inserted into final_attendance!";
+    }
+
+    $insert_final_attendance_stmt->close();
+}
+
 
             exit();  // Stop further processing
         } else {
