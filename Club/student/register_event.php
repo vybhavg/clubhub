@@ -32,7 +32,7 @@ if ($student_id && $event_id) {
                 $stmt_fetch_club->close();
 
                 if ($club_id) {
-                    // Insert registration into event_registrations table without latitude and longitude for now
+                    // Insert registration into event_registrations table without ip_address, latitude, and longitude for now
                     $stmt_insert_registration = $conn->prepare("
                         INSERT INTO event_registrations (event_id, student_id, club_id, name, email, registration_date)
                         VALUES (?, ?, ?, ?, ?, NOW())
