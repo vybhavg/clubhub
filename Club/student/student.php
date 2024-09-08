@@ -174,7 +174,8 @@ $conn->close();
                 </div>
             </div>
         </section><!-- /Events Section -->
-<!-- Registered Events Section -->
+
+    <!-- Registered Events Section -->
 <section id="registered-events" class="about section">
     <div class="container section-title" data-aos="fade-up">
         <h2>Registered Events</h2>
@@ -185,11 +186,16 @@ $conn->close();
             <?php if ($registeredEventsResult && $registeredEventsResult->num_rows > 0): ?>
                 <?php while ($event = $registeredEventsResult->fetch_assoc()): ?>
                     <div class="update-entry">
-                        <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                        <p><?php echo htmlspecialchars($event['description']); ?></p>
+                        <h4><?php echo htmlspecialchars($event['title'] ?? ''); ?></h4>
+                        <p><?php echo htmlspecialchars($event['description'] ?? ''); ?></p>
                         <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
-                        <p>Registered on: <?php echo htmlspecialchars($event['registration_date']); ?></p>
-                        <button onclick="registerForEvent(<?php echo htmlspecialchars($event['id']); ?>, <?php echo htmlspecialchars($event['student_id']); ?>, '<?php echo htmlspecialchars($event['student_name']); ?>', '<?php echo htmlspecialchars($event['college_email']); ?>')" class="btn btn-primary">Attend</button>
+                        <p>Registered on: <?php echo htmlspecialchars($event['registration_date'] ?? ''); ?></p>
+                        <button onclick="registerForEvent(
+                            <?php echo htmlspecialchars($event['event_id'] ?? ''); ?>, 
+                            <?php echo htmlspecialchars($event['student_id'] ?? ''); ?>, 
+                            '<?php echo htmlspecialchars($event['student_name'] ?? ''); ?>', 
+                            '<?php echo htmlspecialchars($event['college_email'] ?? ''); ?>'
+                        )" class="btn btn-primary">Attend</button>
                     </div>
                 <?php endwhile; ?>
             <?php else: ?>
