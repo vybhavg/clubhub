@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_username'], $_PO
             session_start();
             $_SESSION['student_id'] = $student['id'];
             $_SESSION['student_name'] = $student['student_name'];
-            header('Location: students/students.php'); // Change this to your student page
+            header('Location: student.php'); // Change this to your student page
             exit;
         } else {
             $login_error_message = "Invalid roll number or password";
@@ -165,7 +165,7 @@ $conn->close();
     <script src="vendor/select2/select2.min.js"></script>
     <script src="vendor/daterangepicker/moment.min.js"></script>
     <script src="vendor/daterangepicker/daterangepicker.js"></script>
-    <script src="login.js"></script>
+    <script src="student_login.js"></script>
     <script>
        document.getElementById('register-toggle').addEventListener('click', function() {
            document.getElementById('container').classList.add('active');
