@@ -8,7 +8,6 @@ error_reporting(E_ALL);
 // Get the student_id from the session
 $student_id = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : 0;
 $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
-$club_id = isset($_GET['club_id']) ? intval($_GET['club_id']) : 0;
 
 // Fetch the student's name from the `students` table based on `student_id`
 $stmt_fetch_name = $conn->prepare("SELECT name FROM students WHERE id = ?");
@@ -25,9 +24,9 @@ if (empty($name)) {
     exit;
 }
 
-// Insert the event registration data including the student name
-$stmt = $conn->prepare("INSERT INTO event_registrations (name, student_id, event_id, club_id) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("siii", $name, $student_id, $event_id, $club_id);
+// Insert the event registration data without `club_id`
+$stmt = $conn->prepare("INSERT INTO event_registrations (name, student_id, event_id) VALUES (?, ?, ?)");
+$stmt->bind_param("sii", $name, $student_id, $event_id);
 
 if ($stmt->execute()) {
     $_SESSION['message'] = "Event registration successful!";
@@ -43,3 +42,4 @@ $conn->close();
 header("Location: confirmation_page.php");
 exit;
 ?>
+
