@@ -188,7 +188,6 @@ $conn->close();
                 </div>
             </div>
         </section><!-- /Registered Events Section -->
-    <?php } ?>
 
     
 <?php } elseif ($updateType == 'recruitments') { ?>
