@@ -125,6 +125,7 @@ $conn->close();
             </ul>
           </li>
           <li><a class="nav-link scrollto" href="Club/login/login.php">Members</a></li>
+          <li><a class="nav-link scrollto" href="Club/student/student_login.php">Students</a></li>
           <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
@@ -228,7 +229,7 @@ $conn->close();
           <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
           <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
           <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
-          <a href="Club/student/student.php?club_id=<?php echo $recruitment['club_id']; ?>" class="btn btn-primary">Apply</a>
+          <a href="Club/student/application.php?club_id=<?php echo $recruitment['club_id']; ?>" class="btn btn-primary">Apply</a>
         </div>
       <?php endforeach; ?>
     </div>
