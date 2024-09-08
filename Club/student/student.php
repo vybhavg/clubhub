@@ -44,12 +44,13 @@ if ($stmt_fetch_recruitments) {
     $_SESSION['message'] = "Error fetching recruitments.";
 }
 
-// Fetch registered events for the current student including the club name and registration date
+// Fetch registered events for the current student including the club name, registration date, and student details
 $stmt_fetch_registered_events = $conn->prepare("
-    SELECT e.*, c.club_name, r.registration_date 
+    SELECT e.id AS event_id, e.title, e.description, e.date, c.club_name, r.registration_date, r.student_id, s.studentName, s.studentEmail 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
+    INNER JOIN student_login_details s ON r.student_id = s.student_id
     WHERE r.student_id = ?
 ");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
@@ -65,6 +66,8 @@ if ($stmt_fetch_registered_events) {
 // Close the database connection
 $conn->close();
 ?>
+
+
 
 
 
@@ -171,89 +174,102 @@ $conn->close();
                 </div>
             </div>
         </section><!-- /Events Section -->
-         <!-- Registered Events Section -->
-    <section id="registered-events" class="about section">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Registered Events</h2>
-            <p>Here are the events you have registered for.</p>
+<!-- Registered Events Section -->
+<section id="registered-events" class="about section">
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Registered Events</h2>
+        <p>Here are the events you have registered for.</p>
+    </div>
+    <div class="form-container">
+        <div class="upbox update-item filter-registered-events">
+            <?php if ($registeredEventsResult && $registeredEventsResult->num_rows > 0): ?>
+                <?php while ($event = $registeredEventsResult->fetch_assoc()): ?>
+                    <div class="update-entry">
+                        <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+                        <p><?php echo htmlspecialchars($event['description']); ?></p>
+                        <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
+                        <p>Registered on: <?php echo htmlspecialchars($event['registration_date']); ?></p>
+                        <button onclick="registerForEvent(<?php echo htmlspecialchars($event['id']); ?>, <?php echo htmlspecialchars($event['student_id']); ?>, '<?php echo htmlspecialchars($event['studentName']); ?>', '<?php echo htmlspecialchars($event['studentEmail']); ?>')" class="btn btn-primary">Attend</button>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>You have not registered for any events yet.</p>
+            <?php endif; ?>
         </div>
-        <div class="form-container">
-            <div class="upbox update-item filter-registered-events">
-                <?php if ($registeredEventsResult && $registeredEventsResult->num_rows > 0): ?>
-                    <?php while ($event = $registeredEventsResult->fetch_assoc()): ?>
-                        <div class="update-entry">
-                            <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                            <p><?php echo htmlspecialchars($event['description']); ?></p>
-                            <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
-                            <p>Registered on: <?php echo htmlspecialchars($event['registration_date']); ?></p>
-                            <button onclick="registerForEvent(<?php echo htmlspecialchars($event['id']); ?>)" class="btn btn-primary">Attend</button>
-                        </div>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <p>You have not registered for any events yet.</p>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section><!-- /Registered Events Section -->
+    </div>
+</section><!-- /Registered Events Section -->
 
-     <script>
-        function registerForEvent(eventId) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        var form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = 'register_student.php';
 
-                        var inputEventId = document.createElement('input');
-                        inputEventId.type = 'hidden';
-                        inputEventId.name = 'event_id';
-                        inputEventId.value = eventId;
-                        form.appendChild(inputEventId);
+  <script>
+    function registerForEvent(eventId, studentId, studentName, studentEmail) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'register_student.php';
 
-                        var inputStudentId = document.createElement('input');
-                        inputStudentId.type = 'hidden';
-                        inputStudentId.name = 'student_id';
-                        inputStudentId.value = <?php echo json_encode($student_id); ?>;
-                        form.appendChild(inputStudentId);
+                    var inputEventId = document.createElement('input');
+                    inputEventId.type = 'hidden';
+                    inputEventId.name = 'event_id';
+                    inputEventId.value = eventId;
+                    form.appendChild(inputEventId);
 
-                        var inputLatitude = document.createElement('input');
-                        inputLatitude.type = 'hidden';
-                        inputLatitude.name = 'latitude';
-                        inputLatitude.value = position.coords.latitude;
-                        form.appendChild(inputLatitude);
+                    var inputStudentId = document.createElement('input');
+                    inputStudentId.type = 'hidden';
+                    inputStudentId.name = 'student_id';
+                    inputStudentId.value = studentId;
+                    form.appendChild(inputStudentId);
 
-                        var inputLongitude = document.createElement('input');
-                        inputLongitude.type = 'hidden';
-                        inputLongitude.name = 'longitude';
-                        inputLongitude.value = position.coords.longitude;
-                        form.appendChild(inputLongitude);
+                    var inputStudentName = document.createElement('input');
+                    inputStudentName.type = 'hidden';
+                    inputStudentName.name = 'student_name';
+                    inputStudentName.value = studentName;
+                    form.appendChild(inputStudentName);
 
-                        document.body.appendChild(form);
-                        form.submit();
-                    },
-                    function(error) {
-                        switch (error.code) {
-                            case error.PERMISSION_DENIED:
-                                alert("User denied the request for Geolocation.");
-                                break;
-                            case error.POSITION_UNAVAILABLE:
-                                alert("Location information is unavailable.");
-                                break;
-                            case error.TIMEOUT:
-                                alert("The request to get user location timed out.");
-                                break;
-                            case error.UNKNOWN_ERROR:
-                                alert("An unknown error occurred.");
-                                break;
-                        }
+                    var inputStudentEmail = document.createElement('input');
+                    inputStudentEmail.type = 'hidden';
+                    inputStudentEmail.name = 'student_email';
+                    inputStudentEmail.value = studentEmail;
+                    form.appendChild(inputStudentEmail);
+
+                    var inputLatitude = document.createElement('input');
+                    inputLatitude.type = 'hidden';
+                    inputLatitude.name = 'latitude';
+                    inputLatitude.value = position.coords.latitude;
+                    form.appendChild(inputLatitude);
+
+                    var inputLongitude = document.createElement('input');
+                    inputLongitude.type = 'hidden';
+                    inputLongitude.name = 'longitude';
+                    inputLongitude.value = position.coords.longitude;
+                    form.appendChild(inputLongitude);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                },
+                function(error) {
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert("User denied the request for Geolocation.");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert("Location information is unavailable.");
+                            break;
+                        case error.TIMEOUT:
+                            alert("The request to get user location timed out.");
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            alert("An unknown error occurred.");
+                            break;
                     }
-                );
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
         }
-    </script>
+    }
+</script>
 
 
 
