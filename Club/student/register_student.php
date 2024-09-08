@@ -18,7 +18,7 @@ $name = isset($_POST['name']) ? trim($_POST['name']) : ''; // Trim and sanitize 
 $email = isset($_POST['email']) ? filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate email
 
 // Fetch the event details from the database
-$stmt = $conn->prepare("SELECT title, event_start_time, event_duration, event_end_time, latitude, longitude FROM forms WHERE id = ?");
+$stmt = $conn->prepare("SELECT title, event_start_time, event_duration, event_end_time, latitude, longitude FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
 $stmt->bind_result($event_title, $event_start_time, $event_duration, $event_end_time, $event_latitude, $event_longitude);
