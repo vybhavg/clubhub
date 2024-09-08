@@ -159,35 +159,34 @@ $conn->close();
             <?php endif; ?>
         </div>
     </section><!-- /Events Section -->
+<?php } elseif ($updateType == 'recruitments') { ?>
+    <!-- Recruitments Section -->
+    <section id="recruitments" class="about section">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Recruitments</h2>
+            <p>View the current recruitment opportunities below.</p>
+        </div>
+
+        <!-- Existing Recruitments List -->
+        <div class="upbox update-item filter-recruitment">
+            <h3>Current Recruitments</h3>
+            <?php if ($recruitmentsResult && $recruitmentsResult->num_rows > 0): ?>
+                <?php while ($recruitment = $recruitmentsResult->fetch_assoc()): ?>
+                    <div class="update-entry">
+                        <h4><?php echo htmlspecialchars($recruitment['role']); ?></h4>
+                        <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
+                        <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
+                        <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
+                        <a href="Club/student/application.php?club_id=<?php echo htmlspecialchars($recruitment['club_id']); ?>" class="btn btn-primary">Apply</a>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>No recruitments available at the moment.</p>
+            <?php endif; ?>
+        </div>
+    </section><!-- /Recruitments Section -->
 <?php } ?>
 
-    <?php } elseif ($updateType == 'recruitments') { ?>
-        <!-- Recruitments Section -->
-  <section id="recruitments" class="about section">
-    <div class="container section-title" data-aos="fade-up">
-        <h2>Recruitments</h2>
-        <p>View the current recruitment opportunities below.</p>
-    </div>
-
-    <!-- Existing Recruitments List -->
-    <div class="upbox update-item filter-recruitment">
-        <h3>Current Recruitments</h3>
-        <?php if ($recruitmentsResult && $recruitmentsResult->num_rows > 0): ?>
-            <?php while ($recruitment = $recruitmentsResult->fetch_assoc()): ?>
-                <div class="update-entry">
-                    <h4><?php echo htmlspecialchars($recruitment['role']); ?></h4>
-                    <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
-                    <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
-                    <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
-                    <a href="Club/student/application.php?club_id=<?php echo htmlspecialchars($recruitment['club_id']); ?>" class="btn btn-primary">Apply</a>
-                </div>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <p>No recruitments available at the moment.</p>
-        <?php endif; ?>
-    </div>
-</section>
-    <?php } ?>
 <?php } elseif ($updateType == 'applications') { ?>
     <!-- Applications Section -->
     <section id="applications" class="about section">
