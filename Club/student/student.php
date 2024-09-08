@@ -121,7 +121,7 @@ $conn->close();
             <h2>Events</h2>
             <p>Here are the events available for registration.</p>
         </div>
-
+<div class="form-container">
         <div class="upbox update-item filter-events active">
             <h3>Events</h3>
             <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
@@ -136,7 +136,7 @@ $conn->close();
             <?php else: ?>
                 <p>No events available at the moment.</p>
             <?php endif; ?>
-        </div>
+        </div></div>
     </section><!-- /Events Section -->
 <?php } elseif ($updateType == 'recruitments') { ?>
     <!-- Recruitments Section -->
