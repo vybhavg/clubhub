@@ -4,7 +4,7 @@ include('/var/www/html/db_connect.php'); // Ensure this file connects to your da
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-//hiii
+
 // Check if the user is logged in and has a valid club_id
 if (!isset($_SESSION['club_id'])) {
     header('Location: login.php'); // Redirect to login if not logged in
@@ -34,153 +34,21 @@ if ($stmt) {
     error_log("Prepare failed: " . $conn->error);
 }
 
-// Handle form submissions
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Add Event
-    if (isset($_POST['add_event'])) {
-        $title = $_POST['event_title'];
-        $description = $_POST['event_description'];
-
-        $stmt = $conn->prepare("INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)");
-        if ($stmt) {
-            $stmt->bind_param("ssi", $title, $description, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error adding event.";
-            } else {
-                $_SESSION['message'] = "Event added successfully.";
-            }
-            $stmt->close();
-        } else {
-            error_log("Prepare failed: " . $conn->error);
-        }
-    }
-    // Add Recruitment
-    elseif (isset($_POST['add_recruitment'])) {
-        $role = $_POST['role'];
-        $description = $_POST['recruitment_description'];
-        $deadline = $_POST['deadline'];
-
-        $stmt = $conn->prepare("INSERT INTO recruitments (role, description, deadline, club_id) VALUES (?, ?, ?, ?)");
-        if ($stmt) {
-            $stmt->bind_param("sssi", $role, $description, $deadline, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error adding recruitment.";
-            } else {
-                $_SESSION['message'] = "Recruitment added successfully.";
-            }
-            $stmt->close();
-        } else {
-            error_log("Prepare failed: " . $conn->error);
-        }
-    }
-    // Delete Event
-    elseif (isset($_POST['delete_event'])) {
-        $event_id = $_POST['event_id'];
-
-        $stmt = $conn->prepare("DELETE FROM events WHERE id = ? AND club_id = ?");
-        if ($stmt) {
-            $stmt->bind_param("ii", $event_id, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error deleting event.";
-            } else {
-                $_SESSION['message'] = "Event deleted successfully.";
-            }
-            $stmt->close();
-        } else {
-            error_log("Prepare failed: " . $conn->error);
-        }
-    }
-    // Delete Recruitment
-    elseif (isset($_POST['delete_recruitment'])) {
-        $recruitment_id = $_POST['recruitment_id'];
-
-        $stmt = $conn->prepare("DELETE FROM recruitments WHERE id = ? AND club_id = ?");
-        if ($stmt) {
-            $stmt->bind_param("ii", $recruitment_id, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error deleting recruitment.";
-            } else {
-                $_SESSION['message'] = "Recruitment deleted successfully.";
-            }
-            $stmt->close();
-        } else {
-            error_log("Prepare failed: " . $conn->error);
-        }
-    }
-    // Handle Application Accept/Reject
-    elseif (isset($_POST['accept_application']) || isset($_POST['reject_application'])) {
-        $application_id = $_POST['application_id'];
-        $status = isset($_POST['accept_application']) ? 'accepted' : 'rejected';
-
-        // Update the application status
-        $stmt_update_application_status = $conn->prepare("UPDATE applications SET status = ? WHERE id = ?");
-        if ($stmt_update_application_status) {
-            $stmt_update_application_status->bind_param("si", $status, $application_id);
-            if ($stmt_update_application_status->execute()) {
-                if ($status == 'accepted') {
-                    // Move accepted application to onboarding table
-                    $stmt_fetch_application_details = $conn->prepare("SELECT student_id, club_id FROM applications WHERE id = ?");
-                    if ($stmt_fetch_application_details) {
-                        $stmt_fetch_application_details->bind_param("i", $application_id);
-                        $stmt_fetch_application_details->execute();
-                        $result = $stmt_fetch_application_details->get_result();
-                        if ($result->num_rows > 0) {
-                            $application = $result->fetch_assoc();
-                            $student_id = $application['student_id'];
-                            $club_id = $application['club_id'];
-
-                            $stmt_insert_onboarding = $conn->prepare("INSERT INTO onboarding (student_id, club_id) VALUES (?, ?)");
-                            if ($stmt_insert_onboarding) {
-                                $stmt_insert_onboarding->bind_param("ii", $student_id, $club_id);
-                                if (!$stmt_insert_onboarding->execute()) {
-                                    error_log("Error inserting into onboarding table: " . $stmt_insert_onboarding->error);
-                                    $_SESSION['message'] = "Error moving application to onboarding.";
-                                }
-                                $stmt_insert_onboarding->close();
-                            } else {
-                                error_log("Prepare failed: " . $conn->error);
-                            }
-                        }
-                        $stmt_fetch_application_details->close();
-                    } else {
-                        error_log("Prepare failed: " . $conn->error);
-                    }
-                }
-                $_SESSION['message'] = "Application status updated successfully.";
-            } else {
-                error_log("Execute failed: " . $stmt_update_application_status->error);
-                $_SESSION['message'] = "Error updating application status.";
-            }
-            $stmt_update_application_status->close();
-        } else {
-            error_log("Prepare failed: " . $conn->error);
-        }
-    }
-
-    // Redirect to avoid form resubmission
-    header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
-    exit;
-}
-
-
-
-// Fetch events, recruitments, applications, and onboarding data for the logged-in club
-$eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
-$recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
-$onboardingResult = $conn->prepare("SELECT o.id, s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
-
-if ($eventsResult) {
-    $eventsResult->bind_param("i", $club_id);
-    $eventsResult->execute();
-    $eventsResult = $eventsResult->get_result();
+// Fetch events for the logged-in club
+$stmt_fetch_events = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
+if ($stmt_fetch_events) {
+    $stmt_fetch_events->bind_param("i", $club_id);
+    $stmt_fetch_events->execute();
+    $eventsResult = $stmt_fetch_events->get_result();
+    $stmt_fetch_events->close();
 } else {
     error_log("Prepare failed: " . $conn->error);
+    $_SESSION['message'] = "Error fetching events.";
 }
 
+$recruitmentsResult = $conn->prepare("SELECT r.*, c.club_name FROM recruitments r
+    INNER JOIN clubs c ON r.club_id = c.id
+    WHERE r.club_id = ?");
 if ($recruitmentsResult) {
     $recruitmentsResult->bind_param("i", $club_id);
     $recruitmentsResult->execute();
@@ -188,34 +56,10 @@ if ($recruitmentsResult) {
 } else {
     error_log("Prepare failed: " . $conn->error);
 }
-
-
-
-if ($onboardingResult) {
-    $onboardingResult->bind_param("i", $club_id);
-    $onboardingResult->execute();
-    $onboardingResult = $onboardingResult->get_result();
-} else {
-    error_log("Prepare failed: " . $conn->error);
-}
-// Fetch pending applications
-$stmt_fetch_pending_applications = $conn->prepare("SELECT a.id, s.name AS student_name, s.email, a.resume_path
-    FROM applications a
-    JOIN students s ON a.student_id = s.id
-    WHERE a.status = 'pending' AND a.club_id = ?");
-if ($stmt_fetch_pending_applications) {
-    $stmt_fetch_pending_applications->bind_param("i", $club_id); // Assuming $club_id is set correctly
-    $stmt_fetch_pending_applications->execute();
-    $applicationsResult = $stmt_fetch_pending_applications->get_result();
-    $stmt_fetch_pending_applications->close();
-} else {
-    error_log("Prepare failed: " . $conn->error);
-    $_SESSION['message'] = "Error fetching applications.";
-}
-
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -291,120 +135,59 @@ $conn->close();
     </section><!-- /Hero Section -->
 
     <!-- Dynamic Content Sections -->
-    <?php if ($updateType == 'events') { ?>
-        <!-- Events Section -->
-        <section id="events" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Events</h2>
-                <p>Manage and view the events here.</p>
-            </div>
-        </section><!-- /Events Section -->
-
-        <div class="form-container">
-            <form method="post" class="mb-4">
-                <div class="form-group">
-                    <label for="event_title">Event Title:</label>
-                    <input type="text" name="event_title" id="event_title" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="event_description">Event Description:</label>
-                    <textarea name="event_description" id="event_description" class="form-control"></textarea>
-                </div>
-                <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
-                <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
-            </form>
-
-            <!-- Existing Events List -->
-            <section id="faq" class="faq section light-background">
-                <div class="container section-title" data-aos="fade-up">
-                    <h2>Existing Events</h2>
-                    <p>Here are the existing events.</p>
-                </div>
-                <div class="container">
-                    <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
-                        <div class="col-lg-12">
-                            <ul class="list-group">
-                                <?php 
-                                if ($eventsResult && $eventsResult->num_rows > 0) {
-                                    while ($event = $eventsResult->fetch_assoc()) { ?>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
-                                            <form method="post" class="d-inline-block">
-                                                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
-                                                <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
-                                        </li>
-                                    <?php }
-                                } else {
-                                    echo "<li class='list-group-item'>No events available</li>";
-                                }
-                                ?>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section><!-- /Faq Section -->
+<?php if ($updateType == 'events') { ?>
+    <!-- Events Section -->
+    <section id="events" class="about section">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Events</h2>
+            <p>Here are the events available for registration.</p>
         </div>
+
+        <div class="upbox update-item filter-events active">
+            <h3>Events</h3>
+            <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
+                <?php while ($event = $eventsResult->fetch_assoc()): ?>
+                    <div class="update-entry">
+                        <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+                        <p><?php echo htmlspecialchars($event['description']); ?></p>
+                        <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
+                        <a href="register_event.php?event_id=<?php echo $event['id']; ?>&club_id=<?php echo $event['club_id']; ?>" class="btn btn-primary">Register</a>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>No events available at the moment.</p>
+            <?php endif; ?>
+        </div>
+    </section><!-- /Events Section -->
+<?php } ?>
 
     <?php } elseif ($updateType == 'recruitments') { ?>
         <!-- Recruitments Section -->
-        <section id="recruitments" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Recruitments</h2>
-                <p>Manage and view the recruitments here.</p>
-            </div>
-        </section><!-- /Recruitments Section -->
+  <section id="recruitments" class="about section">
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Recruitments</h2>
+        <p>View the current recruitment opportunities below.</p>
+    </div>
 
-        <div class="form-container">
-            <form method="post" class="mb-4">
-                <div class="form-group">
-                    <label for="role">Role:</label>
-                    <input type="text" name="role" id="role" class="form-control">
+    <!-- Existing Recruitments List -->
+    <div class="upbox update-item filter-recruitment">
+        <h3>Current Recruitments</h3>
+        <?php if ($recruitmentsResult && $recruitmentsResult->num_rows > 0): ?>
+            <?php while ($recruitment = $recruitmentsResult->fetch_assoc()): ?>
+                <div class="update-entry">
+                    <h4><?php echo htmlspecialchars($recruitment['role']); ?></h4>
+                    <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
+                    <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
+                    <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
+                    <a href="Club/student/application.php?club_id=<?php echo htmlspecialchars($recruitment['club_id']); ?>" class="btn btn-primary">Apply</a>
                 </div>
-                <div class="form-group">
-                    <label for="recruitment_description">Description:</label>
-                    <textarea name="recruitment_description" id="recruitment_description" class="form-control"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="deadline">Deadline:</label>
-                    <input type="date" name="deadline" id="deadline" class="form-control">
-                </div>
-                <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
-                <button type="submit" name="add_recruitment" class="btn btn-custom">Add Recruitment</button>
-            </form>
-
-            <!-- Existing Recruitments List -->
-            <section id="faq" class="faq section light-background">
-                <div class="container section-title" data-aos="fade-up">
-                    <h2>Current Recruitments</h2>
-                    <p>Here are the current recruitment opportunities.</p>
-                </div>
-                <div class="container">
-                    <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
-                        <div class="col-lg-12">
-                            <ul class="list-group">
-                                <?php 
-                                if ($recruitmentsResult && $recruitmentsResult->num_rows > 0) {
-                                    while ($recruitment = $recruitmentsResult->fetch_assoc()) { ?>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <?php echo htmlspecialchars($recruitment['role']); ?>: <?php echo htmlspecialchars($recruitment['description']); ?>
-                                            <form method="post" class="d-inline-block">
-                                                <input type="hidden" name="recruitment_id" value="<?php echo htmlspecialchars($recruitment['id']); ?>">
-                                                <button type="submit" name="delete_recruitment" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
-                                        </li>
-                                    <?php }
-                                } else {
-                                    echo "<li class='list-group-item'>No recruitments available</li>";
-                                }
-                                ?>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section><!-- /Faq Section -->
-        </div>
-
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p>No recruitments available at the moment.</p>
+        <?php endif; ?>
+    </div>
+</section>
+    
 <?php } elseif ($updateType == 'applications') { ?>
     <!-- Applications Section -->
     <section id="applications" class="about section">
