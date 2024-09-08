@@ -4,12 +4,18 @@ include('/var/www/html/db_connect.php'); // Include your database connection
 // Start the session
 session_start();
 
+// Check if student_id is set in the session
+if (!isset($_SESSION['student_id'])) {
+    die('Student ID not found. Please log in.');
+}
+
 // Get data from the form and cast to appropriate types
-$name = $_POST['name'];
-$email = $_POST['email'];
-$user_latitude = (float) $_POST['latitude'];  // Cast to float
-$user_longitude = (float) $_POST['longitude']; // Cast to float
+$student_id = (int) $_POST['student_id']; // Cast to integer
 $event_id = (int) $_POST['event_id']; // Cast to integer
+$user_latitude = isset($_POST['latitude']) ? (float) $_POST['latitude'] : null;  // Cast to float, use null if not set
+$user_longitude = isset($_POST['longitude']) ? (float) $_POST['longitude'] : null; // Cast to float, use null if not set
+$name = isset($_POST['name']) ? trim($_POST['name']) : ''; // Trim and sanitize name
+$email = isset($_POST['email']) ? filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate email
 
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, event_end_time, latitude, longitude FROM forms WHERE id = ?");
