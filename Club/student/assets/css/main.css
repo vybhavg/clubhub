@@ -1084,6 +1084,36 @@ section,
   background-color: #0056b3;
 }
 
+/* Container for updates with scrolling */
+.upbox {
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 0 30px rgba(214, 215, 216, 0.6);
+  max-height: 400px; /* Set the maximum height */
+  overflow-y: auto;  /* Enable vertical scrolling */
+  padding-right: 15px; /* Space for scrollbar */
+}
+
+/* Custom scrollbar for webkit browsers */
+.upbox::-webkit-scrollbar {
+  width: 6px; /* Thinner scrollbar */
+}
+
+.upbox::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px; /* Curved borders */
+}
+
+.upbox::-webkit-scrollbar-thumb {
+  background: #67B0D1; /* Custom color */
+  border-radius: 10px; /* Curved borders */
+}
+
+.upbox::-webkit-scrollbar-thumb:hover {
+  background: #4A98B3; /* Slightly darker shade on hover */
+}
+
+
 /*--------------------------------------------------------------
 # Faq Section
 --------------------------------------------------------------*/
