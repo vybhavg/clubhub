@@ -46,7 +46,7 @@ if ($stmt_fetch_recruitments) {
 
 // Fetch registered events for the current student including the club name, registration date, and student details
 $stmt_fetch_registered_events = $conn->prepare("
-    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, r.student_id, s.studentName, s.studentEmail 
+    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, r.student_id, s.student_name, s.college_email 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
@@ -189,7 +189,7 @@ $conn->close();
                         <p><?php echo htmlspecialchars($event['description']); ?></p>
                         <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
                         <p>Registered on: <?php echo htmlspecialchars($event['registration_date']); ?></p>
-                        <button onclick="registerForEvent(<?php echo htmlspecialchars($event['id']); ?>, <?php echo htmlspecialchars($event['student_id']); ?>, '<?php echo htmlspecialchars($event['studentName']); ?>', '<?php echo htmlspecialchars($event['studentEmail']); ?>')" class="btn btn-primary">Attend</button>
+                        <button onclick="registerForEvent(<?php echo htmlspecialchars($event['id']); ?>, <?php echo htmlspecialchars($event['student_id']); ?>, '<?php echo htmlspecialchars($event['student_name']); ?>', '<?php echo htmlspecialchars($event['college_email']); ?>')" class="btn btn-primary">Attend</button>
                     </div>
                 <?php endwhile; ?>
             <?php else: ?>
