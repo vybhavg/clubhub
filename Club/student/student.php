@@ -196,64 +196,65 @@ $conn->close();
         </div>
     </section><!-- /Registered Events Section -->
 
-    <script>
-        function registerForEvent(eventId) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        var form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = 'register_student.php';
+   <script>
+    function registerForEvent(eventId) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'register_student.php';
 
-                        var inputEventId = document.createElement('input');
-                        inputEventId.type = 'hidden';
-                        inputEventId.name = 'event_id';
-                        inputEventId.value = eventId;
-                        form.appendChild(inputEventId);
+                    // Collect student information
+                    var studentId = <?php echo json_encode($student_id); ?>;
+                    var studentName = <?php echo json_encode($student_name); ?>; // Add this to PHP and output as JS
+                    var studentEmail = <?php echo json_encode($student_email); ?>; // Add this to PHP and output as JS
 
-                        var inputStudentId = document.createElement('input');
-                        inputStudentId.type = 'hidden';
-                        inputStudentId.name = 'student_id';
-                        inputStudentId.value = <?php echo json_encode($student_id); ?>;
-                        form.appendChild(inputStudentId);
+                    // Create form fields
+                    var fields = [
+                        { name: 'event_id', value: eventId },
+                        { name: 'student_id', value: studentId },
+                        { name: 'name', value: studentName },
+                        { name: 'email', value: studentEmail },
+                        { name: 'latitude', value: position.coords.latitude },
+                        { name: 'longitude', value: position.coords.longitude },
+                        { name: 'ip_address', value: '<?php echo $_SERVER['REMOTE_ADDR']; ?>' } // Added IP address
+                    ];
 
-                        var inputLatitude = document.createElement('input');
-                        inputLatitude.type = 'hidden';
-                        inputLatitude.name = 'latitude';
-                        inputLatitude.value = position.coords.latitude;
-                        form.appendChild(inputLatitude);
+                    // Append fields to form
+                    fields.forEach(function(field) {
+                        var input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = field.name;
+                        input.value = field.value;
+                        form.appendChild(input);
+                    });
 
-                        var inputLongitude = document.createElement('input');
-                        inputLongitude.type = 'hidden';
-                        inputLongitude.name = 'longitude';
-                        inputLongitude.value = position.coords.longitude;
-                        form.appendChild(inputLongitude);
-
-                        document.body.appendChild(form);
-                        form.submit();
-                    },
-                    function(error) {
-                        switch (error.code) {
-                            case error.PERMISSION_DENIED:
-                                alert("User denied the request for Geolocation.");
-                                break;
-                            case error.POSITION_UNAVAILABLE:
-                                alert("Location information is unavailable.");
-                                break;
-                            case error.TIMEOUT:
-                                alert("The request to get user location timed out.");
-                                break;
-                            case error.UNKNOWN_ERROR:
-                                alert("An unknown error occurred.");
-                                break;
-                        }
+                    document.body.appendChild(form);
+                    form.submit();
+                },
+                function(error) {
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert("User denied the request for Geolocation.");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert("Location information is unavailable.");
+                            break;
+                        case error.TIMEOUT:
+                            alert("The request to get user location timed out.");
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            alert("An unknown error occurred.");
+                            break;
                     }
-                );
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
         }
-    </script>
+    }
+</script>
 
 
 
