@@ -5,11 +5,10 @@ include('/var/www/html/db_connect.php'); // Include your database connection
 session_start();
 
 // Get data from the form and cast to appropriate types
-$name = $_POST['name'];
-$email = $_POST['email'];
+
 $user_latitude = (float) $_POST['latitude'];  // Cast to float
 $user_longitude = (float) $_POST['longitude']; // Cast to float
-$event_id = (int) $_POST['event_id']; // Cast to integer
+$event_id = (int) $_POST['eventId']; // Cast to integer
 
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, event_end_time, latitude, longitude FROM forms WHERE id = ?");
