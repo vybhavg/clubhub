@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 
 // Check if the user is logged in and has a valid club_id
 if (!isset($_SESSION['club_id'])) {
-    header('Location: login.php'); // Redirect to login if not logged in
+    header('Location: student_login.php'); // Redirect to login if not logged in
     exit;
 }
 
