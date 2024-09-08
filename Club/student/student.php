@@ -123,7 +123,6 @@ $conn->close();
         </div>
 <div class="form-container">
         <div class="upbox update-item filter-events active">
-            <h3>Events</h3>
             <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
                 <?php while ($event = $eventsResult->fetch_assoc()): ?>
                     <div class="update-entry">
@@ -145,10 +144,9 @@ $conn->close();
             <h2>Recruitments</h2>
             <p>View the current recruitment opportunities below.</p>
         </div>
-
+    <div class="form-container">
         <!-- Existing Recruitments List -->
         <div class="upbox update-item filter-recruitment">
-            <h3>Current Recruitments</h3>
             <?php if ($recruitmentsResult && $recruitmentsResult->num_rows > 0): ?>
                 <?php while ($recruitment = $recruitmentsResult->fetch_assoc()): ?>
                     <div class="update-entry">
@@ -162,7 +160,7 @@ $conn->close();
             <?php else: ?>
                 <p>No recruitments available at the moment.</p>
             <?php endif; ?>
-        </div>
+        </div></div>
     </section><!-- /Recruitments Section -->
 <?php } ?>
 
