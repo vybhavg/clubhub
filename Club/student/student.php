@@ -146,7 +146,7 @@ $conn->close();
                             <h4><?php echo htmlspecialchars($event['title']); ?></h4>
                             <p><?php echo htmlspecialchars($event['description']); ?></p>
                             <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
-                            <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>" class="btn btn-primary">Register</a>
+                            <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>&club_id=<?php echo htmlspecialchars($event['club_id']); ?>" class="btn btn-primary">Register</a>
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>
@@ -188,23 +188,24 @@ $conn->close();
             <h2>Recruitments</h2>
             <p>View the current recruitment opportunities below.</p>
         </div>
-    <div class="form-container">
-        <!-- Existing Recruitments List -->
-        <div class="upbox update-item filter-recruitment">
-            <?php if ($recruitmentsResult && $recruitmentsResult->num_rows > 0): ?>
-                <?php while ($recruitment = $recruitmentsResult->fetch_assoc()): ?>
-                    <div class="update-entry">
-                        <h4><?php echo htmlspecialchars($recruitment['role']); ?></h4>
-                        <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
-                        <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
-                        <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
-                        <a href="Club/student/application.php?club_id=<?php echo htmlspecialchars($recruitment['club_id']); ?>" class="btn btn-primary">Apply</a>
-                    </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <p>No recruitments available at the moment.</p>
-            <?php endif; ?>
-        </div></div>
+        <div class="form-container">
+            <!-- Existing Recruitments List -->
+            <div class="upbox update-item filter-recruitment">
+                <?php if ($recruitmentsResult && $recruitmentsResult->num_rows > 0): ?>
+                    <?php while ($recruitment = $recruitmentsResult->fetch_assoc()): ?>
+                        <div class="update-entry">
+                            <h4><?php echo htmlspecialchars($recruitment['role']); ?></h4>
+                            <p><?php echo htmlspecialchars($recruitment['description']); ?></p>
+                            <p>Deadline: <?php echo htmlspecialchars($recruitment['deadline']); ?></p>
+                            <p>Club: <?php echo htmlspecialchars($recruitment['club_name']); ?></p>
+                            <a href="Club/student/application.php?club_id=<?php echo htmlspecialchars($recruitment['club_id']); ?>" class="btn btn-primary">Apply</a>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p>No recruitments available at the moment.</p>
+                <?php endif; ?>
+            </div>
+        </div>
     </section><!-- /Recruitments Section -->
 <?php } ?>
 
