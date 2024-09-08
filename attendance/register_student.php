@@ -77,12 +77,18 @@ if ($distance_to_event <= $geofence_radius) {
     $entry_check_stmt->close();
 
     if ($entry_time && !$exit_time) {
-        // If exit time is not set, check if the event has ended
+        // If the user entered before the event started
+        if ($entry_time < $event_start_time_ist->getTimestamp()) {
+            // Adjust entry time to event start time
+            $entry_time = $event_start_time_ist->getTimestamp();
+        }
+
+        // Check if the event has ended
         if ($time_until_end <= 0) {
             // Event has ended, log exit
             echo "<p>The event has ended. Logging your exit automatically.</p>";
             $exit_time = $event_end_time_ist->getTimestamp();  // Use event end time as exit time
-            $time_spent = $exit_time - $entry_time;  // Calculate time spent
+            $time_spent = $exit_time - $entry_time;  // Calculate time spent from adjusted entry time
 
             // Update the log with the exit time
             $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
@@ -95,8 +101,23 @@ if ($distance_to_event <= $geofence_radius) {
             echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
 
             // Display the link if the user has spent significant time at the event
-            if ($time_spent >= $event_duration) { // Check if time spent is at least the event duration
+            if ($time_spent >= $event_duration) {
                 echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
+
+                // Insert into final_attendance if the duration is met
+                $insert_final_attendance_stmt = $conn->prepare(
+                    "INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) 
+                     VALUES (?, ?, ?, ?, ?, ?)"
+                );
+                $insert_final_attendance_stmt->bind_param("ssiiii", $name, $email, $event_id, $entry_time, $exit_time, $time_spent);
+                
+                if (!$insert_final_attendance_stmt->execute()) {
+                    echo "Error inserting into final_attendance: " . $insert_final_attendance_stmt->error;
+                } else {
+                    echo "Successfully inserted into final_attendance!";
+                }
+
+                $insert_final_attendance_stmt->close();
             }
 
             exit();  // Stop further processing
@@ -106,7 +127,8 @@ if ($distance_to_event <= $geofence_radius) {
     } else {
         // Log the entry time (user enters geofence)
         if (!$entry_time) {
-            $entry_time = $current_time->getTimestamp();  // Convert to timestamp for logging
+            // Adjust entry time if the user enters before the event start time
+            $entry_time = max($current_time->getTimestamp(), $event_start_time_ist->getTimestamp());  // Use event start time if entry is before it
             $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_name, student_email, event_id, entry_time) VALUES (?, ?, ?, ?)");
             $insert_entry_stmt->bind_param("ssis", $name, $email, $event_id, $entry_time);
             $insert_entry_stmt->execute();
@@ -117,7 +139,8 @@ if ($distance_to_event <= $geofence_radius) {
             echo "<p>Entry time already logged.</p>";
         }
     }
-} else {
+}
+else {
     // User is outside the geofence, check for exit
     $exit_check_stmt = $conn->prepare("SELECT id, entry_time, exit_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
     $exit_check_stmt->bind_param("is", $event_id, $email);
