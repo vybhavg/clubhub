@@ -7,7 +7,7 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     var xhr = new XMLHttpRequest();
-                    xhr.open("POST", "/path/to/track_location.php", true);
+                    xhr.open("POST", "track_location.php", true);
                     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
                     // Ensure PHP variables are available
