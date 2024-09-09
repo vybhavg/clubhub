@@ -4,7 +4,7 @@ include('/var/www/html/db_connect.php'); // Ensure this file connects to your da
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-//hiii
+
 // Check if the user is logged in and has a valid club_id
 if (!isset($_SESSION['club_id'])) {
     header('Location: login.php'); // Redirect to login if not logged in
@@ -36,9 +36,8 @@ if ($stmt) {
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Add Event
     if (isset($_POST['add_event'])) {
-        $title = $_POST['event_title'];
+        $title = $_POST['event_name'];
         $description = $_POST['event_description'];
         $latitude = $_POST['latitude']; // Latitude input
         $longitude = $_POST['longitude']; // Longitude input
@@ -355,34 +354,42 @@ $conn->close();
         </div>
     </section><!-- /Events Section -->
 
-    <!-- Form Container for Adding Events -->
- <div class="form-container">
-     <div id="map"></div>
-        <form method="post" action="your-server-endpoint.php">
-            <div class="form-group">
-                <label for="event_name">Event Name:</label>
-                <input type="text" name="event_name" id="event_name" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="event_description">Description:</label>
-                <textarea name="event_description" id="event_description" class="form-control" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="event_date">Date:</label>
-                <input type="date" name="event_date" id="event_date" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="latitude">Latitude:</label>
-                <input type="text" name="latitude" id="latitude" class="form-control" readonly>
-            </div>
-            <div class="form-group">
-                <label for="longitude">Longitude:</label>
-                <input type="text" name="longitude" id="longitude" class="form-control" readonly>
-            </div>
-            <button type="submit" class="btn btn-custom">Submit Event</button>
-        </form>
-    </div>
-
+   
+        <!-- Form Container for Adding Events -->
+        <div class="form-container">
+            <div id="map"></div>
+            <form method="post" action="">
+                <div class="form-group">
+                    <label for="event_name">Event Name:</label>
+                    <input type="text" name="event_name" id="event_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="event_description">Description:</label>
+                    <textarea name="event_description" id="event_description" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="event_date">Date:</label>
+                    <input type="date" name="event_date" id="event_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="event_start_time">Start Time:</label>
+                    <input type="time" name="event_start_time" id="event_start_time" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="event_duration">Duration:</label>
+                    <input type="text" name="event_duration" id="event_duration" class="form-control" placeholder="e.g., 2 hours" required>
+                </div>
+                <div class="form-group">
+                    <label for="latitude">Latitude:</label>
+                    <input type="text" name="latitude" id="latitude" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="longitude">Longitude:</label>
+                    <input type="text" name="longitude" id="longitude" class="form-control" readonly>
+                </div>
+                <button type="submit" name="add_event" class="btn btn-custom">Submit Event</button>
+            </form>
+        </div>
     
 
     <!-- Leaflet JS -->
