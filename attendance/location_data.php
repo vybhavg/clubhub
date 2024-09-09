@@ -4,11 +4,11 @@ include('/var/www/html/db_connect.php'); // Include your database connection
 // Start the session
 session_start();
 
-// Retrieve session data
+// Check if the user is logged in
 if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
     header('Content-Type: application/json');
-    http_response_code(400);
-    echo json_encode(['error' => 'Session data is missing.']);
+    http_response_code(403);
+    echo json_encode(['error' => 'Unauthorized']);
     exit;
 }
 
@@ -17,11 +17,11 @@ $student_id = $_SESSION['student_id'];
 $event_id = $_SESSION['event_id'];
 $email = $_SESSION['email'];
 
-// Handle POST request for location updates
+// Handle POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
 
-    // Read the JSON input
+    // Read and decode the JSON input
     $data = json_decode(file_get_contents('php://input'), true);
 
     // Check if JSON data is valid
@@ -32,11 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Retrieve data from JSON
-    $lat = isset($data['latitude']) ? (float)$data['latitude'] : null;
-    $lng = isset($data['longitude']) ? (float)$data['longitude'] : null;
+    $latitude = isset($data['latitude']) ? (float)$data['latitude'] : null;
+    $longitude = isset($data['longitude']) ? (float)$data['longitude'] : null;
 
     // Validate the input
-    if ($lat === null || $lng === null) {
+    if ($latitude === null || $longitude === null) {
         http_response_code(400);
         echo json_encode(['error' => 'Missing required data.']);
         exit;
@@ -56,16 +56,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Ensure event latitude and longitude are cast to float
-    $event_latitude = (float) $event_latitude;
-    $event_longitude = (float) $event_longitude;
-
     // Geofence parameters
     $geofence_radius = 1.0; // 1 km radius
 
-    // Haversine formula to calculate the distance between two GPS coordinates
+    // Function to calculate the distance between two GPS coordinates
     function haversine_distance($lat1, $lon1, $lat2, $lon2) {
-        $earth_radius = 6371;  // Earth radius in kilometers
+        $earth_radius = 6371; // Earth radius in kilometers
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
         $a = sin($dLat / 2) * sin($dLat / 2) +
@@ -75,11 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Calculate the distance between the event location and the user's location
-    $distance_to_event = haversine_distance($lat, $lng, $event_latitude, $event_longitude);
+    $distance_to_event = haversine_distance($latitude, $longitude, $event_latitude, $event_longitude);
 
-    // Check if the user is within the geofence
     if ($distance_to_event <= $geofence_radius) {
-        // Check if the user has an existing entry
+        // User is within the geofence, check if there is an existing entry
         $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_id = ?");
         $entry_check_stmt->bind_param("ii", $event_id, $student_id);
         $entry_check_stmt->execute();
@@ -88,8 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $entry_check_stmt->close();
 
         if (!$entry_time) {
-            // Log the entry time (user enters geofence)
-            $entry_time = time();  // Use current time as entry time
+            // Log the entry time
+            $entry_time = time();
             $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_id, event_id, entry_time) VALUES (?, ?, ?)");
             $insert_entry_stmt->bind_param("iii", $student_id, $event_id, $entry_time);
             if ($insert_entry_stmt->execute()) {
@@ -103,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['message' => 'You are already within the geofence.']);
         }
     } else {
-        // User is outside the geofence, check for exit
+        // User is outside the geofence, check if there is an existing entry to log exit
         $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_id = ?");
         $exit_check_stmt->bind_param("ii", $event_id, $student_id);
         $exit_check_stmt->execute();
@@ -112,8 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $exit_check_stmt->close();
 
         if ($entry_time) {
-            // The user is leaving the geofence, log exit time
-            $exit_time = time();  // Use current time as exit time
+            // Log exit time
+            $exit_time = time();
             $time_spent = $exit_time - $entry_time;
 
             // Update the log with exit time
@@ -136,10 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Close the database connection
     $conn->close();
     exit;
+} else {
+    // If the request method is not POST
+    header('Content-Type: application/json');
+    http_response_code(405);
+    echo json_encode(['error' => 'Method Not Allowed']);
 }
-
-// If not a POST request, return Method Not Allowed
-header('Content-Type: application/json');
-http_response_code(405);
-echo json_encode(['error' => 'Method Not Allowed']);
 ?>
