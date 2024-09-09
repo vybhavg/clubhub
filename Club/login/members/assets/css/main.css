@@ -923,9 +923,7 @@ section,
 .about .icon-box:hover h4 a {
   color: var(--accent-color);
 }
-.about {
-    padding-bottom: 20px; /* Adjust this value to reduce space below the about section */
-}
+
 /*--------------------------------------------------------------
 # Services Section
 --------------------------------------------------------------*/
