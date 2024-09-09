@@ -12,11 +12,7 @@ $student_id = $_SESSION['student_id'];
 $event_id = $_SESSION['event_id'];
 $email = $_SESSION['email'];
 
-// Database connection
-$conn = new mysqli('host', 'user', 'password', 'database');
-if ($conn->connect_error) {
-    die('Database connection failed: ' . $conn->connect_error);
-}
+
 
 // Handle POST request for location updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
