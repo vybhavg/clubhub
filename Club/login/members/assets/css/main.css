@@ -1039,17 +1039,19 @@ section,
 }
 
 /* Map container styles */
- .form-cont{
-            margin: 50px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 300px;
-        }
-        #map {
-            height: 200px; /* Decrease height */
-            width: 100%; /* Adjust width as needed */
-        }
+.form-cont {
+    margin: 50px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 200px;  /* Adjusted to allow a wider container */
+    width: 100%;  /* Ensures it spans the page */
+}
+
+#map {
+    height: 100px;  /* Adjust height as needed */
+    width: 100%;  /* Let it fill the form-cont container */
+}
 
 
 
