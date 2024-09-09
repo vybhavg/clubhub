@@ -1,6 +1,18 @@
 <?php
-// Include your database connection
-include('/var/www/html/db_connect.php');
+include('/var/www/html/db_connect.php'); // Include your database connection
+
+// Start the session
+session_start();
+
+// Retrieve session data
+if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
+    die('Session data is missing.');
+}
+
+// Retrieve session data
+$student_id = $_SESSION['student_id'];
+$event_id = $_SESSION['event_id'];
+$email = $_SESSION['email'];
 
 // Handle POST request for location updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,33 +29,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Retrieve data from JSON
-    $email = isset($data['email']) ? $data['email'] : null;
     $lat = isset($data['latitude']) ? (float)$data['latitude'] : null;
     $lng = isset($data['longitude']) ? (float)$data['longitude'] : null;
-    $event_id = isset($data['event_id']) ? (int)$data['event_id'] : null;
 
     // Validate the input
-    if ($email === null || $lat === null || $lng === null || $event_id === null) {
+    if ($lat === null || $lng === null) {
         http_response_code(400);
         echo json_encode(['error' => 'Missing required data.']);
         exit;
     }
 
-    // Fetch student data from the database based on email
-    $student_query = $conn->prepare("SELECT id FROM students WHERE email = ?");
-    $student_query->bind_param("s", $email);
-    $student_query->execute();
-    $student_query->bind_result($student_id);
-    $student_query->fetch();
-    $student_query->close();
-
-    if (!$student_id) {
-        http_response_code(404);
-        echo json_encode(['error' => 'Student not found.']);
-        exit;
-    }
-
-    // Fetch the event location from the database
+    // Fetch event location from the database
     $event_query = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
     $event_query->bind_param("i", $event_id);
     $event_query->execute();
@@ -148,17 +144,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Location Tracker</title>
     <script>
         // Function to send location data to the server in JSON format
-        function sendLocationData(email, latitude, longitude, event_id) {
+        function sendLocationData(latitude, longitude) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'location.php', true); // Use the same script for handling the data
             xhr.setRequestHeader('Content-Type', 'application/json');
 
             // Create a JSON object
             const data = JSON.stringify({
-                email: email,
                 latitude: latitude,
-                longitude: longitude,
-                event_id: event_id
+                longitude: longitude
             });
 
             xhr.send(data);
@@ -173,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Function to track and send location periodically
-        function trackLocationPeriodically(email, event_id) {
+        function trackLocationPeriodically() {
             if (navigator.geolocation) {
                 setInterval(function () {
                     navigator.geolocation.getCurrentPosition(function (position) {
@@ -181,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         const longitude = position.coords.longitude;
 
                         // Send location data to the server
-                        sendLocationData(email, latitude, longitude, event_id);
+                        sendLocationData(latitude, longitude);
                     }, function (error) {
                         console.error('Error fetching location: ' + error.message);
                     });
@@ -193,12 +187,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Start tracking once the page loads
         window.onload = function () {
-            // Example values for email and event_id; replace with actual values
-            const email = '<?php echo addslashes($email); ?>';
-            const event_id = <?php echo intval($event_id); ?>;
-
             // Start location tracking
-            trackLocationPeriodically(email, event_id);
+            trackLocationPeriodically();
         };
     </script>
 </head>
