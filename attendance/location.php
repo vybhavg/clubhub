@@ -142,55 +142,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Location Tracker</title>
-    <script>
-        // Function to send location data to the server in JSON format
-        function sendLocationData(latitude, longitude) {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/var/www/html/attendance/location.php', true); // Use the same script for handling the data
-            xhr.setRequestHeader('Content-Type', 'application/json');
+<script>
+    // Function to send location data to the server in JSON format
+    function sendLocationData(latitude, longitude) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'location.php', true); // Use the correct relative URL for the script
+        xhr.setRequestHeader('Content-Type', 'application/json');
 
-            // Create a JSON object
-            const data = JSON.stringify({
-                latitude: latitude,
-                longitude: longitude
-            });
+        // Create a JSON object
+        const data = JSON.stringify({
+            latitude: latitude,
+            longitude: longitude
+        });
 
-            xhr.send(data);
+        xhr.send(data);
 
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    console.log('Location submitted successfully');
-                } else {
-                    console.log('Error submitting location');
-                }
-            };
-        }
-
-        // Function to track and send location periodically
-        function trackLocationPeriodically() {
-            if (navigator.geolocation) {
-                setInterval(function () {
-                    navigator.geolocation.getCurrentPosition(function (position) {
-                        const latitude = position.coords.latitude;
-                        const longitude = position.coords.longitude;
-
-                        // Send location data to the server
-                        sendLocationData(latitude, longitude);
-                    }, function (error) {
-                        console.error('Error fetching location: ' + error.message);
-                    });
-                }, 10000); // Send location every 10 seconds
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log('Location submitted successfully');
             } else {
-                alert('Geolocation is not supported by this browser.');
+                console.log('Error submitting location: ' + xhr.statusText);
             }
-        }
-
-        // Start tracking once the page loads
-        window.onload = function () {
-            // Start location tracking
-            trackLocationPeriodically();
         };
-    </script>
+
+        xhr.onerror = function () {
+            console.error('Request failed');
+        };
+    }
+
+    // Function to track and send location periodically
+    function trackLocationPeriodically() {
+        if (navigator.geolocation) {
+            setInterval(function () {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Send location data to the server
+                    sendLocationData(latitude, longitude);
+                }, function (error) {
+                    console.error('Error fetching location: ' + error.message);
+                });
+            }, 10000); // Send location every 10 seconds
+        } else {
+            alert('Geolocation is not supported by this browser.');
+        }
+    }
+
+    // Start tracking once the page loads
+    window.onload = function () {
+        // Start location tracking
+        trackLocationPeriodically();
+    };
+</script>
+
 </head>
 <body>
     <h1>Location Tracker</h1>
