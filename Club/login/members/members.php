@@ -265,6 +265,26 @@ $conn->close();
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+
+    
+    <!-- CSS for Proper Map Sizing -->
+    <style>
+        .map-container {
+            height: 250px; /* Adjust as needed */
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body class="index-page">
 
@@ -302,7 +322,7 @@ $conn->close();
         </div>
     </section><!-- /Hero Section -->
 
- <!-- Dynamic Content Sections -->
+<!-- Dynamic Content Sections -->
 <?php if ($updateType == 'events') { ?>
     <!-- Events Section -->
     <section id="events" class="about section">
@@ -312,6 +332,7 @@ $conn->close();
         </div>
     </section><!-- /Events Section -->
 
+    <!-- Form Container for Adding Events -->
     <div class="form-container">
         <h2>Add New Event</h2>
         <form id="locationForm" method="POST" action="save_event.php" class="mb-4">
@@ -336,18 +357,19 @@ $conn->close();
             </div>
 
             <!-- Map Section for Location -->
-         <div class="form-group" style="height: 250px; width: 100%;">
-    <h4>Pick Event Location on the Map</h4>
-    <div id="map" style="height: 250px; width: 100%;"></div><br>
-    <input type="hidden" id="latitude" name="latitude">
-    <input type="hidden" id="longitude" name="longitude">
-         </div>
+            <div class="form-group">
+                <h4>Pick Event Location on the Map</h4>
+                <div id="map" class="map-container"></div>
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+            </div>
 
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
 
             <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
         </form>
     </div>
+
 
     <!-- Existing Events List -->
     <section id="faq" class="faq section light-background">
