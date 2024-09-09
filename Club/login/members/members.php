@@ -337,11 +337,12 @@ $conn->close();
 
             <!-- Map Section for Location -->
             <div class="form-group">
-                <h4>Pick Event Location on the Map</h4>
-                <div id="map" style="height: 250px; width: 100%;"></div><br>
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
-            </div>
+    <h4>Pick Event Location on the Map</h4>
+    <div id="map" style="height: 250px; width: 100%;"></div><br>
+    <input type="hidden" id="latitude" name="latitude">
+    <input type="hidden" id="longitude" name="longitude">
+</div>
+
 
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
 
@@ -712,16 +713,28 @@ if ($updateType == 'onboarding') { ?>
 <!-- Map Script -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+    var map;  // Declare the map variable globally
+
     function initMap() {
         var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
-        var map = L.map('map').setView(defaultLocation, 15);
 
+        // Check if the map is already initialized
+        if (map !== undefined) {
+            map.remove();  // Remove the existing map instance
+        }
+
+        // Initialize the map and set its view
+        map = L.map('map').setView(defaultLocation, 15);
+
+        // Add the OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        // Add a draggable marker to the map
         var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
 
+        // Update latitude and longitude fields on marker dragend
         marker.on('dragend', function (e) {
             var lat = e.target.getLatLng().lat.toFixed(8);
             var lng = e.target.getLatLng().lng.toFixed(8);
@@ -732,7 +745,7 @@ if ($updateType == 'onboarding') { ?>
 
     window.onload = initMap;
 </script>
-    
+
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
 
