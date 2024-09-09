@@ -336,12 +336,10 @@ $conn->close();
             </div>
 
             <!-- Map Section for Location -->
-            <div class="form-group">
     <h4>Pick Event Location on the Map</h4>
     <div id="map" style="height: 250px; width: 100%;"></div><br>
     <input type="hidden" id="latitude" name="latitude">
     <input type="hidden" id="longitude" name="longitude">
-</div>
 
 
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
