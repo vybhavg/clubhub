@@ -269,20 +269,16 @@ $conn->close();
     
     <!-- CSS for Proper Map Sizing -->
     <style>
-        .map-container {
-            height: 250px; /* Adjust as needed */
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        .form-container {
-            max-width: 600px;
-            margin: 20px auto;
-            background-color: #f8f9fa;
+        .form-cont {
+            margin: 50px;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+        }
+        #map {
+            height: 200px; /* Decrease height */
+            width: 100%; /* Adjust width as needed */
         }
     </style>
 </head>
@@ -358,8 +354,9 @@ $conn->close();
 
             <!-- Map Section for Location -->
             <div class="form-group">
+                <div class="form-cont">
                 <h4>Pick Event Location on the Map</h4>
-                <div id="map" class="map-container"></div>
+                <div id="map" class="map-container"></div></div>
                 <input type="hidden" id="latitude" name="latitude">
                 <input type="hidden" id="longitude" name="longitude">
             </div>
