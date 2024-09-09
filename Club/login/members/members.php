@@ -266,38 +266,7 @@ $conn->close();
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
 
-    
-    <!-- CSS for Proper Map Sizing -->
-<style>
-    .form-container {
-        margin: 50px;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        max-width: 600px; /* Limit the width to prevent it from taking too much space */
-        margin: 0 auto; /* Center the form */
-        background-color: #f8f9fa;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .form-cont {
-        margin-top: 20px;
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    #map {
-        height: 300px; /* Set a proper height for the map */
-        width: 100%; /* Ensure the map takes full width of the container */
-    }
-
-    h2, h4 {
-        text-align: center;
-    }
-</style>
+   
 </head>
 <body class="index-page">
 
