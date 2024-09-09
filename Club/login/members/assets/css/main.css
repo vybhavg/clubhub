@@ -11,18 +11,7 @@
 # Help: https://bootstrapmade.com/color-system/
 --------------------------------------------------------------*/
 /* Fonts */
-/* Map container styles */
- .form-dist {
-            margin: 50px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 300px;
-        }
-        #map {
-            height: 200px; /* Decrease height */
-            width: 100%; /* Adjust width as needed */
-        }
+
 :root {
   --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --heading-font: "Raleway",  sans-serif;
@@ -1049,7 +1038,18 @@ section,
     max-height: 200px;
     overflow-y: auto;
 }
-
+/* Map container styles */
+ .form-dist {
+            margin: 50px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+        }
+        #map {
+            height: 200px; /* Decrease height */
+            width: 100%; /* Adjust width as needed */
+        }
 
 
 
