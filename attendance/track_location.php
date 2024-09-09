@@ -1,38 +1,34 @@
 <?php
-// Start session
-session_start();
+// Database connection code should be here
+// Example: $conn = new mysqli('host', 'user', 'password', 'database');
 
-// Check if session data is available
-if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
-    die('Required session data is missing.');
+header('Content-Type: application/json');
+
+// Read the JSON input
+$data = json_decode(file_get_contents('php://input'), true);
+
+// Check if JSON data is valid
+if (json_last_error() !== JSON_ERROR_NONE) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid JSON']);
+    exit;
 }
 
-// Retrieve session data
-$student_id = $_SESSION['student_id'];
-$event_id = $_SESSION['event_id'];
-$email = $_SESSION['email'];
+// Retrieve data
+$student_id = isset($data['student_id']) ? (int) $data['student_id'] : null;
+$event_id = isset($data['event_id']) ? (int) $data['event_id'] : null;
+$email = isset($data['email']) ? filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL) : '';
+$latitude = isset($data['latitude']) ? (float) $data['latitude'] : null;
+$longitude = isset($data['longitude']) ? (float) $data['longitude'] : null;
 
-// Check if the request method is POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    die('Invalid request method.');
+// Validate the input
+if ($student_id === null || $event_id === null || $latitude === null || $longitude === null || empty($email)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Required data is missing.']);
+    exit;
 }
 
-// Retrieve POST data
-$student_id = isset($_POST['student_id']) ? (int) $_POST['student_id'] : null;
-$event_id = isset($_POST['event_id']) ? (int) $_POST['event_id'] : null;
-$email = isset($_POST['email']) ? filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL) : '';
-$user_latitude = isset($_POST['latitude']) ? (float) $_POST['latitude'] : null;
-$user_longitude = isset($_POST['longitude']) ? (float) $_POST['longitude'] : null;
-
-// Validate input
-if ($student_id === null || $event_id === null || empty($email) || $user_latitude === null || $user_longitude === null) {
-    die('Required data is missing or invalid.');
-}
-
-// Database connection
-require_once 'db_connect.php'; // Ensure you include your actual DB connection
-
-// Fetch event details
+// Fetch the event details from the database
 $stmt = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -41,13 +37,19 @@ $stmt->fetch();
 $stmt->close();
 
 if ($event_latitude === null || $event_longitude === null) {
-    die('Event location not found.');
+    http_response_code(404);
+    echo json_encode(['error' => 'Event location not found.']);
+    exit;
 }
 
-// Geofence radius in km
-$geofence_radius = 1.0;
+// Ensure event latitude and longitude are cast to float
+$event_latitude = (float) $event_latitude;
+$event_longitude = (float) $event_longitude;
 
-// Haversine formula to calculate the distance between two coordinates
+// Geofence parameters
+$geofence_radius = 1.0; // 1 km radius
+
+// Haversine formula to calculate the distance between two GPS coordinates
 function haversine_distance($lat1, $lon1, $lat2, $lon2) {
     $earth_radius = 6371;  // Earth radius in kilometers
     $dLat = deg2rad($lat2 - $lat1);
@@ -58,12 +60,12 @@ function haversine_distance($lat1, $lon1, $lat2, $lon2) {
     return $earth_radius * $c;
 }
 
-// Calculate the distance between user's location and the event location
-$distance_to_event = haversine_distance($user_latitude, $user_longitude, $event_latitude, $event_longitude);
+// Calculate the distance between the event location and the user's location
+$distance_to_event = haversine_distance($latitude, $longitude, $event_latitude, $event_longitude);
 
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
-    // Check if the user has an existing attendance log
+    // Check if the user has an existing entry
     $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
     $entry_check_stmt->bind_param("is", $event_id, $email);
     $entry_check_stmt->execute();
@@ -73,20 +75,21 @@ if ($distance_to_event <= $geofence_radius) {
 
     if (!$entry_time) {
         // Log the entry time (user enters geofence)
-        $entry_time = time();
+        $entry_time = time();  // Use current time as entry time
         $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_email, event_id, entry_time) VALUES (?, ?, ?)");
         $insert_entry_stmt->bind_param("sii", $email, $event_id, $entry_time);
         if ($insert_entry_stmt->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Entry time logged successfully.']);
+            echo json_encode(['message' => 'Welcome! Your entry time has been logged.']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Error logging entry time: ' . $insert_entry_stmt->error]);
+            http_response_code(500);
+            echo json_encode(['error' => 'Error logging entry time: ' . $insert_entry_stmt->error]);
         }
         $insert_entry_stmt->close();
     } else {
-        echo json_encode(['status' => 'info', 'message' => 'Already within geofence.']);
+        echo json_encode(['message' => 'You are already within the geofence.']);
     }
 } else {
-    // If user is outside the geofence, log exit
+    // User is outside the geofence, check for exit
     $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
     $exit_check_stmt->bind_param("is", $event_id, $email);
     $exit_check_stmt->execute();
@@ -96,20 +99,23 @@ if ($distance_to_event <= $geofence_radius) {
 
     if ($entry_time) {
         // The user is leaving the geofence, log exit time
-        $exit_time = time();
+        $exit_time = time();  // Use current time as exit time
         $time_spent = $exit_time - $entry_time;
 
         // Update the log with exit time
         $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
         $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
         if ($update_exit_stmt->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Exit time logged successfully.', 'time_spent' => $time_spent]);
+            echo json_encode([
+                'message' => 'Exit logged: ' . date('Y-m-d H:i:s', $exit_time) . '. Time spent: ' . $time_spent . ' seconds.'
+            ]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Error logging exit time: ' . $update_exit_stmt->error]);
+            http_response_code(500);
+            echo json_encode(['error' => 'Error updating exit time: ' . $update_exit_stmt->error]);
         }
         $update_exit_stmt->close();
     } else {
-        echo json_encode(['status' => 'info', 'message' => 'You are not currently within the geofence.']);
+        echo json_encode(['message' => 'You are not currently within the geofence.']);
     }
 }
 
