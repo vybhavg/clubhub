@@ -3,50 +3,46 @@
 <head>
     <title>Location Tracker</title>
     <script>
-        function sendLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("POST", "track_location.php", true);
-                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        // Function to get URL parameters
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.slice(1);
+            const queryArr = queryString.split('&');
+            queryArr.forEach(param => {
+                const [key, value] = param.split('=');
+                params[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
+            return params;
+        }
 
-                    // Ensure PHP variables are available
-                    var student_id = <?php echo json_encode($_SESSION['student_id'] ?? ''); ?>;
-                    var event_id = <?php echo json_encode($_SESSION['event_id'] ?? ''); ?>;
-                    var email = <?php echo json_encode($_SESSION['email'] ?? ''); ?>;
+        // Function to display received data
+        function displayData() {
+            const params = getQueryParams();
 
-                    // Prepare the data to be sent
-                    var data = "student_id=" + encodeURIComponent(student_id) +
-                               "&event_id=" + encodeURIComponent(event_id) +
-                               "&latitude=" + encodeURIComponent(position.coords.latitude) +
-                               "&longitude=" + encodeURIComponent(position.coords.longitude) +
-                               "&student_email=" + encodeURIComponent(email);
+            // Display received data in the console and on the page
+            console.log(params);
 
-                    // Handle response and errors
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === 4) {
-                            if (xhr.status === 200) {
-                                console.log("Location sent successfully.");
-                            } else {
-                                console.error("Error sending location:", xhr.statusText);
-                            }
-                        }
-                    };
-
-                    xhr.send(data);
-                }, function(error) {
-                    console.error("Error getting location:", error.message);
-                });
-            } else {
-                console.error("Geolocation is not supported by this browser.");
+            const dataDisplay = document.getElementById('data-display');
+            if (dataDisplay) {
+                dataDisplay.innerHTML = `
+                    <h2>Received Data</h2>
+                    <p><strong>Student ID:</strong> ${params.student_id || 'Not received'}</p>
+                    <p><strong>Event ID:</strong> ${params.event_id || 'Not received'}</p>
+                    <p><strong>Latitude:</strong> ${params.latitude || 'Not received'}</p>
+                    <p><strong>Longitude:</strong> ${params.longitude || 'Not received'}</p>
+                    <p><strong>Email:</strong> ${params.student_email || 'Not received'}</p>
+                `;
             }
         }
 
-        // Send location updates every 5 minutes
-        setInterval(sendLocation, 5 * 60 * 1000); // 5 minutes
+        // Execute displayData on page load
+        window.onload = function() {
+            displayData();
+        };
     </script>
 </head>
 <body>
     <h1>Tracking Location</h1>
+    <div id="data-display"></div>
 </body>
 </html>
