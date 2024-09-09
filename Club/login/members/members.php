@@ -316,43 +316,33 @@ $conn->close();
     </section><!-- /Events Section -->
 
     <!-- Form Container for Adding Events -->
-    <div class="form-container">
-        <h2>Add New Event</h2>
-        <form id="locationForm" method="POST" action="save_event.php" class="mb-4">
+ <div class="form-container">
+        <form method="post" action="your-server-endpoint.php">
             <div class="form-group">
-                <label for="event_name">Event Title:</label>
+                <label for="event_name">Event Name:</label>
                 <input type="text" name="event_name" id="event_name" class="form-control" required>
             </div>
-            
             <div class="form-group">
-                <label for="event_description">Event Description:</label>
+                <label for="event_description">Description:</label>
                 <textarea name="event_description" id="event_description" class="form-control" required></textarea>
             </div>
-
             <div class="form-group">
-                <label for="event_start_time">Event Start Time:</label>
-                <input type="datetime-local" name="event_start_time" id="event_start_time" class="form-control" required>
+                <label for="event_date">Date:</label>
+                <input type="date" name="event_date" id="event_date" class="form-control" required>
             </div>
-
             <div class="form-group">
-                <label for="event_duration">Event Duration (minutes):</label>
-                <input type="number" name="event_duration" id="event_duration" class="form-control" required>
+                <label for="latitude">Latitude:</label>
+                <input type="text" name="latitude" id="latitude" class="form-control" readonly>
             </div>
-
-             <!-- Map Container -->
-<div class="form-group form-dist">
-            <h4>Pick Event Location on the Map</h4>
-            <div id="map"></div>
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-        </div>
-
-            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
-
-            <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="text" name="longitude" id="longitude" class="form-control" readonly>
+            </div>
+            <button type="submit" class="btn btn-custom">Submit Event</button>
         </form>
     </div>
 
+    <div id="map"></div>
 
     <!-- Existing Events List -->
     <section id="faq" class="faq section light-background">
@@ -714,7 +704,7 @@ if ($updateType == 'onboarding') { ?>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
     
-   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         function initMap() {
             var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
@@ -736,7 +726,6 @@ if ($updateType == 'onboarding') { ?>
 
         window.onload = initMap;
     </script>
-
 
 
   <!-- Main JS File -->
