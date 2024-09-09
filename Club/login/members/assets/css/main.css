@@ -989,13 +989,13 @@ section,
 # form Section
 --------------------------------------------------------------*/
 .form-container {
-    max-width: 600px;
-    margin: 20px auto;
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
 /* Unordered list styles */
 .form-container ul {
@@ -1039,15 +1039,8 @@ section,
     overflow-y: auto;
 }
 /* Map container styles */
- .form-dist {
-            margin: 50px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 300px;
-        }
         #map {
-            height: 200px; /* Decrease height */
+            height: 200px; /* Adjust height as needed */
             width: 100%; /* Adjust width as needed */
         }
 
