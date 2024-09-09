@@ -992,6 +992,7 @@ section,
 --------------------------------------------------------------*/
 .form-container {
             max-width: 600px;
+  margin-top:10px;
             margin: 20px auto;
             background-color: #f8f9fa;
             padding: 20px;
