@@ -163,7 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    console.log('Location submitted successfully');
+                    const response = JSON.parse(xhr.responseText);
+                    console.log(response.message || 'Location submitted successfully');
                 } else {
                     console.log('Error submitting location');
                 }
