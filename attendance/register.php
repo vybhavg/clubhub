@@ -24,13 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $student_id = $stmt->insert_id;
         $stmt->close();
 
-        // Redirect to location.html with student_id, event_id, and email
-        $url = "location.html?" . http_build_query([
-            'student_id' => $student_id,
-            'event_id' => $event_id,
-            'email' => $email
-        ]);
-        header("Location: $url");
+        // Redirect to location.html with event_id and email
+        header("Location: location.html?event_id=$event_id&email=" . urlencode($email));
         exit();
     } else {
         echo "Error inserting data: " . $stmt->error;
@@ -52,45 +47,12 @@ $stmt->bind_result($event_id, $event_title);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration</title>
-    <script>
-        // Handle form submission
-        function handleSubmit(event) {
-            event.preventDefault(); // Prevent default form submission
-
-            var form = document.querySelector('form');
-            var formData = new FormData(form);
-
-            // Send form data to the server
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "register.php", true);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    var response = xhr.responseText;
-                    // Check if response indicates a successful redirect
-                    if (response.indexOf('Redirecting') !== -1) {
-                        var url = response.match(/href="([^"]*)"/)[1];
-                        window.location.href = url;
-                    } else {
-                        alert("Error: " + response);
-                    }
-                } else {
-                    alert("Error submitting form. Please try again.");
-                }
-            };
-            xhr.send(formData);
-        }
-
-        window.onload = function() {
-            var form = document.querySelector('form');
-            form.addEventListener('submit', handleSubmit);
-        };
-    </script>
 </head>
 <body>
 
     <h2>Register for an Event</h2>
 
-    <form>
+    <form action="register.php" method="POST">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
 
@@ -106,8 +68,6 @@ $stmt->bind_result($event_id, $event_title);
             }
             ?>
         </select><br><br>
-
-        <input type="hidden" name="student_id" value="<?php echo htmlspecialchars($_SESSION['student_id'] ?? ''); ?>">
 
         <input type="submit" value="Proceed to Location">
     </form>
