@@ -1,5 +1,44 @@
 <?php
-include('/var/www/html/db_connect.php');
+include('/var/www/html/db_connect.php'); // Include your database connection
+
+// Start the session
+session_start();
+
+// Check if the form has been submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Retrieve POST data
+    $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+    $email = isset($_POST['email']) ? filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL) : '';
+    $event_id = isset($_POST['event_id']) ? (int) $_POST['event_id'] : null;
+
+    // Validate the input
+    if (empty($name) || empty($email) || $event_id === null) {
+        die('Required data is missing.');
+    }
+
+    // Insert student data into the students table
+    $stmt = $conn->prepare("INSERT INTO students (name, email) VALUES (?, ?)");
+    $stmt->bind_param("ss", $name, $email);
+    if ($stmt->execute()) {
+        // Get the ID of the newly inserted student
+        $student_id = $stmt->insert_id;
+        $stmt->close();
+
+        // Redirect to location.html with student_id, event_id, and email
+        $url = "location.html?" . http_build_query([
+            'student_id' => $student_id,
+            'event_id' => $event_id,
+            'email' => $email
+        ]);
+        header("Location: $url");
+        exit();
+    } else {
+        echo "Error inserting data: " . $stmt->error;
+    }
+
+    $conn->close();
+    exit();
+}
 
 // Fetch events from the database
 $stmt = $conn->prepare("SELECT id, title FROM forms");
@@ -21,9 +60,24 @@ $stmt->bind_result($event_id, $event_title);
             var form = document.querySelector('form');
             var formData = new FormData(form);
 
-            // Redirect to location.html with form data
-            var url = "location.html?" + new URLSearchParams(formData).toString();
-            window.location.href = url;
+            // Send form data to the server
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "register.php", true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = xhr.responseText;
+                    // Check if response indicates a successful redirect
+                    if (response.indexOf('Redirecting') !== -1) {
+                        var url = response.match(/href="([^"]*)"/)[1];
+                        window.location.href = url;
+                    } else {
+                        alert("Error: " + response);
+                    }
+                } else {
+                    alert("Error submitting form. Please try again.");
+                }
+            };
+            xhr.send(formData);
         }
 
         window.onload = function() {
