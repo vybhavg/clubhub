@@ -14,69 +14,29 @@ $stmt->bind_result($event_id, $event_title);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration with Geofence</title>
     <script>
-        var studentId = <?php echo json_encode($_SESSION['student_id']); ?>;
-
-        // Function to get user's GPS location
-        function getLocation(callback) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var latitude = position.coords.latitude;
-                    var longitude = position.coords.longitude;
-                    callback(latitude, longitude);
-                }, showError);
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
-        }
-
-        function showError(error) {
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    alert("User denied the request for Geolocation.");
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    alert("Location information is unavailable.");
-                    break;
-                case error.TIMEOUT:
-                    alert("The request to get user location timed out.");
-                    break;
-                case error.UNKNOWN_ERROR:
-                    alert("An unknown error occurred.");
-                    break;
-            }
-        }
-
         // Handle form submission
         function handleSubmit(event) {
             event.preventDefault(); // Prevent the default form submission
 
             var form = document.querySelector('form');
             var formData = new FormData(form);
-            var event_id = formData.get('event_id');
-            var email = formData.get('email');
 
-            getLocation(function(latitude, longitude) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "/path/to/track_location.php", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                var data = "student_id=" + encodeURIComponent(studentId) +
-                           "&event_id=" + encodeURIComponent(event_id) +
-                           "&latitude=" + encodeURIComponent(latitude) +
-                           "&longitude=" + encodeURIComponent(longitude) +
-                           "&student_email=" + encodeURIComponent(email);
-
-                xhr.send(data);
-
-                // Redirect to location.js after data is sent
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        window.location.href = "/path/to/location.js"; // Adjust the path as needed
-                    } else {
-                        alert("Error sending location data.");
-                    }
-                };
-            });
+            // Send the form data to register_student.php
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "register_student.php", true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Redirect to the page that tracks location
+                    window.location.href = "location.html"; // Adjust the path as needed
+                } else {
+                    alert("Error registering. Please try again.");
+                }
+            };
+            
+            // Serialize FormData into URL-encoded format
+            var serializedData = new URLSearchParams(formData).toString();
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(serializedData);
         }
 
         // Attach submit event listener to the form
@@ -110,6 +70,13 @@ $stmt->bind_result($event_id, $event_title);
         <!-- Hidden latitude and longitude fields automatically filled by GPS -->
         <input type="hidden" id="latitude" name="latitude" required>
         <input type="hidden" id="longitude" name="longitude" required>
+
+        <!-- Hidden fields for student_id and event_id -->
+        <input type="hidden" name="student_id" value="<?php echo htmlspecialchars($student_id); ?>">
+        <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event_id); ?>">
+
+        <!-- Submit button -->
+        <input type="submit" value="Register">
     </form>
 
 <?php
