@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Function to send location data to the server in JSON format
     function sendLocationData(latitude, longitude) {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'location.php', true); // Use the correct relative URL for the script
+        xhr.open('POST', 'https://clubhub.hopto.org/attendance/location.php', true); // Use the correct relative URL for the script
         xhr.setRequestHeader('Content-Type', 'application/json');
 
         // Create a JSON object
