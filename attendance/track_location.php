@@ -2,17 +2,22 @@
 // Start session
 session_start();
 
-// Check if student_id is set in the session
-if (!isset($_SESSION['student_id'])) {
-    die('Student ID not found. Please log in.');
+// Check if session data is available
+if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
+    die('Required session data is missing.');
 }
+
+// Retrieve session data
+$student_id = $_SESSION['student_id'];
+$event_id = $_SESSION['event_id'];
+$email = $_SESSION['email'];
 
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die('Invalid request method.');
 }
 
-// Retrieve and sanitize POST data
+// Retrieve POST data
 $student_id = isset($_POST['student_id']) ? (int) $_POST['student_id'] : null;
 $event_id = isset($_POST['event_id']) ? (int) $_POST['event_id'] : null;
 $email = isset($_POST['email']) ? filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL) : '';
@@ -25,10 +30,9 @@ if ($student_id === null || $event_id === null || empty($email) || $user_latitud
 }
 
 // Database connection
-// Ensure you replace this with your actual database connection details
-require_once 'db_connect.php'; // Assuming you have a file for DB connection
+require_once 'db_connect.php'; // Ensure you include your actual DB connection
 
-// Fetch event details from the database
+// Fetch event details
 $stmt = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -41,7 +45,7 @@ if ($event_latitude === null || $event_longitude === null) {
 }
 
 // Geofence radius in km
-$geofence_radius = 1.0; 
+$geofence_radius = 1.0;
 
 // Haversine formula to calculate the distance between two coordinates
 function haversine_distance($lat1, $lon1, $lat2, $lon2) {
