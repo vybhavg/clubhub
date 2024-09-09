@@ -247,6 +247,7 @@ $conn->close();
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -290,41 +291,7 @@ $conn->close();
         </nav>
     </div>
 </header>
- <div class="form-dist">
-        <h2>Input Event Location</h2>
-        <form id="locationForm" action="save_event_location.php" method="POST">
-           
-            <div id="map"></div><br>
-
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-
-            <button type="submit">Save Location</button>
-        </form>
-    </div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        function initMap() {
-            var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
-            var map = L.map('map').setView(defaultLocation, 15);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
-
-            marker.on('dragend', function (e) {
-                var lat = e.target.getLatLng().lat.toFixed(8);
-                var lng = e.target.getLatLng().lng.toFixed(8);
-                document.getElementById('latitude').value = lat;
-                document.getElementById('longitude').value = lng;
-            });
-        }
-
-        window.onload = initMap;
-    </script>
+ 
 <main class="main">
     <!-- Hero Section -->
     <section id="hero" class="hero section accent-background">
@@ -372,7 +339,11 @@ $conn->close();
                 <input type="number" name="event_duration" id="event_duration" class="form-control" required>
             </div>
 
-             
+             <!-- Map Container -->
+<div id="map" style="height: 400px; width: 100%;"></div>
+<input type="hidden" name="event_lat" id="event_lat">
+<input type="hidden" name="event_lng" id="event_lng">
+
 
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
 
@@ -741,6 +712,25 @@ if ($updateType == 'onboarding') { ?>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
     
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([51.505, -0.09], 13); // Default center
+
+    // Add a tile layer (you can use free tile layers like OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    }).addTo(map);
+
+    // Add a draggable marker
+    var marker = L.marker([51.505, -0.09], {draggable: true}).addTo(map);
+
+    // Update latitude and longitude when marker is moved
+    marker.on('moveend', function(e) {
+        var latlng = marker.getLatLng();
+        document.getElementById('event_lat').value = latlng.lat;
+        document.getElementById('event_lng').value = latlng.lng;
+    });
+</script>
 
 
 
