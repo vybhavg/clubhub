@@ -1,5 +1,6 @@
 <?php
 // Start session to capture student_id, event_id, and email from the previous form
+include('/var/www/html/db_connect.php'); 
 session_start();
 
 if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
