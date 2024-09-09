@@ -14,8 +14,8 @@ $student_id = (int) $_POST['student_id']; // Cast to integer
 $event_id = (int) $_POST['event_id']; // Cast to integer
 $user_latitude = isset($_POST['latitude']) ? (float) $_POST['latitude'] : null;  // Cast to float, use null if not set
 $user_longitude = isset($_POST['longitude']) ? (float) $_POST['longitude'] : null; // Cast to float, use null if not set
-$name = isset($_POST['name']) ? trim($_POST['name']) : ''; // Trim and sanitize name
-$email = isset($_POST['email']) ? filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate email
+$name = isset($_POST['student_name']) ? trim($_POST['student_name']) : ''; // Trim and sanitize student name
+$email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate student email
 
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_duration, event_end_time, latitude, longitude FROM events WHERE id = ?");
@@ -166,7 +166,7 @@ if ($distance_to_event <= $geofence_radius) {
             $exit_time = $current_time->getTimestamp();  // Convert to timestamp for logging
             $time_spent = $exit_time - $entry_time;
 
-            // Update the log with the exit time
+            // Update the log with exit time
             $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
             $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
             if (!$update_exit_stmt->execute()) {
@@ -174,13 +174,13 @@ if ($distance_to_event <= $geofence_radius) {
             }
             $update_exit_stmt->close();
 
-            echo "Exit logged: $exit_time, Time spent: $time_spent";
+            echo "Exit logged: $exit_time, Time spent: $time_spent";  // Debugging statement
 
-            // Display the link if the user has spent significant time at the event
+            // Check if the user spent significant time
             if ($time_spent >= $event_duration) {
                 echo "<p>Thank you for attending the event! Here is your link: <a href='http://example.com/special-link'>Special Link</a></p>";
 
-                // Insert into final_attendance if the duration is met
+                // Insert into final_attendance
                 $insert_final_attendance_stmt = $conn->prepare(
                     "INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) 
                      VALUES (?, ?, ?, ?, ?, ?)"
@@ -195,13 +195,11 @@ if ($distance_to_event <= $geofence_radius) {
 
                 $insert_final_attendance_stmt->close();
             }
-
-            exit();  // Stop further processing
         } else {
-            echo "<p>You are outside the geofence.</p>";
+            echo "<p>You are leaving the geofence. If you are outside the geofence, please check in again.</p>";
         }
     } else {
-        echo "<p>No entry record found for you.</p>";
+        echo "<p>You are not currently within the geofence.</p>";
     }
 }
 
