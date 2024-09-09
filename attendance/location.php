@@ -1,8 +1,11 @@
 <?php
-// Start session to capture student_id, event_id, and email from the previous form
-include('/var/www/html/db_connect.php'); 
+// Include your database connection
+include('/var/www/html/db_connect.php');
+
+// Start session to capture student_id, event_id, and email from the registration process
 session_start();
 
+// Check if required session data is available
 if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
     die('Required session data is missing.');
 }
@@ -11,8 +14,6 @@ if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($
 $student_id = $_SESSION['student_id'];
 $event_id = $_SESSION['event_id'];
 $email = $_SESSION['email'];
-
-
 
 // Handle POST request for location updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,21 +29,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Retrieve data
-    $student_id = isset($data['student_id']) ? (int) $data['student_id'] : null;
-    $event_id = isset($data['event_id']) ? (int) $data['event_id'] : null;
-    $email = isset($data['email']) ? filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL) : '';
-    $latitude = isset($data['latitude']) ? (float) $data['latitude'] : null;
-    $longitude = isset($data['longitude']) ? (float) $data['longitude'] : null;
+    // Retrieve data from JSON
+    $lat = isset($data['latitude']) ? (float) $data['latitude'] : null;
+    $lng = isset($data['longitude']) ? (float) $data['longitude'] : null;
 
     // Validate the input
-    if ($student_id === null || $event_id === null || $latitude === null || $longitude === null || empty($email)) {
+    if ($lat === null || $lng === null) {
         http_response_code(400);
-        echo json_encode(['error' => 'Required data is missing.']);
+        echo json_encode(['error' => 'Latitude and longitude are required.']);
         exit;
     }
 
-    // Fetch the event details from the database
+    // Fetch the event location from the database
     $stmt = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
@@ -75,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Calculate the distance between the event location and the user's location
-    $distance_to_event = haversine_distance($latitude, $longitude, $event_latitude, $event_longitude);
+    $distance_to_event = haversine_distance($lat, $lng, $event_latitude, $event_longitude);
 
     // Check if the user is within the geofence
     if ($distance_to_event <= $geofence_radius) {
