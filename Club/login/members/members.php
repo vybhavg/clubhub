@@ -340,10 +340,12 @@ $conn->close();
             </div>
 
              <!-- Map Container -->
-<div id="map" style="height: 400px; width: 100%;"></div>
-<input type="hidden" name="event_lat" id="event_lat">
-<input type="hidden" name="event_lng" id="event_lng">
-
+<div class="form-group form-dist">
+            <h4>Pick Event Location on the Map</h4>
+            <div id="map"></div>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+        </div>
 
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
 
@@ -712,25 +714,28 @@ if ($updateType == 'onboarding') { ?>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
     
-<script>
-    // Initialize the map
-    var map = L.map('map').setView([51.505, -0.09], 13); // Default center
+   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        function initMap() {
+            var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
+            var map = L.map('map').setView(defaultLocation, 15);
 
-    // Add a tile layer (you can use free tile layers like OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-    }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
 
-    // Add a draggable marker
-    var marker = L.marker([51.505, -0.09], {draggable: true}).addTo(map);
+            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
 
-    // Update latitude and longitude when marker is moved
-    marker.on('moveend', function(e) {
-        var latlng = marker.getLatLng();
-        document.getElementById('event_lat').value = latlng.lat;
-        document.getElementById('event_lng').value = latlng.lng;
-    });
-</script>
+            marker.on('dragend', function (e) {
+                var lat = e.target.getLatLng().lat.toFixed(8);
+                var lng = e.target.getLatLng().lng.toFixed(8);
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            });
+        }
+
+        window.onload = initMap;
+    </script>
 
 
 
