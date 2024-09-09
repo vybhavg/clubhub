@@ -715,39 +715,60 @@ if ($updateType == 'onboarding') { ?>
     
 <!-- Map Script -->
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    var map;  // Declare the map variable globally
+ // Map Script
 
+// Load Leaflet library
+var script = document.createElement('script');
+script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+document.head.appendChild(script);
+
+// Wait for the Leaflet library to load
+script.onload = function() {
+    // Declare the map variable globally
+    var map;
+
+    /**
+     * Initialize the map and set its view.
+     */
     function initMap() {
-        var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
+        // Default location
+         console.log("Initializing map...");
+        var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015};
 
         // Check if the map is already initialized
         if (map !== undefined) {
-            map.remove();  // Remove the existing map instance
+            // Remove the existing map instance
+            map.remove();
         }
 
-        // Initialize the map and set its view
-        map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 15); // Fix to pass correct format
+        try {
+            // Initialize the map and set its view
+            map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 15);
 
-        // Add the OpenStreetMap tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+            // Add the OpenStreetMap tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
 
-        // Add a draggable marker to the map
-        var marker = L.marker([defaultLocation.lat, defaultLocation.lng], { draggable: true }).addTo(map);
+            // Add a draggable marker to the map
+            var marker = L.marker([defaultLocation.lat, defaultLocation.lng], { draggable: true }).addTo(map);
 
-        // Update latitude and longitude fields on marker dragend
-        marker.on('dragend', function (e) {
-            var lat = e.target.getLatLng().lat.toFixed(8);
-            var lng = e.target.getLatLng().lng.toFixed(8);
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-        });
+            // Update latitude and longitude fields on marker dragend
+            marker.on('dragend', function (e) {
+                var lat = e.target.getLatLng().lat.toFixed(8);
+                var lng = e.target.getLatLng().lng.toFixed(8);
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            });
+        } catch (error) {
+            console.error("Error initializing map: ", error);
+        }
     }
 
-    window.onload = initMap;
+    // Initialize the map
+    initMap();
+};
 </script>
 
 
