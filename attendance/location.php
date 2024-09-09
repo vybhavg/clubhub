@@ -19,14 +19,21 @@ $email = $_SESSION['email'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Location Tracker</title>
     <script>
-        // Function to send location data to the server
+        // Function to send location data to the server in JSON format
         function sendLocationData(student_id, event_id, email, latitude, longitude) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'track_location.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('Content-Type', 'application/json');
 
-            // Sending the data as URL-encoded
-            const data = `student_id=${encodeURIComponent(student_id)}&event_id=${encodeURIComponent(event_id)}&email=${encodeURIComponent(email)}&latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}`;
+            // Create a JSON object
+            const data = JSON.stringify({
+                student_id: student_id,
+                event_id: event_id,
+                email: email,
+                latitude: latitude,
+                longitude: longitude
+            });
+
             xhr.send(data);
 
             xhr.onload = function () {
