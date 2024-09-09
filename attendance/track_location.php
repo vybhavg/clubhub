@@ -1,7 +1,7 @@
 <?php
 // Database connection code should be here
 // Example: $conn = new mysqli('host', 'user', 'password', 'database');
-
+include('/var/www/html/db_connect.php'); 
 header('Content-Type: application/json');
 
 // Read the JSON input
