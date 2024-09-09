@@ -251,7 +251,7 @@ $conn->close();
      <style>
         .form-container {
             max-width: 600px;
-            margin: 20px auto;
+            margin: 5px auto;
             background-color: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
