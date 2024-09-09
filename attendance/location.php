@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Function to send location data to the server in JSON format
         function sendLocationData(latitude, longitude) {
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'location.php', true); // Use the same script for handling the data
+            xhr.open('POST', '/var/www/html/attendance/location.php', true); // Use the same script for handling the data
             xhr.setRequestHeader('Content-Type', 'application/json');
 
             // Create a JSON object
