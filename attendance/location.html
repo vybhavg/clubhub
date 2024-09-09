@@ -20,7 +20,7 @@
         // Function to send location data to the server
         function sendLocationData(student_id, event_id, email, latitude, longitude) {
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'submit_location.php', true);
+            xhr.open('POST', 'track_location.php', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
             // Sending the data as URL-encoded
