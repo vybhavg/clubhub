@@ -24,8 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $student_id = $stmt->insert_id;
         $stmt->close();
 
-        // Redirect to location.html with event_id and email
-        header("Location: location.html?event_id=$event_id&email=" . urlencode($email));
+        // Store student_id, event_id, and email in session
+        $_SESSION['student_id'] = $student_id;
+        $_SESSION['event_id'] = $event_id;
+        $_SESSION['email'] = $email;
+
+        // Redirect to location.php (no need to pass data in URL)
+        header("Location: location.php");
         exit();
     } else {
         echo "Error inserting data: " . $stmt->error;
