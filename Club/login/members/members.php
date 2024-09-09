@@ -290,7 +290,41 @@ $conn->close();
         </nav>
     </div>
 </header>
+ <div class="form-dist">
+        <h2>Input Event Location</h2>
+        <form id="locationForm" action="save_event_location.php" method="POST">
+           
+            <div id="map"></div><br>
 
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+
+            <button type="submit">Save Location</button>
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        function initMap() {
+            var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
+            var map = L.map('map').setView(defaultLocation, 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
+
+            marker.on('dragend', function (e) {
+                var lat = e.target.getLatLng().lat.toFixed(8);
+                var lng = e.target.getLatLng().lng.toFixed(8);
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            });
+        }
+
+        window.onload = initMap;
+    </script>
 <main class="main">
     <!-- Hero Section -->
     <section id="hero" class="hero section accent-background">
@@ -714,41 +748,7 @@ if ($updateType == 'onboarding') { ?>
   <script src="assets/js/main.js"></script>
 
 </body>
- <div class="form-dist">
-        <h2>Input Event Location</h2>
-        <form id="locationForm" action="save_event_location.php" method="POST">
-           
-            <div id="map"></div><br>
 
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-
-            <button type="submit">Save Location</button>
-        </form>
-    </div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        function initMap() {
-            var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
-            var map = L.map('map').setView(defaultLocation, 15);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
-
-            marker.on('dragend', function (e) {
-                var lat = e.target.getLatLng().lat.toFixed(8);
-                var lng = e.target.getLatLng().lng.toFixed(8);
-                document.getElementById('latitude').value = lat;
-                document.getElementById('longitude').value = lng;
-            });
-        }
-
-        window.onload = initMap;
-    </script>
 </html>
  
  
