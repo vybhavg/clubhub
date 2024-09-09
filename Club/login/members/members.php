@@ -40,19 +40,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_event'])) {
         $title = $_POST['event_title'];
         $description = $_POST['event_description'];
+        $latitude = $_POST['latitude']; // Latitude input
+        $longitude = $_POST['longitude']; // Longitude input
+        $event_start_time = $_POST['event_start_time']; // Event start time input
+        $event_duration = $_POST['event_duration']; // Event duration input
 
-        $stmt = $conn->prepare("INSERT INTO events (title, description, club_id) VALUES (?, ?, ?)");
-        if ($stmt) {
-            $stmt->bind_param("ssi", $title, $description, $club_id);
-            if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
-                $_SESSION['message'] = "Error adding event.";
+        if ($latitude && $longitude && $event_start_time && $event_duration) {
+            // Calculate the event end time based on start time and duration
+            $event_end_time = date('Y-m-d H:i:s', strtotime($event_start_time) + ($event_duration * 60));
+
+            // Prepare and execute the statement to insert the event details
+            $stmt = $conn->prepare("INSERT INTO events (title, description, latitude, longitude, event_start_time, event_duration, event_end_time, club_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            if ($stmt) {
+                $stmt->bind_param("ssddsssi", $title, $description, $latitude, $longitude, $event_start_time, $event_duration, $event_end_time, $club_id);
+                if ($stmt->execute()) {
+                    $_SESSION['message'] = "Event added successfully.";
+                } else {
+                    error_log("Execute failed: " . $stmt->error);
+                    $_SESSION['message'] = "Error adding event.";
+                }
+                $stmt->close();
             } else {
-                $_SESSION['message'] = "Event added successfully.";
+                error_log("Prepare failed: " . $conn->error);
             }
-            $stmt->close();
         } else {
-            error_log("Prepare failed: " . $conn->error);
+            $_SESSION['message'] = "Invalid data. Please ensure all fields are filled in.";
         }
     }
     // Add Recruitment
@@ -290,62 +302,108 @@ $conn->close();
         </div>
     </section><!-- /Hero Section -->
 
-    <!-- Dynamic Content Sections -->
-    <?php if ($updateType == 'events') { ?>
-        <!-- Events Section -->
-        <section id="events" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Events</h2>
-                <p>Manage and view the events here.</p>
-            </div>
-        </section><!-- /Events Section -->
-
-        <div class="form-container">
-            <form method="post" class="mb-4">
-                <div class="form-group">
-                    <label for="event_title">Event Title:</label>
-                    <input type="text" name="event_title" id="event_title" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="event_description">Event Description:</label>
-                    <textarea name="event_description" id="event_description" class="form-control"></textarea>
-                </div>
-                <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
-                <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
-            </form>
-
-            <!-- Existing Events List -->
-            <section id="faq" class="faq section light-background">
-                <div class="container section-title" data-aos="fade-up">
-                    <h2>Existing Events</h2>
-                    <p>Here are the existing events.</p>
-                </div>
-                <div class="container">
-                    <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
-                        <div class="col-lg-12">
-                            <ul class="list-group">
-                                <?php 
-                                if ($eventsResult && $eventsResult->num_rows > 0) {
-                                    while ($event = $eventsResult->fetch_assoc()) { ?>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
-                                            <form method="post" class="d-inline-block">
-                                                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
-                                                <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
-                                        </li>
-                                    <?php }
-                                } else {
-                                    echo "<li class='list-group-item'>No events available</li>";
-                                }
-                                ?>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section><!-- /Faq Section -->
+ <!-- Dynamic Content Sections -->
+<?php if ($updateType == 'events') { ?>
+    <!-- Events Section -->
+    <section id="events" class="about section">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Events</h2>
+            <p>Manage and view the events here.</p>
         </div>
+    </section><!-- /Events Section -->
 
+    <div class="form-container">
+        <h2>Add New Event</h2>
+        <form id="locationForm" method="POST" action="save_event.php" class="mb-4">
+            <div class="form-group">
+                <label for="event_name">Event Title:</label>
+                <input type="text" name="event_name" id="event_name" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="event_description">Event Description:</label>
+                <textarea name="event_description" id="event_description" class="form-control" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="event_start_time">Event Start Time:</label>
+                <input type="datetime-local" name="event_start_time" id="event_start_time" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="event_duration">Event Duration (minutes):</label>
+                <input type="number" name="event_duration" id="event_duration" class="form-control" required>
+            </div>
+
+            <!-- Map Section for Location -->
+            <div class="form-group">
+                <h4>Pick Event Location on the Map</h4>
+                <div id="map" style="height: 400px;"></div><br>
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+            </div>
+
+            <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
+
+            <button type="submit" name="add_event" class="btn btn-custom">Add Event</button>
+        </form>
+    </div>
+
+    <!-- Existing Events List -->
+    <section id="faq" class="faq section light-background">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Existing Events</h2>
+            <p>Here are the existing events.</p>
+        </div>
+        <div class="container">
+            <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-lg-12">
+                    <ul class="list-group">
+                        <?php 
+                        if ($eventsResult && $eventsResult->num_rows > 0) {
+                            while ($event = $eventsResult->fetch_assoc()) { ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
+                                    <form method="post" class="d-inline-block">
+                                        <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
+                                        <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </li>
+                            <?php }
+                        } else {
+                            echo "<li class='list-group-item'>No events available</li>";
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section><!-- /Faq Section -->
+<?php } ?>
+
+<!-- Map Script -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    function initMap() {
+        var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
+        var map = L.map('map').setView(defaultLocation, 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
+
+        marker.on('dragend', function (e) {
+            var lat = e.target.getLatLng().lat.toFixed(8);
+            var lng = e.target.getLatLng().lng.toFixed(8);
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        });
+    }
+
+    window.onload = initMap;
+</script>
     <?php } elseif ($updateType == 'recruitments') { ?>
         <!-- Recruitments Section -->
         <section id="recruitments" class="about section">
