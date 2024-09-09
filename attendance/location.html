@@ -12,8 +12,8 @@
 
                     // Ensure PHP variables are available
                     var student_id = <?php echo json_encode($_SESSION['student_id'] ?? ''); ?>;
-                    var event_id = <?php echo json_encode($event_id ?? ''); ?>;
-                    var email = <?php echo json_encode($email ?? ''); ?>;
+                    var event_id = <?php echo json_encode($_SESSION['event_id'] ?? ''); ?>;
+                    var email = <?php echo json_encode($_SESSION['email'] ?? ''); ?>;
 
                     // Prepare the data to be sent
                     var data = "student_id=" + encodeURIComponent(student_id) +
