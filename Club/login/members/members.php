@@ -268,19 +268,36 @@ $conn->close();
 
     
     <!-- CSS for Proper Map Sizing -->
-    <style>
-        .form-cont {
-            margin: 50px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 300px;
-        }
-        #map {
-            height: 200px; /* Decrease height */
-            width: 100%; /* Adjust width as needed */
-        }
-    </style>
+<style>
+    .form-container {
+        margin: 50px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        max-width: 600px; /* Limit the width to prevent it from taking too much space */
+        margin: 0 auto; /* Center the form */
+        background-color: #f8f9fa;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-cont {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    #map {
+        height: 300px; /* Set a proper height for the map */
+        width: 100%; /* Ensure the map takes full width of the container */
+    }
+
+    h2, h4 {
+        text-align: center;
+    }
+</style>
 </head>
 <body class="index-page">
 
@@ -352,14 +369,13 @@ $conn->close();
                 <input type="number" name="event_duration" id="event_duration" class="form-control" required>
             </div>
 
-            <!-- Map Section for Location -->
-            <div class="form-group">
-                <div class="form-cont">
-                <h4>Pick Event Location on the Map</h4>
-                <div id="map" class="map-container"></div></div>
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
-            </div>
+              <!-- Map Section for Location -->
+        <div class="form-group form-cont">
+            <h4>Pick Event Location on the Map</h4>
+            <div id="map"></div>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+        </div>
 
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
 
