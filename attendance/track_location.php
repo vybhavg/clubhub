@@ -100,3 +100,4 @@ if ($distance_to_event <= $geofence_radius) {
 // Close the database connection
 $conn->close();
 ?>
+
