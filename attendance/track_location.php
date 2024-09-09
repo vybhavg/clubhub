@@ -10,11 +10,16 @@ if (!isset($_SESSION['student_id'])) {
 }
 
 // Get data from the form and cast to appropriate types
-$student_id = (int) $_POST['student_id'];
-$event_id = (int) $_POST['event_id'];
+$student_id = isset($_POST['student_id']) ? (int) $_POST['student_id'] : null;
+$event_id = isset($_POST['event_id']) ? (int) $_POST['event_id'] : null;
 $user_latitude = isset($_POST['latitude']) ? (float) $_POST['latitude'] : null;
 $user_longitude = isset($_POST['longitude']) ? (float) $_POST['longitude'] : null;
 $email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : '';
+
+// Validate required data
+if ($student_id === null || $event_id === null || $user_latitude === null || $user_longitude === null || $email === '') {
+    die('Missing required data.');
+}
 
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
@@ -100,4 +105,3 @@ if ($distance_to_event <= $geofence_radius) {
 // Close the database connection
 $conn->close();
 ?>
-
