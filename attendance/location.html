@@ -1,48 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Location Tracker</title>
-    <script>
-        // Function to get URL parameters
-        function getQueryParams() {
-            const params = {};
-            const queryString = window.location.search.slice(1);
-            const queryArr = queryString.split('&');
-            queryArr.forEach(param => {
-                const [key, value] = param.split('=');
-                params[decodeURIComponent(key)] = decodeURIComponent(value);
-            });
-            return params;
-        }
-
-        // Function to display received data
-        function displayData() {
-            const params = getQueryParams();
-
-            // Display received data in the console and on the page
-            console.log(params);
-
-            const dataDisplay = document.getElementById('data-display');
-            if (dataDisplay) {
-                dataDisplay.innerHTML = `
-                    <h2>Received Data</h2>
-                    <p><strong>Student ID:</strong> ${params.student_id || 'Not received'}</p>
-                    <p><strong>Event ID:</strong> ${params.event_id || 'Not received'}</p>
-                    <p><strong>Latitude:</strong> ${params.latitude || 'Not received'}</p>
-                    <p><strong>Longitude:</strong> ${params.longitude || 'Not received'}</p>
-                    <p><strong>Email:</strong> ${params.student_email || 'Not received'}</p>
-                `;
-            }
-        }
-
-        // Execute displayData on page load
-        window.onload = function() {
-            displayData();
-        };
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking Location</title>
 </head>
 <body>
-    <h1>Tracking Location</h1>
-    <div id="data-display"></div>
+
+    <h2>Received Data</h2>
+
+    <p>Student ID: <span id="student-id">Not received</span></p>
+    <p>Event ID: <span id="event-id">Not received</span></p>
+    <p>Email: <span id="email">Not received</span></p>
+    <p>Latitude: <span id="latitude">Not received</span></p>
+    <p>Longitude: <span id="longitude">Not received</span></p>
+
+    <script>
+        // Extract query parameters from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentId = urlParams.get('student_id');
+        const eventId = urlParams.get('event_id');
+        const email = urlParams.get('email');
+        const latitude = urlParams.get('latitude');
+        const longitude = urlParams.get('longitude');
+
+        // Display the data on the page
+        document.getElementById('student-id').textContent = studentId || "Not received";
+        document.getElementById('event-id').textContent = eventId || "Not received";
+        document.getElementById('email').textContent = email || "Not received";
+        document.getElementById('latitude').textContent = latitude || "Not received";
+        document.getElementById('longitude').textContent = longitude || "Not received";
+    </script>
+
 </body>
 </html>
