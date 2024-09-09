@@ -12,35 +12,20 @@ $stmt->bind_result($event_id, $event_title);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Registration with Geofence</title>
+    <title>Event Registration</title>
     <script>
         // Handle form submission
         function handleSubmit(event) {
-            event.preventDefault(); // Prevent the default form submission
+            event.preventDefault(); // Prevent default form submission
 
             var form = document.querySelector('form');
             var formData = new FormData(form);
 
-            // Serialize FormData into URL-encoded format
-            var serializedData = new URLSearchParams(formData).toString();
-            console.log("Serialized data being sent: ", serializedData); // Debugging
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "register.php", true); // Adjust this as needed
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    // Pass the data through URL query parameters
-                    var params = new URLSearchParams(formData).toString();
-                    window.location.href = "location.html?" + params; // Redirect with form data in URL
-                } else {
-                    alert("Error registering. Please try again.");
-                }
-            };
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.send(serializedData);
+            // Redirect to location.html with form data
+            var url = "location.html?" + new URLSearchParams(formData).toString();
+            window.location.href = url;
         }
 
-        // Attach submit event listener to the form
         window.onload = function() {
             var form = document.querySelector('form');
             form.addEventListener('submit', handleSubmit);
@@ -68,15 +53,9 @@ $stmt->bind_result($event_id, $event_title);
             ?>
         </select><br><br>
 
-        <!-- Hidden latitude and longitude fields automatically filled by GPS -->
-        <input type="hidden" id="latitude" name="latitude">
-        <input type="hidden" id="longitude" name="longitude">
+        <input type="hidden" name="student_id" value="<?php echo htmlspecialchars($_SESSION['student_id'] ?? ''); ?>">
 
-        <!-- Hidden fields for student_id and event_id -->
-        <input type="hidden" name="student_id" id="student_id" value="<?php echo htmlspecialchars($_SESSION['student_id'] ?? ''); ?>">
-
-        <!-- Submit button -->
-        <input type="submit" value="Register">
+        <input type="submit" value="Proceed to Location">
     </form>
 
 <?php
