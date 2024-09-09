@@ -617,13 +617,41 @@ if ($updateType == 'onboarding') { ?>
       </div>
 
     </section><!-- /Contact Section -->
- <!-- Map Section for Location -->
-        <div class="form-cont">
-            <h4>Pick Event Location on the Map</h4>
-            <div id="map"></div>
+ <div class="form-dist">
+        <h2>Input Event Location</h2>
+        <form id="locationForm" action="save_event_location.php" method="POST">
+           
+            <div id="map"></div><br>
+
             <input type="hidden" id="latitude" name="latitude">
             <input type="hidden" id="longitude" name="longitude">
-        </div>
+
+            <button type="submit">Save Location</button>
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        function initMap() {
+            var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
+            var map = L.map('map').setView(defaultLocation, 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
+
+            marker.on('dragend', function (e) {
+                var lat = e.target.getLatLng().lat.toFixed(8);
+                var lng = e.target.getLatLng().lng.toFixed(8);
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            });
+        }
+
+        window.onload = initMap;
+    </script>
   </main>
 
   <footer id="footer" class="footer dark-background">
@@ -713,63 +741,7 @@ if ($updateType == 'onboarding') { ?>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
     
-<!-- Map Script -->
 
-<script>
- // Map Script
-
-// Load Leaflet library
-var script = document.createElement('script');
-script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-document.head.appendChild(script);
-
-// Wait for the Leaflet library to load
-script.onload = function() {
-    // Declare the map variable globally
-    var map;
-
-    /**
-     * Initialize the map and set its view.
-     */
-    function initMap() {
-        // Default location
-         console.log("Initializing map...");
-        var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015};
-
-        // Check if the map is already initialized
-        if (map !== undefined) {
-            // Remove the existing map instance
-            map.remove();
-        }
-
-        try {
-            // Initialize the map and set its view
-            map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 15);
-
-            // Add the OpenStreetMap tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Add a draggable marker to the map
-            var marker = L.marker([defaultLocation.lat, defaultLocation.lng], { draggable: true }).addTo(map);
-
-            // Update latitude and longitude fields on marker dragend
-            marker.on('dragend', function (e) {
-                var lat = e.target.getLatLng().lat.toFixed(8);
-                var lng = e.target.getLatLng().lng.toFixed(8);
-                document.getElementById('latitude').value = lat;
-                document.getElementById('longitude').value = lng;
-            });
-        } catch (error) {
-            console.error("Error initializing map: ", error);
-        }
-    }
-
-    // Initialize the map
-    initMap();
-};
-</script>
 
 
   <!-- Main JS File -->
