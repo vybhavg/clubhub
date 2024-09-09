@@ -6,6 +6,7 @@ session_start();
 
 // Retrieve session data
 if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
+    header('Content-Type: application/json');
     http_response_code(400);
     echo json_encode(['error' => 'Session data is missing.']);
     exit;
@@ -137,7 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// If accessed directly without POST, show an error message
+// If not a POST request, return Method Not Allowed
+header('Content-Type: application/json');
 http_response_code(405);
-echo json_encode(['error' => 'Method not allowed.']);
+echo json_encode(['error' => 'Method Not Allowed']);
 ?>
