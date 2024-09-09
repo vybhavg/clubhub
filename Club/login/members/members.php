@@ -42,16 +42,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $latitude = $_POST['latitude']; // Latitude input
         $longitude = $_POST['longitude']; // Longitude input
         $event_start_time = $_POST['event_start_time']; // Event start time input
-        $event_duration = $_POST['event_duration']; // Event duration input
+        $event_duration = intval($_POST['event_duration']); // Event duration input, ensure it's an integer
 
         if ($latitude && $longitude && $event_start_time && $event_duration) {
-            // Calculate the event end time based on start time and duration
+            // Calculate the event end time based on start time and duration in minutes
             $event_end_time = date('Y-m-d H:i:s', strtotime($event_start_time) + ($event_duration * 60));
 
             // Prepare and execute the statement to insert the event details
             $stmt = $conn->prepare("INSERT INTO events (title, description, latitude, longitude, event_start_time, event_duration, event_end_time, club_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             if ($stmt) {
-                $stmt->bind_param("ssddsssi", $title, $description, $latitude, $longitude, $event_start_time, $event_duration, $event_end_time, $club_id);
+                $stmt->bind_param("sssssisi", $title, $description, $latitude, $longitude, $event_start_time, $event_duration, $event_end_time, $club_id);
                 if ($stmt->execute()) {
                     $_SESSION['message'] = "Event added successfully.";
                 } else {
@@ -368,16 +368,12 @@ $conn->close();
                     <textarea name="event_description" id="event_description" class="form-control" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="event_date">Date:</label>
-                    <input type="date" name="event_date" id="event_date" class="form-control" required>
-                </div>
-                <div class="form-group">
                     <label for="event_start_time">Start Time:</label>
                     <input type="time" name="event_start_time" id="event_start_time" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="event_duration">Duration:</label>
-                    <input type="text" name="event_duration" id="event_duration" class="form-control" placeholder="e.g., 2 hours" required>
+                    <label for="event_duration">Duration (minutes):</label>
+                    <input type="number" name="event_duration" id="event_duration" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label for="latitude">Latitude:</label>
