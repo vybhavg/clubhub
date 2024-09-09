@@ -3,34 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracking Location</title>
+    <title>Location Tracker</title>
+    <script>
+        // Function to get URL parameters
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.slice(1);
+            const queryArr = queryString.split('&');
+            queryArr.forEach(param => {
+                const [key, value] = param.split('=');
+                params[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
+            return params;
+        }
+
+        // Function to send location data to the server
+        function sendLocationData(student_id, event_id, email, latitude, longitude) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'submit_location.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            // Sending the data as URL-encoded
+            const data = `student_id=${encodeURIComponent(student_id)}&event_id=${encodeURIComponent(event_id)}&email=${encodeURIComponent(email)}&latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}`;
+            xhr.send(data);
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    console.log('Location submitted successfully');
+                } else {
+                    console.log('Error submitting location');
+                }
+            };
+        }
+
+        // Function to display received data and track location
+        function displayData() {
+            const params = getQueryParams();
+
+            // Display received data
+            const dataDisplay = document.getElementById('data-display');
+            dataDisplay.innerHTML = `
+                <h2>Received Data</h2>
+                <p><strong>Student ID:</strong> ${params.student_id || 'Not received'}</p>
+                <p><strong>Event ID:</strong> ${params.event_id || 'Not received'}</p>
+                <p><strong>Email:</strong> ${params.email || 'Not received'}</p>
+                <p><strong>Latitude:</strong> Fetching...</p>
+                <p><strong>Longitude:</strong> Fetching...</p>
+            `;
+
+            // Get the user's current location using the Geolocation API
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Update the latitude and longitude in the display
+                    dataDisplay.innerHTML = `
+                        <h2>Received Data</h2>
+                        <p><strong>Student ID:</strong> ${params.student_id || 'Not received'}</p>
+                        <p><strong>Event ID:</strong> ${params.event_id || 'Not received'}</p>
+                        <p><strong>Email:</strong> ${params.email || 'Not received'}</p>
+                        <p><strong>Latitude:</strong> ${latitude}</p>
+                        <p><strong>Longitude:</strong> ${longitude}</p>
+                    `;
+
+                    // Send the data to the server
+                    sendLocationData(params.student_id, params.event_id, params.email, latitude, longitude);
+                }, function (error) {
+                    alert('Error fetching location: ' + error.message);
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        // Execute displayData on page load
+        window.onload = function () {
+            displayData();
+        };
+    </script>
 </head>
 <body>
-
-    <h2>Received Data</h2>
-
-    <p>Student ID: <span id="student-id">Not received</span></p>
-    <p>Event ID: <span id="event-id">Not received</span></p>
-    <p>Email: <span id="email">Not received</span></p>
-    <p>Latitude: <span id="latitude">Not received</span></p>
-    <p>Longitude: <span id="longitude">Not received</span></p>
-
-    <script>
-        // Extract query parameters from the URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const studentId = urlParams.get('student_id');
-        const eventId = urlParams.get('event_id');
-        const email = urlParams.get('email');
-        const latitude = urlParams.get('latitude');
-        const longitude = urlParams.get('longitude');
-
-        // Display the data on the page
-        document.getElementById('student-id').textContent = studentId || "Not received";
-        document.getElementById('event-id').textContent = eventId || "Not received";
-        document.getElementById('email').textContent = email || "Not received";
-        document.getElementById('latitude').textContent = latitude || "Not received";
-        document.getElementById('longitude').textContent = longitude || "Not received";
-    </script>
-
+    <h1>Tracking Location</h1>
+    <div id="data-display"></div>
 </body>
 </html>
