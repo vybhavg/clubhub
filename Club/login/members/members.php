@@ -338,13 +338,7 @@ $conn->close();
                 <input type="number" name="event_duration" id="event_duration" class="form-control" required>
             </div>
 
-              <!-- Map Section for Location -->
-        <div class="form-group form-cont">
-            <h4>Pick Event Location on the Map</h4>
-            <div id="map"></div>
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-        </div>
+             
 
             <input type="hidden" name="club_id" value="<?php echo htmlspecialchars($club_id); ?>">
 
@@ -623,7 +617,13 @@ if ($updateType == 'onboarding') { ?>
       </div>
 
     </section><!-- /Contact Section -->
-
+ <!-- Map Section for Location -->
+        <div class="form-cont">
+            <h4>Pick Event Location on the Map</h4>
+            <div id="map"></div>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+        </div>
   </main>
 
   <footer id="footer" class="footer dark-background">
