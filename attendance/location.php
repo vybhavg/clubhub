@@ -2,19 +2,6 @@
 // Include your database connection
 include('/var/www/html/db_connect.php');
 
-// Start session to capture student_id, event_id, and email from the registration process
-session_start();
-
-// Check if required session data is available
-if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
-    die('Required session data is missing.');
-}
-
-// Retrieve session data
-$student_id = $_SESSION['student_id'];
-$event_id = $_SESSION['event_id'];
-$email = $_SESSION['email'];
-
 // Handle POST request for location updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
@@ -30,23 +17,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Retrieve data from JSON
-    $lat = isset($data['latitude']) ? (float) $data['latitude'] : null;
-    $lng = isset($data['longitude']) ? (float) $data['longitude'] : null;
+    $email = isset($data['email']) ? $data['email'] : null;
+    $lat = isset($data['latitude']) ? (float)$data['latitude'] : null;
+    $lng = isset($data['longitude']) ? (float)$data['longitude'] : null;
+    $event_id = isset($data['event_id']) ? (int)$data['event_id'] : null;
 
     // Validate the input
-    if ($lat === null || $lng === null) {
+    if ($email === null || $lat === null || $lng === null || $event_id === null) {
         http_response_code(400);
-        echo json_encode(['error' => 'Latitude and longitude are required.']);
+        echo json_encode(['error' => 'Missing required data.']);
+        exit;
+    }
+
+    // Fetch student data from the database based on email
+    $student_query = $conn->prepare("SELECT id FROM students WHERE email = ?");
+    $student_query->bind_param("s", $email);
+    $student_query->execute();
+    $student_query->bind_result($student_id);
+    $student_query->fetch();
+    $student_query->close();
+
+    if (!$student_id) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Student not found.']);
         exit;
     }
 
     // Fetch the event location from the database
-    $stmt = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
-    $stmt->bind_param("i", $event_id);
-    $stmt->execute();
-    $stmt->bind_result($event_latitude, $event_longitude);
-    $stmt->fetch();
-    $stmt->close();
+    $event_query = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
+    $event_query->bind_param("i", $event_id);
+    $event_query->execute();
+    $event_query->bind_result($event_latitude, $event_longitude);
+    $event_query->fetch();
+    $event_query->close();
 
     if ($event_latitude === null || $event_longitude === null) {
         http_response_code(404);
@@ -78,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if the user is within the geofence
     if ($distance_to_event <= $geofence_radius) {
         // Check if the user has an existing entry
-        $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
-        $entry_check_stmt->bind_param("is", $event_id, $email);
+        $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_id = ?");
+        $entry_check_stmt->bind_param("ii", $event_id, $student_id);
         $entry_check_stmt->execute();
         $entry_check_stmt->bind_result($log_id, $entry_time);
         $entry_check_stmt->fetch();
@@ -88,8 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$entry_time) {
             // Log the entry time (user enters geofence)
             $entry_time = time();  // Use current time as entry time
-            $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_email, event_id, entry_time) VALUES (?, ?, ?)");
-            $insert_entry_stmt->bind_param("sii", $email, $event_id, $entry_time);
+            $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_id, event_id, entry_time) VALUES (?, ?, ?)");
+            $insert_entry_stmt->bind_param("iii", $student_id, $event_id, $entry_time);
             if ($insert_entry_stmt->execute()) {
                 echo json_encode(['message' => 'Welcome! Your entry time has been logged.']);
             } else {
@@ -102,8 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } else {
         // User is outside the geofence, check for exit
-        $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
-        $exit_check_stmt->bind_param("is", $event_id, $email);
+        $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_id = ?");
+        $exit_check_stmt->bind_param("ii", $event_id, $student_id);
         $exit_check_stmt->execute();
         $exit_check_stmt->bind_result($log_id, $entry_time);
         $exit_check_stmt->fetch();
@@ -145,26 +148,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Location Tracker</title>
     <script>
         // Function to send location data to the server in JSON format
-        function sendLocationData(student_id, event_id, email, latitude, longitude) {
+        function sendLocationData(email, latitude, longitude, event_id) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'location.php', true); // Use the same script for handling the data
             xhr.setRequestHeader('Content-Type', 'application/json');
 
             // Create a JSON object
             const data = JSON.stringify({
-                student_id: student_id,
-                event_id: event_id,
                 email: email,
                 latitude: latitude,
-                longitude: longitude
+                longitude: longitude,
+                event_id: event_id
             });
 
             xhr.send(data);
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    console.log(response.message || 'Location submitted successfully');
+                    console.log('Location submitted successfully');
                 } else {
                     console.log('Error submitting location');
                 }
@@ -172,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Function to track and send location periodically
-        function trackLocationPeriodically(student_id, event_id, email) {
+        function trackLocationPeriodically(email, event_id) {
             if (navigator.geolocation) {
                 setInterval(function () {
                     navigator.geolocation.getCurrentPosition(function (position) {
@@ -180,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         const longitude = position.coords.longitude;
 
                         // Send location data to the server
-                        sendLocationData(student_id, event_id, email, latitude, longitude);
+                        sendLocationData(email, latitude, longitude, event_id);
                     }, function (error) {
                         console.error('Error fetching location: ' + error.message);
                     });
@@ -192,11 +193,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Start tracking once the page loads
         window.onload = function () {
-            const student_id = <?php echo json_encode($student_id); ?>;
-            const event_id = <?php echo json_encode($event_id); ?>;
-            const email = <?php echo json_encode($email); ?>;
+            // Assume email and event_id are obtained from a server-side script or other means
+            const email = '<?php echo $email; ?>'; // Placeholder, set properly
+            const event_id = <?php echo $event_id; ?>; // Placeholder, set properly
 
-            trackLocationPeriodically(student_id, event_id, email);
+            trackLocationPeriodically(email, event_id);
         };
     </script>
 </head>
