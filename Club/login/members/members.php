@@ -714,8 +714,7 @@ if ($updateType == 'onboarding') { ?>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
     
 <!-- Map Script -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-// Map Script
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     var map;  // Declare the map variable globally
