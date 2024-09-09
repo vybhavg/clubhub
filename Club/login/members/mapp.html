@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Location</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            height: 200px; /* Adjust height as needed */
+            width: 100%; /* Adjust width as needed */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form method="post" action="your-server-endpoint.php">
+            <div class="form-group">
+                <label for="event_name">Event Name:</label>
+                <input type="text" name="event_name" id="event_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="event_description">Description:</label>
+                <textarea name="event_description" id="event_description" class="form-control" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="event_date">Date:</label>
+                <input type="date" name="event_date" id="event_date" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="text" name="latitude" id="latitude" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="text" name="longitude" id="longitude" class="form-control" readonly>
+            </div>
+            <button type="submit" class="btn btn-custom">Submit Event</button>
+        </form>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        function initMap() {
+            var defaultLocation = { lat: 17.782067586690925, lng: 83.37835326649015 }; // Default location
+            var map = L.map('map').setView(defaultLocation, 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
+
+            // Update latitude and longitude fields when marker is dragged
+            marker.on('dragend', function (e) {
+                var lat = e.target.getLatLng().lat.toFixed(8);
+                var lng = e.target.getLatLng().lng.toFixed(8);
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            });
+
+            // Initialize latitude and longitude fields with default marker location
+            document.getElementById('latitude').value = defaultLocation.lat.toFixed(8);
+            document.getElementById('longitude').value = defaultLocation.lng.toFixed(8);
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>
