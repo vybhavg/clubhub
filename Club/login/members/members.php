@@ -368,9 +368,10 @@ $conn->close();
                     <textarea name="event_description" id="event_description" class="form-control" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="event_start_time">Start Time:</label>
-                    <input type="time" name="event_start_time" id="event_start_time" class="form-control" required>
-                </div>
+    <label for="event_start_time">Start Time:</label>
+    <input type="datetime-local" name="event_start_time" id="event_start_time" class="form-control" required>
+</div>
+
                 <div class="form-group">
                     <label for="event_duration">Duration (minutes):</label>
                     <input type="number" name="event_duration" id="event_duration" class="form-control" required>
