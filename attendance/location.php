@@ -79,4 +79,3 @@ $email = $_SESSION['email'];
     <p>Tracking your location...</p>
 </body>
 </html>
- 
