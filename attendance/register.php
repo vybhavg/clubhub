@@ -21,20 +21,21 @@ $stmt->bind_result($event_id, $event_title);
             var form = document.querySelector('form');
             var formData = new FormData(form);
 
-            // Send the form data to register_student.php
+            // Serialize FormData into URL-encoded format
+            var serializedData = new URLSearchParams(formData).toString();
+            console.log("Serialized data being sent: ", serializedData); // Debugging
+
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "register_student.php", true); // Adjust this as needed
+            xhr.open("POST", "register.php", true); // Adjust this as needed
             xhr.onload = function() {
                 if (xhr.status === 200) {
-                    // Set session variables and redirect to location.html
-                    window.location.href = "location.html"; // Adjust the path as needed
+                    // Pass the data through URL query parameters
+                    var params = new URLSearchParams(formData).toString();
+                    window.location.href = "location.html?" + params; // Redirect with form data in URL
                 } else {
                     alert("Error registering. Please try again.");
                 }
             };
-
-            // Serialize FormData into URL-encoded format
-            var serializedData = new URLSearchParams(formData).toString();
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.send(serializedData);
         }
@@ -73,7 +74,6 @@ $stmt->bind_result($event_id, $event_title);
 
         <!-- Hidden fields for student_id and event_id -->
         <input type="hidden" name="student_id" id="student_id" value="<?php echo htmlspecialchars($_SESSION['student_id'] ?? ''); ?>">
-        <input type="hidden" name="event_id" id="event_id" value="<?php echo htmlspecialchars($event_id ?? ''); ?>">
 
         <!-- Submit button -->
         <input type="submit" value="Register">
