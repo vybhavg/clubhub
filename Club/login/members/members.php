@@ -715,6 +715,8 @@ if ($updateType == 'onboarding') { ?>
     
 <!-- Map Script -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+// Map Script
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     var map;  // Declare the map variable globally
 
@@ -727,7 +729,7 @@ if ($updateType == 'onboarding') { ?>
         }
 
         // Initialize the map and set its view
-        map = L.map('map').setView(defaultLocation, 15);
+        map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 15); // Fix to pass correct format
 
         // Add the OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -735,7 +737,7 @@ if ($updateType == 'onboarding') { ?>
         }).addTo(map);
 
         // Add a draggable marker to the map
-        var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
+        var marker = L.marker([defaultLocation.lat, defaultLocation.lng], { draggable: true }).addTo(map);
 
         // Update latitude and longitude fields on marker dragend
         marker.on('dragend', function (e) {
@@ -748,6 +750,7 @@ if ($updateType == 'onboarding') { ?>
 
     window.onload = initMap;
 </script>
+
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
