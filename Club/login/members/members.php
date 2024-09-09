@@ -379,31 +379,8 @@ $conn->close();
             </div>
         </div>
     </section><!-- /Faq Section -->
-<?php } ?>
 
-<!-- Map Script -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    function initMap() {
-        var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
-        var map = L.map('map').setView(defaultLocation, 15);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
-
-        marker.on('dragend', function (e) {
-            var lat = e.target.getLatLng().lat.toFixed(8);
-            var lng = e.target.getLatLng().lng.toFixed(8);
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-        });
-    }
-
-    window.onload = initMap;
-</script>
     <?php } elseif ($updateType == 'recruitments') { ?>
         <!-- Recruitments Section -->
         <section id="recruitments" class="about section">
@@ -731,7 +708,31 @@ if ($updateType == 'onboarding') { ?>
   <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+    
+<!-- Map Script -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    function initMap() {
+        var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
+        var map = L.map('map').setView(defaultLocation, 15);
 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
+
+        marker.on('dragend', function (e) {
+            var lat = e.target.getLatLng().lat.toFixed(8);
+            var lng = e.target.getLatLng().lng.toFixed(8);
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        });
+    }
+
+    window.onload = initMap;
+</script>
+    
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
 
