@@ -259,9 +259,12 @@ $conn->close();
         }
 
         #map {
-            height: 200px; /* Adjust height as needed */
-            width: 100%; /* Adjust width as needed */
-        }
+    width: 300px; /* Set a fixed width */
+    height: 300px; /* Set a fixed height to maintain square shape */
+    border: 1px solid #ccc; /* Optional: border for better visibility */
+    border-radius: 5px; /* Optional: rounded corners */
+    margin: 20px auto; /* Center the map container */
+}
 
         .form-group {
             margin-bottom: 15px;
