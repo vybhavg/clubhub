@@ -57,7 +57,7 @@ $stmt->bind_result($event_id, $event_title);
 
     <h2>Register for an Event</h2>
 
-    <form action="register.php" method="POST">
+    <form action="location.php" method="POST">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
 
