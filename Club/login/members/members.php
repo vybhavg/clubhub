@@ -248,7 +248,44 @@ $conn->close();
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
+        #map {
+            height: 200px; /* Adjust height as needed */
+            width: 100%; /* Adjust width as needed */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+    </style>
   <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -344,6 +381,34 @@ $conn->close();
 
     <div id="map"></div>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        function initMap() {
+            var defaultLocation = { lat: 17.782067586690925, lng: 83.37835326649015 }; // Default location
+            var map = L.map('map').setView(defaultLocation, 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
+
+            // Update latitude and longitude fields when marker is dragged
+            marker.on('dragend', function (e) {
+                var lat = e.target.getLatLng().lat.toFixed(8);
+                var lng = e.target.getLatLng().lng.toFixed(8);
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            });
+
+            // Initialize latitude and longitude fields with default marker location
+            document.getElementById('latitude').value = defaultLocation.lat.toFixed(8);
+            document.getElementById('longitude').value = defaultLocation.lng.toFixed(8);
+        }
+
+        window.onload = initMap;
+    </script>
     <!-- Existing Events List -->
     <section id="faq" class="faq section light-background">
         <div class="container section-title" data-aos="fade-up">
@@ -704,28 +769,7 @@ if ($updateType == 'onboarding') { ?>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
     
- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        function initMap() {
-            var defaultLocation = {lat: 17.782067586690925, lng: 83.37835326649015}; // Default location
-            var map = L.map('map').setView(defaultLocation, 15);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            var marker = L.marker(defaultLocation, { draggable: true }).addTo(map);
-
-            marker.on('dragend', function (e) {
-                var lat = e.target.getLatLng().lat.toFixed(8);
-                var lng = e.target.getLatLng().lng.toFixed(8);
-                document.getElementById('latitude').value = lat;
-                document.getElementById('longitude').value = lng;
-            });
-        }
-
-        window.onload = initMap;
-    </script>
 
 
   <!-- Main JS File -->
