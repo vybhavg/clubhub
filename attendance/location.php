@@ -193,16 +193,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Start tracking once the page loads
         window.onload = function () {
-            // Assume email and event_id are obtained from a server-side script or other means
-            const email = '<?php echo $email; ?>'; // Placeholder, set properly
-            const event_id = <?php echo $event_id; ?>; // Placeholder, set properly
+            // Example values for email and event_id; replace with actual values
+            const email = '<?php echo addslashes($email); ?>';
+            const event_id = <?php echo intval($event_id); ?>;
 
+            // Start location tracking
             trackLocationPeriodically(email, event_id);
         };
     </script>
 </head>
 <body>
     <h1>Location Tracker</h1>
-    <p>Tracking your location...</p>
 </body>
 </html>
