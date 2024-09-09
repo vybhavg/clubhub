@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $description = $_POST['event_description'];
         $latitude = $_POST['latitude']; // Latitude input
         $longitude = $_POST['longitude']; // Longitude input
-        $event_start_time = $_POST['event_start_time']; // Event start time input
+        $event_start_time = $_POST['event_start_time']; // Event start time input (should be datetime-local format)
         $event_duration = intval($_POST['event_duration']); // Event duration input, ensure it's an integer
 
         if ($latitude && $longitude && $event_start_time && $event_duration) {
