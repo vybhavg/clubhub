@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['email'] = $email;
 
         // Redirect to location.php (no need to pass data in URL)
-        header("Location: location.php");
+        header("Location: location.html");
         exit();
     } else {
         echo "Error inserting data: " . $stmt->error;
