@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location Tracker</title>
+    <script>
+        function sendLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/path/to/track_location.php", true);
+                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                    // Assuming these variables are available in your context
+                    var student_id = <?php echo json_encode($_SESSION['student_id']); ?>;
+                    var event_id = <?php echo json_encode($event_id); ?>;
+                    var email = <?php echo json_encode($email); ?>;
+
+                    var data = "student_id=" + encodeURIComponent(student_id) +
+                               "&event_id=" + encodeURIComponent(event_id) +
+                               "&latitude=" + encodeURIComponent(position.coords.latitude) +
+                               "&longitude=" + encodeURIComponent(position.coords.longitude) +
+                               "&student_email=" + encodeURIComponent(email);
+
+                    xhr.send(data);
+                });
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Send location updates every 5 minutes
+        setInterval(sendLocation, 5 * 60 * 1000); // 5 minutes
+    </script>
+</head>
+<body>
+    <h1>Tracking Location</h1>
+</body>
+</html>
