@@ -8,7 +8,7 @@
         // Function to send location data to the server in JSON format
         function sendLocationData(latitude, longitude) {
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'test_post.php', true); // Use the correct relative URL for the script
+            xhr.open('POST', 'location_data.php', true); // Use the correct relative URL for the script
             xhr.setRequestHeader('Content-Type', 'application/json');
 
             // Create a JSON object
