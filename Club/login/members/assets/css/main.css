@@ -1039,33 +1039,17 @@ section,
 }
 
 /* Map container styles */
-.form-cont {
-    margin: 0;  /* Remove any extra margin */
-    padding: 0;
-    width: 100%;  /* Ensure the map container takes up the full width */
-    height: auto; /* Adjust height based on content */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Map Section */
-#map {
-    height: 300px; /* You can adjust this as needed */
-    width: 100%; /* Make sure it fits inside the form */
-    border-radius: 5px; /* Match the form container's rounded corners */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-}
-
-/* Media query for responsiveness */
-@media (max-width: 768px) {
-    .form-container {
-        padding: 15px;
-    }
-
-    #map {
-        height: 200px; /* Decrease height for smaller screens */
-    }
-}
+ .form-cont{
+            margin: 50px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+        }
+        #map {
+            height: 200px; /* Decrease height */
+            width: 100%; /* Adjust width as needed */
+        }
 
 
 
