@@ -86,6 +86,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             error_log("Prepare failed: " . $conn->error);
         }
     }
+    
+// Handle the "Give Attendance" request
+if (isset($_POST['give_attendance'])) {
+    $event_id = (int) $_POST['event_id']; // Cast to integer
+
+    // Mark the event as eligible for attendance confirmation
+    $stmt = $conn->prepare("UPDATE events SET attendance_allowed = 1 WHERE id = ?");
+    $stmt->bind_param("i", $event_id);
+    if ($stmt->execute()) {
+        echo "<p>Attendance confirmation has been enabled for the selected event.</p>";
+    } else {
+        echo "<p>Failed to update event. Please try again.</p>";
+    }
+    $stmt->close();
+}
+
     // Delete Event
     elseif (isset($_POST['delete_event'])) {
         $event_id = $_POST['event_id'];
@@ -417,36 +433,44 @@ $conn->close();
 
         window.onload = initMap;
     </script>
-    <!-- Existing Events List -->
-    <section id="faq" class="faq section light-background">
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Existing Events</h2>
-            <p>Here are the existing events.</p>
-        </div>
-        <div class="container">
-            <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
-                <div class="col-lg-12">
-                    <ul class="list-group">
-                        <?php 
-                        if ($eventsResult && $eventsResult->num_rows > 0) {
-                            while ($event = $eventsResult->fetch_assoc()) { ?>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
-                                    <form method="post" class="d-inline-block">
+  <!-- Existing Events List -->
+<section id="faq" class="faq section light-background">
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Existing Events</h2>
+        <p>Here are the existing events.</p>
+    </div>
+    <div class="container">
+        <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-lg-12">
+                <ul class="list-group">
+                    <?php 
+                    if ($eventsResult && $eventsResult->num_rows > 0) {
+                        while ($event = $eventsResult->fetch_assoc()) { ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
+                                <div class="d-flex">
+                                    <!-- Give Attendance Button -->
+                                    <form method="post" class="mr-2">
+                                        <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
+                                        <button type="submit" name="give_attendance" class="btn btn-primary btn-sm">Give Attendance</button>
+                                    </form>
+                                    <!-- Delete Event Button -->
+                                    <form method="post">
                                         <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
                                         <button type="submit" name="delete_event" class="btn btn-danger btn-sm">Delete</button>
                                     </form>
-                                </li>
-                            <?php }
-                        } else {
-                            echo "<li class='list-group-item'>No events available</li>";
-                        }
-                        ?>
-                    </ul>
-                </div>
+                                </div>
+                            </li>
+                        <?php }
+                    } else {
+                        echo "<li class='list-group-item'>No events available</li>";
+                    }
+                    ?>
+                </ul>
             </div>
         </div>
-    </section><!-- /Faq Section -->
+    </div>
+</section><!-- /Faq Section -->
 
 
     <?php } elseif ($updateType == 'recruitments') { ?>
