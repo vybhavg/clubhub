@@ -91,9 +91,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 if (isset($_POST['give_attendance'])) {
     $event_id = (int) $_POST['event_id']; // Cast to integer
 
-    // Mark the event as eligible for attendance confirmation
-    $stmt = $conn->prepare("UPDATE events SET attendance_allowed = 1 WHERE id = ?");
-    $stmt->bind_param("i", $event_id);
+    // Get the current time for button access time
+    $current_time = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+    $button_access_time = $current_time->format('Y-m-d H:i:s');
+
+    // Prepare the SQL statement to update both attendance_allowed and button_access_time
+    $stmt = $conn->prepare("
+        UPDATE events 
+        SET attendance_allowed = 1, button_access_time = ? 
+        WHERE id = ?
+    ");
+    $stmt->bind_param("si", $button_access_time, $event_id);
     if ($stmt->execute()) {
         echo "<p>Attendance confirmation has been enabled for the selected event.</p>";
     } else {
