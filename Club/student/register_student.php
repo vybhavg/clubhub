@@ -18,16 +18,26 @@ $name = isset($_POST['student_name']) ? trim($_POST['student_name']) : ''; // Tr
 $email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate student email
 
 // Fetch the event details from the database
-$stmt = $conn->prepare("SELECT title, latitude, longitude, button_access_time FROM events WHERE id = ?");
+$stmt = $conn->prepare("SELECT title, latitude, longitude, button_access_time, event_start_time, event_end_time FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
-$stmt->bind_result($event_title, $event_latitude, $event_longitude, $button_access_time);
+$stmt->bind_result($event_title, $event_latitude, $event_longitude, $button_access_time, $event_start_time, $event_end_time);
 $stmt->fetch();
 $stmt->close();
 
 // Ensure event latitude and longitude are cast to float
 $event_latitude = (float) $event_latitude;
 $event_longitude = (float) $event_longitude;
+
+// Handle cases where times are not available
+if (is_null($button_access_time) || is_null($event_start_time) || is_null($event_end_time)) {
+    die('Event times are not available.');
+}
+
+// Convert times to DateTime objects
+$button_access_time_dt = new DateTime($button_access_time, new DateTimeZone('Asia/Kolkata'));
+$event_start_time_dt = new DateTime($event_start_time, new DateTimeZone('Asia/Kolkata'));
+$event_end_time_dt = new DateTime($event_end_time, new DateTimeZone('Asia/Kolkata'));
 
 // Geofence parameters
 $geofence_radius = 1.0; // 1 km radius (adjusted to km)
@@ -53,13 +63,12 @@ if ($distance_to_event <= $geofence_radius) {
     $current_timestamp = $current_time->format('Y-m-d H:i:s');
 
     // Calculate time difference
-    $button_access_time = new DateTime($button_access_time, new DateTimeZone('Asia/Kolkata'));
-    $time_diff = $current_time->getTimestamp() - $button_access_time->getTimestamp();
+    $time_diff = $current_time->getTimestamp() - $button_access_time_dt->getTimestamp();
 
     // Check if the button access time is within the last 5 minutes
     if ($time_diff <= 300) { // 300 seconds = 5 minutes
         // Display "Confirm Attendance" button
-        if ($current_time->getTimestamp() >= $event_start_time_ist->getTimestamp()) {
+        if ($current_time->getTimestamp() >= $event_start_time_dt->getTimestamp()) {
             echo '<form method="post" action="confirm_attendance.php">
                     <input type="hidden" name="student_id" value="' . htmlspecialchars($student_id) . '">
                     <input type="hidden" name="event_id" value="' . htmlspecialchars($event_id) . '">
