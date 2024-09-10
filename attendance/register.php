@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "Invalid email format.";
     } else {
-        // Prepare the SQL statement
+        // Prepare the SQL statement to insert the student
         if ($stmt = $conn->prepare("INSERT INTO students (name, email) VALUES (?, ?)")) {
             // Bind the parameters
             $stmt->bind_param("ss", $name, $email);
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Fetch events from the database
-$stmt = $conn->prepare("SELECT id, title FROM forms");
+$stmt = $conn->prepare("SELECT id, title FROM events");
 if ($stmt) {
     $stmt->execute();
     $stmt->bind_result($event_id, $event_title);
