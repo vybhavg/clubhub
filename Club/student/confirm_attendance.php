@@ -12,10 +12,10 @@ if (!isset($_SESSION['student_id'])) {
 // Get data from the form and cast to appropriate types
 $student_id = (int) $_POST['student_id']; // Cast to integer
 $event_id = (int) $_POST['event_id']; // Cast to integer
-$user_latitude = (float) $_POST['latitude'];  // Cast to float
-$user_longitude = (float) $_POST['longitude']; // Cast to float
-$name = trim($_POST['student_name']); // Trim and sanitize student name
-$email = filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL); // Trim, sanitize and validate student email
+$user_latitude = isset($_POST['latitude']) ? (float) $_POST['latitude'] : null;  // Cast to float, use null if not set
+$user_longitude = isset($_POST['longitude']) ? (float) $_POST['longitude'] : null; // Cast to float, use null if not set
+$name = isset($_POST['student_name']) ? trim($_POST['student_name']) : ''; // Trim and sanitize student name
+$email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate student email
 
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, latitude, longitude FROM events WHERE id = ?");
@@ -57,14 +57,20 @@ if ($distance_to_event <= $geofence_radius) {
         "INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) 
          VALUES (?, ?, ?, ?, ?, ?)"
     );
+
+    // Bind parameters. Note that timestamps are integers.
+    $entry_time = $current_timestamp;
+    $exit_time = $current_timestamp;
+    $time_spent = 0;
+
     $insert_final_attendance_stmt->bind_param(
-        "ssiii", 
+        "ssiiii", 
         $name, 
         $email, 
         $event_id, 
-        $current_timestamp, 
-        $current_timestamp, 
-        0
+        $entry_time, 
+        $exit_time, 
+        $time_spent
     );
     $insert_final_attendance_stmt->execute();
     $insert_final_attendance_stmt->close();
