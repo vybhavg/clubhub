@@ -34,6 +34,9 @@
                 longitude: longitude
             });
 
+            // Debug: Log the data being sent
+            console.log('Sending data:', data);
+
             xhr.send(data);
 
             xhr.onload = function () {
