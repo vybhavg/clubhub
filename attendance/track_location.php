@@ -1,23 +1,15 @@
 <?php
 include('/var/www/html/db_connect.php'); 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 session_start();
 
 header('Content-Type: application/json'); // Ensure the response is JSON
 
-// Check if session data is set
-if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Required session data is missing.']);
-    exit;
-}
-
-// Retrieve session data
-$student_id = $_SESSION['student_id'];
-$event_id = $_SESSION['event_id'];
-$email = $_SESSION['email'];
+// Optional: Comment out session data checks if not needed for testing
+// if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
+//     http_response_code(400);
+//     echo json_encode(['error' => 'Required session data is missing.']);
+//     exit;
+// }
 
 // Handle POST request for location updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -65,4 +57,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 http_response_code(405); // Method Not Allowed
 echo json_encode(['error' => 'Invalid request method']);
-?>
