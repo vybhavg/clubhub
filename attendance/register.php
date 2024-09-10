@@ -35,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Close the statement
                 $stmt->close();
 
-                // Redirect to location.php
-                header("Location: location.html");
+                // Redirect to location.html and pass student_id and event_id as query parameters
+                header("Location: location.html?student_id=$student_id&event_id=$event_id");
                 exit();
             } else {
                 echo "Error inserting data: " . $stmt->error;
