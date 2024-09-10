@@ -18,10 +18,10 @@ $name = isset($_POST['student_name']) ? trim($_POST['student_name']) : ''; // Tr
 $email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate student email
 
 // Fetch the event details from the database
-$stmt = $conn->prepare("SELECT title, event_start_time, event_end_time, latitude, longitude FROM events WHERE id = ?");
+$stmt = $conn->prepare("SELECT title, event_start_time, event_end_time, latitude, longitude, attendance_allowed FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
-$stmt->bind_result($event_title, $event_start_time, $event_end_time, $event_latitude, $event_longitude);
+$stmt->bind_result($event_title, $event_start_time, $event_end_time, $event_latitude, $event_longitude, $attendance_allowed);
 $stmt->fetch();
 $stmt->close();
 
@@ -89,8 +89,8 @@ echo "<p>Time until Event Ends: " . format_time(max($time_until_end, 0)) . "</p>
 if ($distance_to_event <= $geofence_radius) {
     echo "<p>You are within the geofence.</p>";
 
-    // Display "Confirm Attendance" button if the current time is past the event start time
-    if ($current_time_timestamp >= $event_start_time_ist->getTimestamp()) {
+    // Display "Confirm Attendance" button if the current time is past the event start time and attendance is allowed
+    if ($attendance_allowed && $current_time_timestamp >= $event_start_time_ist->getTimestamp()) {
         echo '<form method="post" action="confirm_attendance.php">
                 <input type="hidden" name="student_id" value="' . htmlspecialchars($student_id) . '">
                 <input type="hidden" name="event_id" value="' . htmlspecialchars($event_id) . '">
@@ -101,7 +101,7 @@ if ($distance_to_event <= $geofence_radius) {
                 <button type="submit">Confirm Attendance</button>
               </form>';
     } else {
-        echo "<p>The 'Confirm Attendance' button will be available once the event starts.</p>";
+        echo "<p>The 'Confirm Attendance' button will be available once the event starts and attendance is allowed.</p>";
     }
 } else {
     echo "<p>You are outside the geofence. The 'Confirm Attendance' button will not be available until you are within the geofence.</p>";
