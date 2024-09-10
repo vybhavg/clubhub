@@ -21,6 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Read the JSON input
     $data = json_decode(file_get_contents('php://input'), true);
 
+    // Log received data for debugging
+    error_log('Received data: ' . print_r($data, true));
+
     // Check if JSON data is valid
     if (json_last_error() !== JSON_ERROR_NONE) {
         http_response_code(400);
@@ -29,18 +32,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Retrieve data from JSON
-    $student_id = isset($data['student_id']) ? (int) $data['student_id'] : null;
-    $event_id = isset($data['event_id']) ? (int) $data['event_id'] : null;
-    $email = isset($data['email']) ? filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL) : '';
+    $received_student_id = isset($data['student_id']) ? (int) $data['student_id'] : null;
+    $received_event_id = isset($data['event_id']) ? (int) $data['event_id'] : null;
+    $received_email = isset($data['email']) ? filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL) : '';
     $latitude = isset($data['latitude']) ? (float) $data['latitude'] : null;
     $longitude = isset($data['longitude']) ? (float) $data['longitude'] : null;
 
-    // Validate the input
-    if ($student_id === null || $event_id === null || $latitude === null || $longitude === null || empty($email)) {
+    // Log extracted data for debugging
+    error_log('Extracted data: Student ID: ' . $received_student_id . ', Event ID: ' . $received_event_id . ', Latitude: ' . $latitude . ', Longitude: ' . $longitude);
+
+    // Validate received data
+    if ($latitude === null || $longitude === null) {
         http_response_code(400);
-        echo json_encode(['error' => 'Required data is missing.']);
+        echo json_encode(['error' => 'Latitude or Longitude is missing']);
         exit;
     }
+
+    // Process the received data (e.g., save to database)
+    // For demonstration, just return the received data
+    echo json_encode([
+        'message' => 'Location data received successfully',
+        'student_id' => $received_student_id,
+        'event_id' => $received_event_id,
+        'email' => $received_email,
+        'latitude' => $latitude,
+        'longitude' => $longitude
+    ]);
+    exit;
+}
+
+// If not a POST request, return an error
+http_response_code(405);
+echo json_encode(['error' => 'Method not allowed']);
+exit;
+
+
+
 
     // Fetch the event details from the database
     $stmt = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
