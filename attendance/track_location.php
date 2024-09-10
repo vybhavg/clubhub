@@ -1,10 +1,12 @@
 <?php
-// Start session to capture student_id, event_id, and email from the previous form
 include('/var/www/html/db_connect.php'); 
 session_start();
 
+// Check if session data is set
 if (!isset($_SESSION['student_id']) || !isset($_SESSION['event_id']) || !isset($_SESSION['email'])) {
-    die('Required session data is missing.');
+    http_response_code(400);
+    echo json_encode(['error' => 'Required session data is missing.']);
+    exit;
 }
 
 // Retrieve session data
@@ -26,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Retrieve data
+    // Retrieve data from JSON
     $student_id = isset($data['student_id']) ? (int) $data['student_id'] : null;
     $event_id = isset($data['event_id']) ? (int) $data['event_id'] : null;
     $email = isset($data['email']) ? filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL) : '';
@@ -42,6 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Fetch the event details from the database
     $stmt = $conn->prepare("SELECT latitude, longitude FROM events WHERE id = ?");
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Database prepare error: ' . $conn->error]);
+        exit;
+    }
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
     $stmt->bind_result($event_latitude, $event_longitude);
@@ -79,6 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($distance_to_event <= $geofence_radius) {
         // Check if the user has an existing entry
         $entry_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
+        if (!$entry_check_stmt) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Database prepare error: ' . $conn->error]);
+            exit;
+        }
         $entry_check_stmt->bind_param("is", $event_id, $email);
         $entry_check_stmt->execute();
         $entry_check_stmt->bind_result($log_id, $entry_time);
@@ -89,6 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Log the entry time (user enters geofence)
             $entry_time = time();  // Use current time as entry time
             $insert_entry_stmt = $conn->prepare("INSERT INTO student_attendance (student_email, event_id, entry_time) VALUES (?, ?, ?)");
+            if (!$insert_entry_stmt) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Database prepare error: ' . $conn->error]);
+                exit;
+            }
             $insert_entry_stmt->bind_param("sii", $email, $event_id, $entry_time);
             if ($insert_entry_stmt->execute()) {
                 echo json_encode(['message' => 'Welcome! Your entry time has been logged.']);
@@ -103,6 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // User is outside the geofence, check for exit
         $exit_check_stmt = $conn->prepare("SELECT id, entry_time FROM student_attendance WHERE event_id = ? AND student_email = ?");
+        if (!$exit_check_stmt) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Database prepare error: ' . $conn->error]);
+            exit;
+        }
         $exit_check_stmt->bind_param("is", $event_id, $email);
         $exit_check_stmt->execute();
         $exit_check_stmt->bind_result($log_id, $entry_time);
@@ -116,6 +138,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Update the log with exit time
             $update_exit_stmt = $conn->prepare("UPDATE student_attendance SET exit_time = ?, time_spent = ? WHERE id = ?");
+            if (!$update_exit_stmt) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Database prepare error: ' . $conn->error]);
+                exit;
+            }
             $update_exit_stmt->bind_param("iii", $exit_time, $time_spent, $log_id);
             if ($update_exit_stmt->execute()) {
                 echo json_encode([
