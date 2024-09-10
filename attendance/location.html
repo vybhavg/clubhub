@@ -46,7 +46,7 @@
         }
 
         // Function to track and send location periodically
-        function trackLocationPeriodically(studentId, eventId) {
+        function trackLocationPeriodically() {
             if (navigator.geolocation) {
                 setInterval(function () {
                     navigator.geolocation.getCurrentPosition(function (position) {
@@ -57,8 +57,16 @@
                         document.getElementById('latitude').textContent = 'Latitude: ' + latitude;
                         document.getElementById('longitude').textContent = 'Longitude: ' + longitude;
 
-                        // Send location data to the server
-                        sendLocationData(studentId, eventId, latitude, longitude);
+                        // Retrieve student ID and event ID from session storage
+                        const studentId = sessionStorage.getItem('student_id');
+                        const eventId = sessionStorage.getItem('event_id');
+
+                        if (studentId && eventId) {
+                            // Send location data to the server
+                            sendLocationData(studentId, eventId, latitude, longitude);
+                        } else {
+                            document.getElementById('submit-message').textContent = 'Student ID or Event ID not found.';
+                        }
                     }, function (error) {
                         console.error('Error fetching location: ' + error.message);
                     });
@@ -70,16 +78,7 @@
 
         // Start tracking once the page loads
         window.onload = function () {
-            // Retrieve student ID and event ID from session storage or cookies (assuming they are stored there)
-            const studentId = sessionStorage.getItem('student_id');
-            const eventId = sessionStorage.getItem('event_id');
-
-            if (studentId && eventId) {
-                // Start location tracking
-                trackLocationPeriodically(studentId, eventId);
-            } else {
-                alert('Student ID and Event ID not found.');
-            }
+            trackLocationPeriodically();
         };
     </script>
 </head>
