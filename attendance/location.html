@@ -20,8 +20,8 @@
             return params.get(param);
         }
 
-        // Function to send location data along with student_id and event_id to the server in JSON format
-        function sendLocationData(student_id, event_id, latitude, longitude) {
+        // Function to send location data along with student_id, event_id, and email to the server in JSON format
+        function sendLocationData(student_id, event_id, latitude, longitude, email) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'track_location.php', true); // Use the correct relative URL for the script
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -31,7 +31,8 @@
                 student_id: student_id,
                 event_id: event_id,
                 latitude: latitude,
-                longitude: longitude
+                longitude: longitude,
+                email: email
             });
 
             // Debug: Log the data being sent
@@ -55,7 +56,7 @@
         }
 
         // Function to track and send location periodically
-        function trackLocationPeriodically(student_id, event_id) {
+        function trackLocationPeriodically(student_id, event_id, email) {
             if (navigator.geolocation) {
                 setInterval(function () {
                     navigator.geolocation.getCurrentPosition(function (position) {
@@ -66,8 +67,8 @@
                         document.getElementById('latitude').textContent = 'Latitude: ' + latitude;
                         document.getElementById('longitude').textContent = 'Longitude: ' + longitude;
 
-                        // Send location data to the server along with student_id and event_id
-                        sendLocationData(student_id, event_id, latitude, longitude);
+                        // Send location data to the server along with student_id, event_id, and email
+                        sendLocationData(student_id, event_id, latitude, longitude, email);
                     }, function (error) {
                         console.error('Error fetching location: ' + error.message);
                     });
@@ -79,34 +80,38 @@
 
         // Start tracking once the page loads
         window.onload = function () {
-            // Retrieve student_id and event_id from the URL
+            // Retrieve student_id, event_id, and email from the URL
             const student_id = getQueryParam('student_id');
             const event_id = getQueryParam('event_id');
+            const email = getQueryParam('email');
 
-            if (student_id && event_id) {
-                // Start location tracking with student_id and event_id
-                trackLocationPeriodically(student_id, event_id);
+            if (student_id && event_id && email) {
+                // Start location tracking with student_id, event_id, and email
+                trackLocationPeriodically(student_id, event_id, email);
             } else {
-                document.getElementById('submit-message').textContent = 'Student ID or Event ID missing';
+                document.getElementById('submit-message').textContent = 'Student ID, Event ID, or Email missing';
             }
         };
-        const data = {
-    student_id: "52",
-    event_id: "47",
-    latitude: 17.7844324,
-    longitude: 83.3817213
-};
 
-fetch('https://clubhub.hopto.org/attendance/track_location.php', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-})
-.then(response => response.json())
-.then(data => console.log('Success:', data))
-.catch((error) => console.error('Error:', error));
+        // Sample code to send data manually (if needed)
+        const data = {
+            student_id: "52",
+            event_id: "47",
+            latitude: 17.7844324,
+            longitude: 83.3817213,
+            email: "example@example.com" // Add the email here if sending manually
+        };
+
+        fetch('https://clubhub.hopto.org/attendance/track_location.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => console.log('Success:', data))
+        .catch((error) => console.error('Error:', error));
 
     </script>
 </head>
