@@ -18,10 +18,10 @@ $name = isset($_POST['student_name']) ? trim($_POST['student_name']) : ''; // Tr
 $email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate student email
 
 // Fetch the event details from the database
-$stmt = $conn->prepare("SELECT title, event_start_time, event_end_time, latitude, longitude, confirm_button_time FROM events WHERE id = ?");
+$stmt = $conn->prepare("SELECT title, event_start_time, event_end_time, latitude, longitude FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
-$stmt->bind_result($event_title, $event_start_time, $event_end_time, $event_latitude, $event_longitude, $confirm_button_time);
+$stmt->bind_result($event_title, $event_start_time, $event_end_time, $event_latitude, $event_longitude);
 $stmt->fetch();
 $stmt->close();
 
@@ -58,12 +58,10 @@ $current_time_timestamp = $current_time->getTimestamp(); // Use this timestamp f
 // Convert event start and end times to IST
 $event_start_time_ist = new DateTime($event_start_time, $ist_timezone);
 $event_end_time_ist = new DateTime($event_end_time, $ist_timezone);
-$confirm_button_time_ist = new DateTime($confirm_button_time, $ist_timezone);
 
 // Calculate time differences
 $time_until_start = $event_start_time_ist->getTimestamp() - $current_time_timestamp;
 $time_until_end = $event_end_time_ist->getTimestamp() - $current_time_timestamp;
-$time_until_confirm = $confirm_button_time_ist->getTimestamp() - $current_time_timestamp;
 
 // Display event times and time left
 echo "<p>Event Start Time (IST): " . $event_start_time_ist->format('Y-m-d H:i:s') . "</p>";
@@ -75,8 +73,8 @@ echo "<p>Time until Event Ends: " . format_time(max($time_until_end, 0)) . "</p>
 if ($distance_to_event <= $geofence_radius) {
     echo "<p>You are within the geofence.</p>";
 
-    // Display "Confirm Attendance" button if the current time is past the confirm button time
-    if ($current_time_timestamp >= $confirm_button_time_ist->getTimestamp()) {
+    // Display "Confirm Attendance" button if the current time is past the event start time
+    if ($current_time_timestamp >= $event_start_time_ist->getTimestamp()) {
         echo '<form method="post" action="confirm_attendance.php">
                 <input type="hidden" name="student_id" value="' . htmlspecialchars($student_id) . '">
                 <input type="hidden" name="event_id" value="' . htmlspecialchars($event_id) . '">
@@ -87,7 +85,7 @@ if ($distance_to_event <= $geofence_radius) {
                 <button type="submit">Confirm Attendance</button>
               </form>';
     } else {
-        echo "<p>The 'Confirm Attendance' button will be available once the designated time has passed.</p>";
+        echo "<p>The 'Confirm Attendance' button will be available once the event starts.</p>";
     }
 } else {
     echo "<p>You are outside the geofence. The 'Confirm Attendance' button will not be available until you are within the geofence.</p>";
