@@ -5,14 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Location Tracker</title>
     <script>
-        // Function to send location data to the server in JSON format
-        function sendLocationData(latitude, longitude) {
+        // Function to get query parameters from the URL
+        function getQueryParam(param) {
+            let params = new URLSearchParams(window.location.search);
+            return params.get(param);
+        }
+
+        // Function to send location data along with student_id and event_id to the server in JSON format
+        function sendLocationData(student_id, event_id, latitude, longitude) {
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'location_data.php', true); // Use the correct relative URL for the script
+            xhr.open('POST', 'track_location.php', true); // Use the correct relative URL for the script
             xhr.setRequestHeader('Content-Type', 'application/json');
 
-            // Create a JSON object
+            // Create a JSON object with all the required data
             const data = JSON.stringify({
+                student_id: student_id,
+                event_id: event_id,
                 latitude: latitude,
                 longitude: longitude
             });
@@ -33,15 +41,15 @@
         }
 
         // Function to track and send location periodically
-        function trackLocationPeriodically() {
+        function trackLocationPeriodically(student_id, event_id) {
             if (navigator.geolocation) {
                 setInterval(function () {
                     navigator.geolocation.getCurrentPosition(function (position) {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
 
-                        // Send location data to the server
-                        sendLocationData(latitude, longitude);
+                        // Send location data to the server along with student_id and event_id
+                        sendLocationData(student_id, event_id, latitude, longitude);
                     }, function (error) {
                         console.error('Error fetching location: ' + error.message);
                     });
@@ -53,8 +61,16 @@
 
         // Start tracking once the page loads
         window.onload = function () {
-            // Start location tracking
-            trackLocationPeriodically();
+            // Retrieve student_id and event_id from the URL
+            const student_id = getQueryParam('student_id');
+            const event_id = getQueryParam('event_id');
+
+            if (student_id && event_id) {
+                // Start location tracking with student_id and event_id
+                trackLocationPeriodically(student_id, event_id);
+            } else {
+                console.error('Student ID or Event ID missing');
+            }
         };
     </script>
 </head>
