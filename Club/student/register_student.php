@@ -63,6 +63,22 @@ $event_end_time_ist = new DateTime($event_end_time, $ist_timezone);
 $time_until_start = $event_start_time_ist->getTimestamp() - $current_time_timestamp;
 $time_until_end = $event_end_time_ist->getTimestamp() - $current_time_timestamp;
 
+// Function to format time differences
+function format_time($seconds) {
+    $days = floor($seconds / 86400);
+    $hours = floor(($seconds % 86400) / 3600);
+    $minutes = floor(($seconds % 3600) / 60);
+    $seconds = $seconds % 60;
+
+    $formatted = '';
+    if ($days > 0) $formatted .= $days . ' days ';
+    if ($hours > 0) $formatted .= $hours . ' hours ';
+    if ($minutes > 0) $formatted .= $minutes . ' minutes ';
+    if ($seconds > 0) $formatted .= $seconds . ' seconds ';
+
+    return $formatted ?: '0 seconds';
+}
+
 // Display event times and time left
 echo "<p>Event Start Time (IST): " . $event_start_time_ist->format('Y-m-d H:i:s') . "</p>";
 echo "<p>Time until Event Starts: " . format_time(max($time_until_start, 0)) . "</p>";
