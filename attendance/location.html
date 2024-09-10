@@ -92,27 +92,6 @@
                 document.getElementById('submit-message').textContent = 'Student ID, Event ID, or Email missing';
             }
         };
-
-        // Sample code to send data manually (if needed)
-        const data = {
-            student_id: "52",
-            event_id: "47",
-            latitude: 17.7844324,
-            longitude: 83.3817213,
-            email: "example@example.com" // Add the email here if sending manually
-        };
-
-        fetch('https://clubhub.hopto.org/attendance/track_location.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => console.log('Success:', data))
-        .catch((error) => console.error('Error:', error));
-
     </script>
 </head>
 <body>
