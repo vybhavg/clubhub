@@ -4,23 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Location Tracker</title>
-    <script>
-        // Function to get query parameters from the URL
-        function getQueryParam(param) {
-            let params = new URLSearchParams(window.location.search);
-            return params.get(param);
+    <style>
+        #location-info {
+            margin-top: 20px;
         }
-
-        // Function to send location data along with student_id and event_id to the server in JSON format
-        function sendLocationData(student_id, event_id, latitude, longitude) {
+        #submit-message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        // Function to send location data to the server in JSON format
+        function sendLocationData(studentId, eventId, latitude, longitude) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'track_location.php', true); // Use the correct relative URL for the script
             xhr.setRequestHeader('Content-Type', 'application/json');
 
-            // Create a JSON object with all the required data
+            // Create a JSON object
             const data = JSON.stringify({
-                student_id: student_id,
-                event_id: event_id,
+                student_id: studentId,
+                event_id: eventId,
                 latitude: latitude,
                 longitude: longitude
             });
@@ -29,27 +32,33 @@
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    console.log('Location submitted successfully');
+                    // Display success message
+                    document.getElementById('submit-message').textContent = 'Location submitted successfully!';
                 } else {
-                    console.log('Error submitting location: ' + xhr.statusText);
+                    // Display error message
+                    document.getElementById('submit-message').textContent = 'Error submitting location: ' + xhr.statusText;
                 }
             };
 
             xhr.onerror = function () {
-                console.error('Request failed');
+                document.getElementById('submit-message').textContent = 'Request failed';
             };
         }
 
         // Function to track and send location periodically
-        function trackLocationPeriodically(student_id, event_id) {
+        function trackLocationPeriodically(studentId, eventId) {
             if (navigator.geolocation) {
                 setInterval(function () {
                     navigator.geolocation.getCurrentPosition(function (position) {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
 
-                        // Send location data to the server along with student_id and event_id
-                        sendLocationData(student_id, event_id, latitude, longitude);
+                        // Update the location info on the page
+                        document.getElementById('latitude').textContent = 'Latitude: ' + latitude;
+                        document.getElementById('longitude').textContent = 'Longitude: ' + longitude;
+
+                        // Send location data to the server
+                        sendLocationData(studentId, eventId, latitude, longitude);
                     }, function (error) {
                         console.error('Error fetching location: ' + error.message);
                     });
@@ -61,20 +70,27 @@
 
         // Start tracking once the page loads
         window.onload = function () {
-            // Retrieve student_id and event_id from the URL
-            const student_id = getQueryParam('student_id');
-            const event_id = getQueryParam('event_id');
+            // Retrieve student ID and event ID from session storage or cookies (assuming they are stored there)
+            const studentId = sessionStorage.getItem('student_id');
+            const eventId = sessionStorage.getItem('event_id');
 
-            if (student_id && event_id) {
-                // Start location tracking with student_id and event_id
-                trackLocationPeriodically(student_id, event_id);
+            if (studentId && eventId) {
+                // Start location tracking
+                trackLocationPeriodically(studentId, eventId);
             } else {
-                console.error('Student ID or Event ID missing');
+                alert('Student ID and Event ID not found.');
             }
         };
     </script>
 </head>
 <body>
     <h1>Location Tracker</h1>
+
+    <div id="location-info">
+        <p id="latitude">Latitude: Not available</p>
+        <p id="longitude">Longitude: Not available</p>
+    </div>
+
+    <div id="submit-message"></div>
 </body>
 </html>
