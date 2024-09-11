@@ -155,7 +155,7 @@ $conn->close();
 <main class="main">
    <!-- Hero Section -->
 <section id="hero" class="hero section accent-background">
-    <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+    <img src="assets/img/gitamvsp.jpg" alt="" data-aos="fade-in">
     <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
         <div class="cont">
             <h2>Welcome, <?php echo htmlspecialchars($student_name); ?>!</h2>
