@@ -200,16 +200,20 @@ if (isset($_POST['give_attendance'])) {
     header("Location: ".$_SERVER['PHP_SELF']."?update_type=".$updateType);
     exit;
 }
+// Fetch ongoing events for the logged-in club
+$current_time = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+$current_time_formatted = $current_time->format('Y-m-d H:i:s');
 
 
 
 // Fetch events, recruitments, applications, and onboarding data for the logged-in club
-$eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ?");
+$eventsResult = $conn->prepare("SELECT * FROM events WHERE club_id = ? AND event_end_time > ?");
+
 $recruitmentsResult = $conn->prepare("SELECT * FROM recruitments WHERE club_id = ?");
 $onboardingResult = $conn->prepare("SELECT o.id, s.name as student_name, s.email as email FROM onboarding o INNER JOIN students s ON o.student_id = s.id WHERE o.club_id = ?");
 
 if ($eventsResult) {
-    $eventsResult->bind_param("i", $club_id);
+    $eventsResult->bind_param("is", $club_id, $current_time_formatted);
     $eventsResult->execute();
     $eventsResult = $eventsResult->get_result();
 } else {
@@ -441,7 +445,8 @@ $conn->close();
 
         window.onload = initMap;
     </script>
-  <!-- Existing Events List -->
+    
+<!-- Existing Events List -->
 <section id="faq" class="faq section light-background">
     <div class="container section-title" data-aos="fade-up">
         <h2>Existing Events</h2>
@@ -479,6 +484,7 @@ $conn->close();
         </div>
     </div>
 </section><!-- /Faq Section -->
+
 
 
     <?php } elseif ($updateType == 'recruitments') { ?>
