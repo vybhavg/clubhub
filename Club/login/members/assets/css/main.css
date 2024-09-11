@@ -151,7 +151,7 @@ h6 {
 # Global Header
 --------------------------------------------------------------*/
 .header {
-  --background-color: #4b99bb; /* Set the default background color here */
+  --background-color: rgba(255, 255, 255, 0);
   --default-color: #ffffff;
   --heading-color: #ffffff;
   color: var(--default-color);
@@ -178,12 +178,16 @@ h6 {
   text-transform: uppercase;
 }
 
+.scrolled .header {
+  box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
+}
+
 /* Global Header on Scroll
 ------------------------------*/
 .scrolled .header {
-  box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
-  /* You can adjust the color here if you want it to change on scroll */
+  --background-color: #4b99bb;
 }
+
 
 
 /*--------------------------------------------------------------
