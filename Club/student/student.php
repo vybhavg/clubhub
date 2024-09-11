@@ -63,6 +63,24 @@ if ($stmt_fetch_registered_events) {
     $_SESSION['message'] = "Error fetching registered events.";
 }
 
+if (isset($_SESSION['student_id'])) {
+    $student_id = $_SESSION['student_id'];
+
+    $stmt_fetch_student_name = $conn->prepare("SELECT student_name FROM student_login_details WHERE id = ?");
+    $stmt_fetch_student_name->bind_param("i", $student_id);
+    if ($stmt_fetch_student_name) {
+        $stmt_fetch_student_name->execute();
+        $result = $stmt_fetch_student_name->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $student_name = $row['student_name'];
+        }
+        $stmt_fetch_student_name->close();
+    } else {
+        error_log("Prepare failed: " . $conn->error);
+        $_SESSION['message'] = "Error fetching student details.";
+    }
+}
+
 // Close the database connection
 $conn->close();
 ?>
@@ -135,17 +153,17 @@ $conn->close();
 </header>
 
 <main class="main">
-    <!-- Hero Section -->
-    <section id="hero" class="hero section accent-background">
-        <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
-        <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
-            <div class="cont">
-                <h2>Welcome, <?php echo htmlspecialchars($club_name ?: 'Club'); ?> Club Members!</h2>
-                <p>Manage your events, recruitments, and applications efficiently.</p>
-            </div>
-            <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
+   <!-- Hero Section -->
+<section id="hero" class="hero section accent-background">
+    <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+    <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
+        <div class="cont">
+            <h2>Welcome, <?php echo htmlspecialchars($student_name); ?>!</h2>
+            <p>Manage your events, recruitments, and applications efficiently.</p>
         </div>
-    </section><!-- /Hero Section -->
+        <a href="#events" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
+    </div>
+</section><!-- /Hero Section -->
 
 
    <!-- Dynamic Content Sections -->
