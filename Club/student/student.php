@@ -11,17 +11,21 @@ $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 // Initialize variables
 $club_name = 'All Clubs'; // Displaying for all clubs
 
+
 // Fetch all events that the student has not registered for
 $student_id = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : 0; // Ensure student_id is available
+$current_time = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+$current_time_formatted = $current_time->format('Y-m-d H:i:s');
+
 
 $stmt_fetch_events = $conn->prepare("
     SELECT e.*, c.club_name 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     LEFT JOIN event_registrations r ON e.id = r.event_id AND r.student_id = ?
-    WHERE r.event_id IS NULL
+    WHERE r.event_id IS NULL AND e.event_end_time > ?
 ");
-$stmt_fetch_events->bind_param("i", $student_id);
+$stmt_fetch_events->bind_param("is", $student_id, $current_time_formatted);
 
 if ($stmt_fetch_events) {
     $stmt_fetch_events->execute();
@@ -44,16 +48,17 @@ if ($stmt_fetch_recruitments) {
     $_SESSION['message'] = "Error fetching recruitments.";
 }
 
-// Fetch registered events for the current student including the club name, registration date, and student details
+// Fetch registered events for the current student, excluding those that have ended
 $stmt_fetch_registered_events = $conn->prepare("
     SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, r.student_id, s.student_name, s.college_email 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
     INNER JOIN student_login_details s ON r.student_id = s.id
-    WHERE r.student_id = ?
+    WHERE r.student_id = ? AND e.event_end_time > ?
 ");
-$stmt_fetch_registered_events->bind_param("i", $student_id);
+$stmt_fetch_registered_events->bind_param("is", $student_id, $current_time_formatted);
+
 if ($stmt_fetch_registered_events) {
     $stmt_fetch_registered_events->execute();
     $registeredEventsResult = $stmt_fetch_registered_events->get_result();
@@ -62,7 +67,6 @@ if ($stmt_fetch_registered_events) {
     error_log("Prepare failed: " . $conn->error);
     $_SESSION['message'] = "Error fetching registered events.";
 }
-
 // Close the database connection
 $conn->close();
 ?>
@@ -150,32 +154,40 @@ $conn->close();
 
 
    <!-- Dynamic Content Sections -->
-    <?php if ($updateType == 'events') { ?>
-        <!-- Events Section -->
-        <section id="events" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Events</h2>
-                <p>Here are the events available for registration.</p>
-            </div>
-            <div class="form-container">
-                <div class="upbox update-item filter-events active">
-                    <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
-                        <?php while ($event = $eventsResult->fetch_assoc()): ?>
-                            <div class="update-entry">
-                                <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                                <p><?php echo htmlspecialchars($event['description']); ?></p>
-                                <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
-                                <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>&club_id=<?php echo htmlspecialchars($event['club_id']); ?>" class="btn btn-primary">Register</a>
-                            </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <p>No events available at the moment.</p>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </section><!-- /Events Section -->
+ <!-- Events Section -->
+<section id="events" class="about section">
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Events</h2>
+        <p>Here are the events available for registration.</p>
+    </div>
+    <div class="form-container">
+        <div class="upbox update-item filter-events active">
+            <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
+                <?php while ($event = $eventsResult->fetch_assoc()): ?>
+                    <?php 
+                    // Format event times
+                    $event_start_time = new DateTime($event['event_start_time']);
+                    $event_end_time = new DateTime($event['event_end_time']);
+                    $start_time_formatted = $event_start_time->format('d M Y, H:i');
+                    $end_time_formatted = $event_end_time->format('d M Y, H:i');
+                    ?>
+                    <div class="update-entry">
+                        <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+                        <p><?php echo htmlspecialchars($event['description']); ?></p>
+                        <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
+                        <p>Start: <?php echo $start_time_formatted; ?> | End: <?php echo $end_time_formatted; ?></p>
+                        <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>&club_id=<?php echo htmlspecialchars($event['club_id']); ?>" class="btn btn-primary">Register</a>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>No events available at the moment.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+</section><!-- /Events Section -->
 
-    <!-- Registered Events Section -->
+
+<!-- Registered Events Section -->
 <section id="registered-events" class="about section">
     <div class="container section-title" data-aos="fade-up">
         <h2>Registered Events</h2>
@@ -185,16 +197,24 @@ $conn->close();
         <div class="upbox update-item filter-registered-events">
             <?php if ($registeredEventsResult && $registeredEventsResult->num_rows > 0): ?>
                 <?php while ($event = $registeredEventsResult->fetch_assoc()): ?>
+                    <?php 
+                    // Format event times
+                    $event_start_time = new DateTime($event['event_start_time']);
+                    $event_end_time = new DateTime($event['event_end_time']);
+                    $start_time_formatted = $event_start_time->format('d M Y, H:i');
+                    $end_time_formatted = $event_end_time->format('d M Y, H:i');
+                    ?>
                     <div class="update-entry">
-                        <h4><?php echo htmlspecialchars($event['title'] ?? ''); ?></h4>
-                        <p><?php echo htmlspecialchars($event['description'] ?? ''); ?></p>
-                        <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
-                        <p>Registered on: <?php echo htmlspecialchars($event['registration_date'] ?? ''); ?></p>
+                        <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+                        <p><?php echo htmlspecialchars($event['description']); ?></p>
+                        <p>Club: <?php echo htmlspecialchars($event['club_name']); ?></p>
+                        <p>Registered on: <?php echo htmlspecialchars($event['registration_date']); ?></p>
+                        <p>Start: <?php echo $start_time_formatted; ?> | End: <?php echo $end_time_formatted; ?></p>
                         <button onclick="registerForEvent(
-                            <?php echo htmlspecialchars($event['event_id'] ?? ''); ?>, 
-                            <?php echo htmlspecialchars($event['student_id'] ?? ''); ?>, 
-                            '<?php echo htmlspecialchars($event['student_name'] ?? ''); ?>', 
-                            '<?php echo htmlspecialchars($event['college_email'] ?? ''); ?>'
+                            <?php echo htmlspecialchars($event['event_id']); ?>, 
+                            <?php echo htmlspecialchars($event['student_id']); ?>, 
+                            '<?php echo htmlspecialchars($event['student_name']); ?>', 
+                            '<?php echo htmlspecialchars($event['college_email']); ?>'
                         )" class="btn btn-primary">Attend</button>
                     </div>
                 <?php endwhile; ?>
