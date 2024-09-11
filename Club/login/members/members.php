@@ -458,9 +458,16 @@ $conn->close();
                 <ul class="list-group">
                     <?php 
                     if ($eventsResult && $eventsResult->num_rows > 0) {
-                        while ($event = $eventsResult->fetch_assoc()) { ?>
+                        while ($event = $eventsResult->fetch_assoc()) { 
+                            // Format event times
+                            $event_start_time = new DateTime($event['event_start_time']);
+                            $event_end_time = new DateTime($event['event_end_time']);
+                            $start_time_formatted = $event_start_time->format('d M Y, H:i');
+                            $end_time_formatted = $event_end_time->format('d M Y, H:i');
+                            ?>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?>
+                                <?php echo htmlspecialchars($event['title']); ?>: <?php echo htmlspecialchars($event['description']); ?><br>
+                                <small>Start: <?php echo $start_time_formatted; ?> | End: <?php echo $end_time_formatted; ?></small>
                                 <div class="d-flex">
                                     <!-- Give Attendance Button -->
                                     <form method="post" class="mr-2">
@@ -484,6 +491,7 @@ $conn->close();
         </div>
     </div>
 </section><!-- /Faq Section -->
+
 
 
 
