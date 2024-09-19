@@ -89,34 +89,51 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Global Header
+# Header
 --------------------------------------------------------------*/
-.header {
-  --background-color: #4b99bb; /* Set the background color here */
-  --default-color: #ffffff;
-  --heading-color: #ffffff;
-  color: var(--default-color);
-  background-color: var(--background-color);
-  padding: 15px 0;
+#header {
   transition: all 0.5s;
   z-index: 997;
+  transition: all 0.5s;
+  padding: 24px 0;
+  background: rgba(103, 176, 209, 0.8);
 }
 
-.header .logo {
-  line-height: 1;
+#header.header-transparent {
+  background: transparent;
 }
 
-.header .logo img {
-  max-height: 32px;
-  margin-right: 8px;
+#header.header-scrolled {
+  background: rgba(55, 142, 181, 0.9);
+  padding: 12px;
 }
 
-.header .logo h1 {
-  font-size: 26px;
+#header .logo h1 {
+  font-size: 24px;
   margin: 0;
+  line-height: 1;
   font-weight: 700;
-  color: var(--heading-color);
+  letter-spacing: 1px;
+  font-family: "Poppins", sans-serif;
   text-transform: uppercase;
+}
+
+#header .logo h1 a,
+#header .logo h1 a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+#header .logo img {
+  padding: 0;
+  margin: 0;
+  max-height: 40px;
+}
+
+@media (max-width: 768px) {
+  #header.header-scrolled {
+    padding: 15px 0;
+  }
 }
 
 /*--------------------------------------------------------------
