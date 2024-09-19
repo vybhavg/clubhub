@@ -11,11 +11,11 @@ $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 // Initialize variables
 $club_name = 'All Clubs'; // Displaying for all clubs
 
-// Fetch all events that the student has not registered for
+// Fetch all events that the student has not registered for, including event start time, latitude, and longitude
 $student_id = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : 0; // Ensure student_id is available
 
 $stmt_fetch_events = $conn->prepare("
-    SELECT e.*, c.club_name 
+    SELECT e.*, c.club_name, e.event_start_time, e.latitude, e.longitude
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     LEFT JOIN event_registrations r ON e.id = r.event_id AND r.student_id = ?
@@ -33,8 +33,10 @@ if ($stmt_fetch_events) {
 }
 
 // Fetch all recruitments from all clubs
-$stmt_fetch_recruitments = $conn->prepare("SELECT r.*, c.club_name FROM recruitments r
-    INNER JOIN clubs c ON r.club_id = c.id");
+$stmt_fetch_recruitments = $conn->prepare("
+    SELECT r.*, c.club_name FROM recruitments r
+    INNER JOIN clubs c ON r.club_id = c.id
+");
 if ($stmt_fetch_recruitments) {
     $stmt_fetch_recruitments->execute();
     $recruitmentsResult = $stmt_fetch_recruitments->get_result();
@@ -44,9 +46,9 @@ if ($stmt_fetch_recruitments) {
     $_SESSION['message'] = "Error fetching recruitments.";
 }
 
-// Fetch registered events for the current student including the club name, registration date, and student details
+// Fetch registered events for the current student including event start time, latitude, longitude, and club name
 $stmt_fetch_registered_events = $conn->prepare("
-    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, r.student_id, s.student_name, s.college_email 
+    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, e.event_start_time, e.latitude, e.longitude, s.student_name, s.college_email 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
@@ -64,6 +66,7 @@ if ($stmt_fetch_registered_events) {
     $_SESSION['message'] = "Error fetching registered events.";
 }
 
+// Fetch the student's name
 if (isset($_SESSION['student_id'])) {
     $student_id = $_SESSION['student_id'];
 
@@ -170,27 +173,30 @@ $conn->close();
     <?php if ($updateType == 'events') { ?>
         <!-- Events Section -->
         <section id="events" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Events</h2>
-                <p>Here are the events available for registration.</p>
-            </div>
-            <div class="form-container">
-                <div class="upbox update-item filter-events active">
-                    <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
-                        <?php while ($event = $eventsResult->fetch_assoc()): ?>
-                            <div class="update-entry">
-                                <h4><?php echo htmlspecialchars($event['title']); ?></h4>
-                                <p><?php echo htmlspecialchars($event['description']); ?></p>
-                                <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
-                                <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>&club_id=<?php echo htmlspecialchars($event['club_id']); ?>" class="btn btn-primary">Register</a>
-                            </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <p>No events available at the moment.</p>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </section><!-- /Events Section -->
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Events</h2>
+        <p>Here are the events available for registration.</p>
+    </div>
+    <div class="form-container">
+        <div class="upbox update-item filter-events active">
+            <?php if ($eventsResult && $eventsResult->num_rows > 0): ?>
+                <?php while ($event = $eventsResult->fetch_assoc()): ?>
+                    <div class="update-entry">
+                        <h4><?php echo htmlspecialchars($event['title']); ?></h4>
+                        <p><?php echo htmlspecialchars($event['description']); ?></p>
+                        <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
+                        <p>Event Start Time: <?php echo htmlspecialchars($event['event_start_time'] ?? ''); ?></p>
+                        <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude'] ?? ''); ?>,<?php echo htmlspecialchars($event['longitude'] ?? ''); ?>" target="_blank" class="btn btn-secondary">View Location</a>
+                        <a href="register_event.php?event_id=<?php echo htmlspecialchars($event['id']); ?>&club_id=<?php echo htmlspecialchars($event['club_id']); ?>" class="btn btn-primary">Register</a>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>No events available at the moment.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+<!-- /Events Section -->
 
     <!-- Registered Events Section -->
 <section id="registered-events" class="about section">
@@ -206,7 +212,9 @@ $conn->close();
                         <h4><?php echo htmlspecialchars($event['title'] ?? ''); ?></h4>
                         <p><?php echo htmlspecialchars($event['description'] ?? ''); ?></p>
                         <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
+                        <p>Event Start Time: <?php echo htmlspecialchars($event['event_start_time'] ?? ''); ?></p>
                         <p>Registered on: <?php echo htmlspecialchars($event['registration_date'] ?? ''); ?></p>
+                        <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude'] ?? ''); ?>,<?php echo htmlspecialchars($event['longitude'] ?? ''); ?>" target="_blank" class="btn btn-secondary">View Location</a>
                         <button onclick="registerForEvent(
                             <?php echo htmlspecialchars($event['event_id'] ?? ''); ?>, 
                             <?php echo htmlspecialchars($event['student_id'] ?? ''); ?>, 
@@ -220,7 +228,8 @@ $conn->close();
             <?php endif; ?>
         </div>
     </div>
-</section><!-- /Registered Events Section -->
+</section>
+<!-- /Registered Events Section -->
 
 
   <script>
