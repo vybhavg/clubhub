@@ -69,19 +69,17 @@
 # General Styling & Shared Classes
 --------------------------------------------------------------*/
 body {
-  color: var(--default-color);
-  background-color: var(--background-color);
-  font-family: var(--default-font);
+  font-family: "Open Sans", sans-serif;
+  color: #444444;
 }
 
 a {
-  color: var(--accent-color);
   text-decoration: none;
-  transition: 0.3s;
+  color: #67b0d1;
 }
 
 a:hover {
-  color: color-mix(in srgb, var(--accent-color), transparent 25%);
+  color: #8ec4dd;
   text-decoration: none;
 }
 
@@ -91,8 +89,7 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--heading-color);
-  font-family: var(--heading-font);
+  font-family: "Raleway", sans-serif;
 }
 
 /* PHP Email Form Messages
