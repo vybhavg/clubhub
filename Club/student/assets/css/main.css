@@ -7,20 +7,81 @@
 */
 
 /*--------------------------------------------------------------
-# General
+# Font & Color Variables
+# Help: https://bootstrapmade.com/color-system/
+--------------------------------------------------------------*/
+/* Fonts */
+
+:root {
+  --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --heading-font: "Raleway",  sans-serif;
+  --nav-font: "Poppins",  sans-serif;
+}
+
+/* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
+:root { 
+  --background-color: #ffffff; /* Background color for the entire website, including individual sections */
+  --default-color: #444444; /* Default color used for the majority of the text content across the entire website */
+  --heading-color: #2f4d5a; /* Color for headings, subheadings and title throughout the website */
+  --accent-color: #67b0d1; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
+  --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
+}
+
+/* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
+:root {
+  --nav-color: #ffffff;  /* The default color of the main navmenu links */
+  --nav-hover-color: #67b0d1; /* Applied to main navmenu links when they are hovered over or active */
+  --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
+  --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
+  --nav-dropdown-color: #444444; /* Used for navigation links of the dropdown items in the navigation menu. */
+  --nav-dropdown-hover-color: #67b0d1; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+}
+
+/* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
+
+.light-background {
+  --background-color: #f5f9fc;
+  --surface-color: #ffffff;
+}
+
+.dark-background {
+  --background-color: #273f49;
+  --default-color: #ffffff;
+  --heading-color: #ffffff;
+  --surface-color: #395c6a;
+  --contrast-color: #ffffff;
+}
+
+.accent-background {
+  --background-color: #67b0d1;
+  --default-color: #ffffff;
+  --heading-color: #ffffff;
+  --surface-color: #8ec4dd;
+}
+
+/* Smooth scroll */
+:root {
+  scroll-behavior: smooth;
+}
+
+/*--------------------------------------------------------------
+# General Styling & Shared Classes
 --------------------------------------------------------------*/
 body {
-  font-family: "Open Sans", sans-serif;
-  color: #444444;
+  color: var(--default-color);
+  background-color: var(--background-color);
+  font-family: var(--default-font);
 }
 
 a {
+  color: var(--accent-color);
   text-decoration: none;
-  color: #67b0d1;
+  transition: 0.3s;
 }
 
 a:hover {
-  color: #8ec4dd;
+  color: color-mix(in srgb, var(--accent-color), transparent 25%);
   text-decoration: none;
 }
 
@@ -30,12 +91,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Raleway", sans-serif;
+  color: var(--heading-color);
+  font-family: var(--heading-font);
 }
 
-#main {
-  margin-top: 90px;
-}
 /* PHP Email Form Messages
 ------------------------------*/
 .php-email-form .error-message {
@@ -89,218 +148,157 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Header
+# Global Header
 --------------------------------------------------------------*/
-#header {
+.header {
+  --background-color: rgba(255, 255, 255, 0);
+  --default-color: #ffffff;
+  --heading-color: #ffffff;
+  color: var(--default-color);
+  background-color: var(--background-color);
+  padding: 15px 0;
   transition: all 0.5s;
   z-index: 997;
-  transition: all 0.5s;
-  padding: 24px 0;
-  background: rgba(103, 176, 209, 0.8);
 }
 
-#header.header-transparent {
-  background: transparent;
-}
-
-#header.header-scrolled {
-  background: rgba(55, 142, 181, 0.9);
-  padding: 12px;
-}
-
-#header .logo h1 {
-  font-size: 24px;
-  margin: 0;
+.header .logo {
   line-height: 1;
+}
+
+.header .logo img {
+  max-height: 32px;
+  margin-right: 8px;
+}
+
+.header .logo h1 {
+  font-size: 26px;
+  margin: 0;
   font-weight: 700;
-  letter-spacing: 1px;
-  font-family: "Poppins", sans-serif;
+  color: var(--heading-color);
   text-transform: uppercase;
 }
 
-#header .logo h1 a,
-#header .logo h1 a:hover {
-  color: #fff;
-  text-decoration: none;
+.scrolled .header {
+  box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
 }
 
-#header .logo img {
-  padding: 0;
-  margin: 0;
-  max-height: 40px;
+/* Global Header on Scroll
+------------------------------*/
+.scrolled .header {
+  --background-color: #4b99bb;
 }
 
-@media (max-width: 768px) {
-  #header.header-scrolled {
-    padding: 15px 0;
-  }
-}
+
 
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/
-/**
-* Desktop Navigation 
-*/
-.navbar {
-  padding: 0;
-  position: static;
-}
+/* Desktop Navigation */
+@media (min-width: 1200px) {
+  .navmenu {
+    padding: 0;
+  }
 
-.navbar ul {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  list-style: none;
-  align-items: center;
-}
+  .navmenu ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style: none;
+    align-items: center;
+  }
 
-.navbar li {
-  position: relative;
-}
+  .navmenu li {
+    position: relative;
+  }
 
-.navbar a,
-.navbar a:focus {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
-  margin-left: 10px;
-  font-family: "Raleway", sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-  white-space: nowrap;
-  transition: 0.3s;
-}
+  .navmenu a,
+  .navmenu a:focus {
+    color: var(--nav-color);
+    padding: 10px 15px;
+    margin-left: 2px;
+    font-size: 16px;
+    font-family: var(--nav-font);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    white-space: nowrap;
+    transition: 0.3s;
+  }
 
-.navbar a i,
-.navbar a:focus i {
-  font-size: 12px;
-  line-height: 0;
-  margin-left: 5px;
-}
+  .navmenu a i,
+  .navmenu a:focus i {
+    font-size: 12px;
+    line-height: 0;
+    margin-left: 5px;
+    transition: 0.3s;
+  }
 
-.navbar a:hover,
-.navbar .active,
-.navbar .active:focus,
-.navbar li:hover>a {
-  background: rgba(255, 255, 255, 0.2);
-}
+  .navmenu li:hover>a,
+  .navmenu .active,
+  .navmenu .active:focus {
+    color: var(--contrast-color);
+    background-color: var(--nav-hover-color);
+  }
 
-.navbar .dropdown ul {
-  display: block;
-  position: absolute;
-  left: 10px;
-  top: calc(100% + 30px);
-  margin: 0;
-  padding: 10px 0;
-  z-index: 99;
-  opacity: 0;
-  visibility: hidden;
-  background: #fff;
-  box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
-  transition: 0.3s;
-}
+  .navmenu .dropdown ul {
+    margin: 0;
+    padding: 0;
+    background: var(--nav-dropdown-background-color);
+    display: block;
+    position: absolute;
+    visibility: hidden;
+    left: 2px;
+    top: 130%;
+    opacity: 0;
+    transition: 0.3s;
+    z-index: 99;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+  }
 
-.navbar .dropdown ul li {
-  min-width: 200px;
-}
+  .navmenu .dropdown ul li {
+    min-width: 200px;
+  }
 
-.navbar .dropdown ul a {
-  padding: 10px 20px;
-  font-size: 15px;
-  text-transform: none;
-  font-weight: 600;
-  color: #2f4d5a;
-}
+  .navmenu .dropdown ul a {
+    padding: 10px 20px;
+    margin: 0;
+    font-size: 15px;
+    text-transform: none;
+    color: var(--nav-dropdown-color);
+  }
 
-.navbar .dropdown ul a i {
-  font-size: 12px;
-}
+  .navmenu .dropdown ul a i {
+    font-size: 12px;
+  }
 
-.navbar .dropdown ul a:hover,
-.navbar .dropdown ul .active:hover,
-.navbar .dropdown ul li:hover>a {
-  color: #67b0d1;
-}
+  .navmenu .dropdown ul a:hover,
+  .navmenu .dropdown ul .active:hover,
+  .navmenu .dropdown ul li:hover>a {
+    color: var(--contrast-color);
+    background-color: var(--nav-hover-color);
+  }
 
-.navbar .dropdown:hover>ul {
-  opacity: 1;
-  top: 100%;
-  visibility: visible;
-}
+  .navmenu .dropdown:hover>ul {
+    opacity: 1;
+    top: 100%;
+    visibility: visible;
+  }
 
-.navbar .megamenu {
-  position: static;
-}
-
-.navbar .megamenu ul {
-  margin: 0;
-  padding: 10px;
-  display: block;
-  position: absolute;
-  top: 130%;
-  left: 0;
-  right: 0;
-  visibility: hidden;
-  opacity: 0;
-  display: flex;
-  transition: 0.3s;
-  border-radius: 4px;
-  z-index: 99;
-}
-
-.navbar .megamenu ul li {
-  flex: 1;
-}
-
-.navbar .megamenu ul li strong {
-  padding: 10px 0 10px 20px;
-  display: block;
-}
-
-.navbar .megamenu ul li a,
-.navbar .megamenu ul li:hover>a {
-  color: rgba(var(--color-white-rgb), 0.5);
-  background: none;
-  padding: 8px 10px;
-}
-
-.navbar .megamenu ul li a:hover,
-.navbar .megamenu ul li .active,
-.navbar .megamenu ul li .active:hover {
-  color: #67b0d1;
-}
-
-.navbar .megamenu:hover>ul {
-  opacity: 1;
-  top: 100%;
-  visibility: visible;
-}
-
-.navbar .dropdown .dropdown ul {
-  top: 0;
-  left: calc(100% - 30px);
-  visibility: hidden;
-}
-
-.navbar .dropdown .dropdown:hover>ul {
-  opacity: 1;
-  top: 0;
-  left: 100%;
-  visibility: visible;
-}
-
-@media (max-width: 1366px) {
-  .navbar .dropdown .dropdown ul {
+  .navmenu .dropdown .dropdown ul {
+    top: 0;
     left: -90%;
+    visibility: hidden;
   }
 
-  .navbar .dropdown .dropdown:hover>ul {
+  .navmenu .dropdown .dropdown:hover>ul {
+    opacity: 1;
+    top: 0;
     left: -100%;
+    visibility: visible;
   }
 }
+
 /* Mobile Navigation */
 @media (max-width: 1199px) {
   .mobile-nav-toggle {
@@ -427,6 +425,7 @@ h6 {
     display: block;
   }
 }
+
 
 /*--------------------------------------------------------------
 # Global Footer
