@@ -15,7 +15,7 @@
 :root {
   --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --heading-font: "Raleway",  sans-serif;
-  --nav-font: "Poppins",  sans-serif;
+  --nav-font: "Raleway",  sans-serif;
 }
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
@@ -215,7 +215,7 @@ h6 {
     margin-left: 2px;
     font-size: 16px;
     font-family: var(--nav-font);
-    font-weight: 500;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: space-between;
