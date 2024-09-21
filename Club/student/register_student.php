@@ -58,6 +58,15 @@ $event_end_time_ist = new DateTime($event_end_time, $ist_timezone);
 $event_start_timestamp = $event_start_time_ist->getTimestamp();
 $event_end_timestamp = $event_end_time_ist->getTimestamp();
 
+// Determine the heading based on the event timing
+$heading = '';
+if ($current_time_timestamp < $event_start_timestamp) {
+    $heading = htmlspecialchars($event_title) . ' is Approaching!';
+} elseif ($current_time_timestamp < $event_end_timestamp) {
+    $heading = htmlspecialchars($event_title) . ' is Ongoing!';
+} else {
+    $heading = htmlspecialchars($event_title) . ' has Concluded!';
+}
 // HTML Output
 echo '<html>
 <head>
@@ -168,7 +177,8 @@ echo '<html>
 <body>';
 
 echo '<img src="https://media.tenor.com/5miqL4qPOGgAAAAj/school-book.gif" alt="Celebration GIF"/>';
-echo '<h2>' . htmlspecialchars($event_title) . ' is Approaching!</h2>';
+echo '<h2>' . $heading . '</h2>'; // Display the heading based on event timing
+
 echo '<div class="message">';
 
 if ($distance_to_event <= $geofence_radius) {
