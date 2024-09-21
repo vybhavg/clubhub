@@ -18,10 +18,10 @@ $name = isset($_POST['student_name']) ? trim($_POST['student_name']) : ''; // Tr
 $email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate student email
 
 // Fetch the event details from the database
-$stmt = $conn->prepare("SELECT title, event_start_time, event_end_time, latitude, longitude, attendance_allowed, button_access_time FROM events WHERE id = ?");
+$stmt = $conn->prepare("SELECT title, event_start_time, latitude, longitude, attendance_allowed, button_access_time FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
-$stmt->bind_result($event_title, $event_start_time, $event_end_time, $event_latitude, $event_longitude, $attendance_allowed, $button_access_time);
+$stmt->bind_result($event_title, $event_start_time, $event_latitude, $event_longitude, $attendance_allowed, $button_access_time);
 $stmt->fetch();
 $stmt->close();
 
@@ -55,41 +55,52 @@ $current_time = new DateTime('now', $server_timezone);
 $current_time->setTimezone($ist_timezone);
 $current_time_timestamp = $current_time->getTimestamp(); // Use this timestamp for time calculations
 
-// Convert event start and end times to IST
+// Convert event start time to IST
 $event_start_time_ist = new DateTime($event_start_time, $ist_timezone);
-$event_end_time_ist = new DateTime($event_end_time, $ist_timezone);
 
-// Calculate time differences
+// Calculate time until the event starts
 $time_until_start = $event_start_time_ist->getTimestamp() - $current_time_timestamp;
-$time_until_end = $event_end_time_ist->getTimestamp() - $current_time_timestamp;
 
 // Function to format time differences
 function format_time($seconds) {
+    if ($seconds < 0) return 'Event has already started.';
+    
     $days = floor($seconds / 86400);
     $hours = floor(($seconds % 86400) / 3600);
     $minutes = floor(($seconds % 3600) / 60);
-    $seconds = $seconds % 60;
 
     $formatted = '';
     if ($days > 0) $formatted .= $days . ' days ';
     if ($hours > 0) $formatted .= $hours . ' hours ';
     if ($minutes > 0) $formatted .= $minutes . ' minutes ';
-    if ($seconds > 0) $formatted .= $seconds . ' seconds ';
-
+    
     return $formatted ?: '0 seconds';
 }
 
-// Display event times and time left
-echo "<p>Event Start Time (IST): " . $event_start_time_ist->format('Y-m-d H:i:s') . "</p>";
-echo "<p>Time until Event Starts: " . format_time(max($time_until_start, 0)) . "</p>";
-echo "<p>Event End Time (IST): " . $event_end_time_ist->format('Y-m-d H:i:s') . "</p>";
-echo "<p>Time until Event Ends: " . format_time(max($time_until_end, 0)) . "</p>";
+// HTML Output
+echo '<html>
+<head>
+    <style>
+        body {
+            background-color: #4b9abb;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .message {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>';
 
-// Check if the user is within the geofence
+echo '<img src="https://media.tenor.com/5miqL4qPOGgAAAAj/school-book.gif" alt="Loading..." style="width: 100px; height: auto;"/>';
+echo '<div class="message">';
+
 if ($distance_to_event <= $geofence_radius) {
     echo "<p>You are within the geofence.</p>";
 
-    // Check if button access time is set and calculate if within 5 minutes window
     if ($attendance_allowed) {
         $button_access_time_ist = new DateTime($button_access_time, $ist_timezone);
         $button_access_time_timestamp = $button_access_time_ist->getTimestamp();
@@ -97,7 +108,6 @@ if ($distance_to_event <= $geofence_radius) {
         $five_minutes = 5 * 60; // 5 minutes in seconds
 
         if ($time_since_button_access <= $five_minutes) {
-            // Display "Confirm Attendance" button if the current time is within 5 minutes of button access time
             if ($current_time_timestamp >= $event_start_time_ist->getTimestamp()) {
                 echo '<form method="post" action="confirm_attendance.php">
                         <input type="hidden" name="student_id" value="' . htmlspecialchars($student_id) . '">
@@ -109,7 +119,7 @@ if ($distance_to_event <= $geofence_radius) {
                         <button type="submit">Confirm Attendance</button>
                       </form>';
             } else {
-                echo "<p>The 'Confirm Attendance' button will be available once the event starts and attendance is allowed.</p>";
+                echo "<p>Event not yet started. It will start in: " . format_time(max($time_until_start, 0)) . "</p>";
             }
         } else {
             echo "<p>The 'Confirm Attendance' button is no longer available as the 5-minute window has passed.</p>";
@@ -120,6 +130,8 @@ if ($distance_to_event <= $geofence_radius) {
 } else {
     echo "<p>You are outside the geofence. The 'Confirm Attendance' button will not be available until you are within the geofence.</p>";
 }
+
+echo '</div></body></html>';
 
 // Close the database connection
 $conn->close();
