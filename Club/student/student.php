@@ -232,7 +232,7 @@ $conn->close();
                        <p><?php echo htmlspecialchars($event['description'] ?? ''); ?></p>
                        <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
                        <p>Event Start Time: <?php echo htmlspecialchars($event['event_start_time'] ?? ''); ?></p>
-                       <p>Registered on: <?php echo htmlspecialchars(date('Y-m-d H:i:s', strtotime($event['registration_date'] ?? ''))); ?></p>
+                       <p>Registered on: <?php echo htmlspecialchars(date('Y-m-d H:i:s', strtotime($event['registration_date_ist'] ?? ''))); ?></p>
 
 
                        <!-- Check if latitude and longitude are provided for the map link -->
