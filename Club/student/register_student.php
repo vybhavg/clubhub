@@ -70,14 +70,14 @@ echo '<html>
             padding: 20px;
         }
         h1 {
-            font-size: 2.5em;
+            font-size: 2.2em; /* Decreased size */
             margin-bottom: 20px;
         }
         .message {
             margin: 20px 0;
-            font-size: 1.5em;
+            font-size: 1.3em; /* Decreased size */
             background-color: rgba(255, 255, 255, 0.2);
-            padding: 20px;
+            padding: 15px;
             border-radius: 15px;
             display: inline-block;
             max-width: 600px;
@@ -98,10 +98,10 @@ echo '<html>
             text-align: center;
         }
         .time {
-            font-size: 2.5em;
+            font-size: 2.2em; /* Decreased size */
         }
         .metric {
-            font-size: 1.2em;
+            font-size: 1em; /* Decreased size */
         }
         .button {
             background-color: #28a745; /* Button color */
@@ -119,16 +119,16 @@ echo '<html>
         }
         @media (max-width: 600px) {
             h1 {
-                font-size: 2em;
+                font-size: 2em; /* Decreased size */
             }
             .message {
-                font-size: 1.2em;
+                font-size: 1.1em; /* Decreased size */
             }
             .time {
-                font-size: 2em;
+                font-size: 1.8em; /* Decreased size */
             }
             .metric {
-                font-size: 1em;
+                font-size: 0.9em; /* Decreased size */
             }
         }
     </style>
@@ -167,7 +167,7 @@ echo '<html>
 </head>
 <body>';
 
-echo '<img src="https://media.tenor.com/0HwF_YNt5coAAAAj/school-penguin.gif" alt="Celebration GIF"/>';
+echo '<img src="https://media.tenor.com/5miqL4qPOGgAAAAj/school-book.gif" alt="Celebration GIF"/>';
 echo '<h1>' . htmlspecialchars($event_title) . ' is Approaching!</h1>';
 echo '<div class="message">';
 
@@ -255,6 +255,7 @@ if ($distance_to_event <= $geofence_radius) {
 } else {
     echo "<p>Unfortunately, you are outside the geofence radius for this event.</p>";
 }
+
 echo '</div>';
 echo '</body>';
 echo '</html>';
