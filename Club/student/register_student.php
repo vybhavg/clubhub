@@ -69,53 +69,56 @@ echo '<html>
             text-align: center;
             padding: 20px;
         }
-        h1 {
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .caption {
             font-size: 2.5em;
             margin-bottom: 20px;
         }
-        .message {
-            margin: 20px 0;
-            font-size: 1.5em;
+        .countdown {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .time-wrapper {
+            text-align: center;
+        }
+        .time-content {
+            position: relative;
+            display: inline-block;
+        }
+        .time {
+            font-size: 4em;
             background-color: rgba(255, 255, 255, 0.2);
             padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            max-width: 600px;
+            border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
-        img {
-            width: 200px;
-            height: auto;
-            margin-bottom: 20px;
+        .metric {
+            font-size: 1.5em;
+            margin-top: 10px;
+            color: #f0e68c;
         }
-        .timer {
-            font-size: 2em;
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 20px;
+        .rings {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 5px solid #f0e68c;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: rotate 4s infinite linear;
         }
-        .button {
-            background-color: #28a745; /* Button color */
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-            transition: background-color 0.3s ease;
-        }
-        .button:hover {
-            background-color: #218838; /* Darker green on hover */
-        }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2em;
+        @keyframes rotate {
+            0% {
+                transform: translateX(-50%) rotate(0deg);
             }
-            .message {
-                font-size: 1.2em;
+            100% {
+                transform: translateX(-50%) rotate(360deg);
             }
         }
     </style>
@@ -131,13 +134,19 @@ echo '<html>
                     const hours = Math.floor((timeUntilStart % 86400) / 3600);
                     const minutes = Math.floor((timeUntilStart % 3600) / 60);
                     const seconds = timeUntilStart % 60;
-                    document.getElementById("timer").innerHTML = `Event Starts in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+                    document.getElementById("days").innerText = days;
+                    document.getElementById("hours").innerText = hours;
+                    document.getElementById("minutes").innerText = minutes;
+                    document.getElementById("seconds").innerText = seconds;
                 } else if (timeUntilEnd > 0) {
                     const days = Math.floor(timeUntilEnd / 86400);
                     const hours = Math.floor((timeUntilEnd % 86400) / 3600);
                     const minutes = Math.floor((timeUntilEnd % 3600) / 60);
                     const seconds = timeUntilEnd % 60;
-                    document.getElementById("timer").innerHTML = `Event Ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+                    document.getElementById("days").innerText = days;
+                    document.getElementById("hours").innerText = hours;
+                    document.getElementById("minutes").innerText = minutes;
+                    document.getElementById("seconds").innerText = seconds;
                 } else {
                     clearInterval(interval);
                     document.getElementById("timer").innerHTML = "Event has ended!";
@@ -146,25 +155,59 @@ echo '<html>
         }
     </script>
 </head>
-<body>';
+<body>
+    <div class="container">
+        <h1 class="caption">Event Status: ' . htmlspecialchars($event_title) . '</h1>
+        <section class="countdown" id="timer">
+            <div class="time-wrapper">
+                <div class="time-content">
+                    <div class="time">
+                        <span class="days" id="days">00</span>
+                        <div class="rings"></div>
+                    </div>
+                </div>
+                <p class="metric">Days</p>
+            </div>
 
-echo '<img src="https://media.tenor.com/5miqL4qPOGgAAAAj/school-book.gif" alt="Loading..."/>';
-echo '<h1>Event Status</h1>';
-echo '<div class="message">';
+            <div class="time-wrapper">
+                <div class="time-content">
+                    <div class="time">
+                        <span class="hours" id="hours">00</span>
+                        <div class="rings"></div>
+                    </div>
+                </div>
+                <p class="metric">Hours</p>
+            </div>
+
+            <div class="time-wrapper">
+                <div class="time-content">
+                    <div class="time">
+                        <span class="minutes" id="minutes">00</span>
+                        <div class="rings"></div>
+                    </div>
+                </div>
+                <p class="metric">Minutes</p>
+            </div>
+
+            <div class="time-wrapper">
+                <div class="time-content">
+                    <div class="time">
+                        <span class="seconds" id="seconds">00</span>
+                        <div class="rings"></div>
+                    </div>
+                </div>
+                <p class="metric">Seconds</p>
+            </div>
+        </section>';
 
 if ($distance_to_event <= $geofence_radius) {
-    echo "<p>You are within the geofence!</p>";
-
-    // Always show the event status and timer
     if ($current_time_timestamp < $event_start_timestamp) {
         echo "<p>Attendance is not yet allowed. Please check back later.</p>";
-        echo "<p><span id='timer' class='timer'></span></p>";
         echo "<script>startTimer(" . $event_start_timestamp . ", " . $event_end_timestamp . ");</script>";
     } elseif ($current_time_timestamp < $event_end_timestamp) {
         echo "<p>The event is currently live!</p>";
-        echo "<p><span id='timer' class='timer'></span></p>";
         echo "<script>startTimer(" . $event_start_timestamp . ", " . $event_end_timestamp . ");</script>";
-        
+
         // Show the Confirm Attendance button only if attendance is allowed
         if ($attendance_allowed) {
             echo '<form method="post" action="confirm_attendance.php">
@@ -172,20 +215,18 @@ if ($distance_to_event <= $geofence_radius) {
                     <input type="hidden" name="event_id" value="' . htmlspecialchars($event_id) . '">
                     <input type="hidden" name="latitude" value="' . htmlspecialchars($user_latitude) . '">
                     <input type="hidden" name="longitude" value="' . htmlspecialchars($user_longitude) . '">
-                    <input type="hidden" name="student_name" value="' . htmlspecialchars($name) . '">
-                    <input type="hidden" name="student_email" value="' . htmlspecialchars($email) . '">
-                    <button type="submit" class="button">Confirm Attendance</button>
-                  </form>';
+                    <button type="submit">Confirm Attendance</button>
+                </form>';
         }
     } else {
-        echo "<p>The event has ended.</p>";
+        echo "<p>The event has ended. Thank you for your interest!</p>";
     }
 } else {
-    echo "<p>You're currently outside the geofence. The 'Confirm Attendance' button will be available once you are inside.</p>";
+    echo "<p>You are outside the event location. Please check your coordinates.</p>";
 }
 
-echo '</div></body></html>';
-
-// Close the database connection
-$conn->close();
+echo '
+        </div>
+    </body>
+</html>';
 ?>
