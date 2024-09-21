@@ -27,7 +27,25 @@ background-color: #c9d6ff;
     max-width: 100%;
     min-height: 480px;
 }
-
+@media (max-width: 768px) {
+   .container {
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    width: 768px;
+    max-width: 95%;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    h1{
+        font-size:28px;
+    }
+    
+}
 .container p{
     font-size: 14px;
     line-height: 20px;
