@@ -227,4 +227,36 @@ body {
 .container.active .toggle-right {
     transform: translateX(200%);
 }
- 
+ /* Existing Styles */
+
+/* Add media queries for mobile devices */
+@media (max-width: 600px) {
+    .container {
+        width: 100%; /* Make the container full-width on mobile devices */
+        min-height: auto; /* Adjust the height for mobile */
+        margin: 0; /* Remove margin */
+        border-radius: 0; /* Remove border-radius */
+    }
+
+    .container form {
+        padding: 20px; /* Reduce the padding inside the form */
+    }
+
+    .container input {
+        font-size: 14px; /* Slightly increase input font size for better readability on mobile */
+        padding: 12px; /* Add more padding for easier clicking on mobile */
+    }
+
+    .toggle-container {
+        border-radius: 0; /* Remove the rounded borders on mobile */
+    }
+
+    .container button {
+        padding: 10px 35px; /* Adjust the button padding */
+    }
+
+    .toggle {
+        width: 300%; /* Ensure the toggle panel covers the screen width on smaller devices */
+    }
+}
+
