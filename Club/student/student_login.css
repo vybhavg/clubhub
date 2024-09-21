@@ -31,11 +31,22 @@ body {
     justify-content: center;
 }
 @media (max-width: 768px) {
-    .container {
-        width: 50%; /* Adjust the width to occupy 90% of the screen on smaller devices */
-        border-radius: 15px; /* Reduce border-radius on mobile */
+   .container {
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    width: 768px;
+    max-width: 90%;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    h1{
+    font-size:30px;
     }
-
     body {
         padding: 30px; /* Add padding so the container has some space on the edges */
     }
