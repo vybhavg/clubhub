@@ -51,7 +51,7 @@ if ($stmt_fetch_recruitments) {
     $_SESSION['message'] = "Error fetching recruitments.";
 }
 
-// Fetch registered events for the current student (those that have not ended), including event_start_time
+// Fetch registered events for the current student (those that have started but not ended), including event_start_time
 $stmt_fetch_registered_events = $conn->prepare("
     SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, e.latitude, e.longitude, 
            e.event_start_time, e.event_end_time, r.student_id, s.student_name, s.college_email 
@@ -59,9 +59,10 @@ $stmt_fetch_registered_events = $conn->prepare("
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
     INNER JOIN student_login_details s ON r.student_id = s.id
-    WHERE r.student_id = ? AND e.event_end_time > NOW()
+    WHERE r.student_id = ? AND e.event_end_time > NOW() AND e.event_start_time <= NOW()
 ");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
+
 
 if ($stmt_fetch_registered_events) {
     $stmt_fetch_registered_events->execute();
