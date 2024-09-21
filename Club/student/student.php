@@ -68,8 +68,6 @@ $stmt_fetch_registered_events = $conn->prepare("
 ");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
 
-
-
 if ($stmt_fetch_registered_events) {
     $stmt_fetch_registered_events->execute();
     $registeredEventsResult = $stmt_fetch_registered_events->get_result();
