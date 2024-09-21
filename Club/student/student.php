@@ -188,7 +188,7 @@ $conn->close();
 
             <!-- Check if latitude and longitude are provided for the map link -->
             <?php if (!empty($event['latitude']) && !empty($event['longitude'])): ?>
-                <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude']); ?>,<?php echo htmlspecialchars($event['longitude']); ?>" target="_blank" class="btn btn-secondary">View Location on Map</a>
+                <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude']); ?>,<?php echo htmlspecialchars($event['longitude']); ?>" target="_blank" class="btn btn-secondary">View Location</a>
             <?php else: ?>
                 <p>Location coordinates not available.</p>
             <?php endif; ?>
@@ -223,7 +223,7 @@ $conn->close();
 
             <!-- Check if latitude and longitude are provided for the map link -->
             <?php if (!empty($event['latitude']) && !empty($event['longitude'])): ?>
-                <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude']); ?>,<?php echo htmlspecialchars($event['longitude']); ?>" target="_blank" class="btn btn-secondary">View Location on Map</a>
+                <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude']); ?>,<?php echo htmlspecialchars($event['longitude']); ?>" target="_blank" class="btn btn-secondary">View Location</a>
             <?php else: ?>
                 <p>Location coordinates not available.</p>
             <?php endif; ?>
