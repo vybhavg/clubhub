@@ -16,7 +16,7 @@ $user_latitude = isset($_POST['latitude']) ? (float) $_POST['latitude'] : null;
 $user_longitude = isset($_POST['longitude']) ? (float) $_POST['longitude'] : null;
 $name = isset($_POST['student_name']) ? trim($_POST['student_name']) : '';
 $email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : '';
-
+$roll_number = isset($_POST['roll_number']) ? trim($_POST['roll_number']) : '';
 // Fetch the event details from the database
 $stmt = $conn->prepare("SELECT title, event_start_time, event_end_time, latitude, longitude, attendance_allowed FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
@@ -268,6 +268,7 @@ if ($distance_to_event <= $geofence_radius) {
                     <input type="hidden" name="longitude" value="' . htmlspecialchars($user_longitude) . '">
                     <input type="hidden" name="student_name" value="' . htmlspecialchars($name) . '">
                     <input type="hidden" name="student_email" value="' . htmlspecialchars($email) . '">
+                    <input type="hidden" name="roll_number" value="' . htmlspecialchars($roll_number) . '">
                     <button type="submit" class="button">Confirm Attendance</button>
                   </form>';
         }
