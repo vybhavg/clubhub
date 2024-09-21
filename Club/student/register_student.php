@@ -70,6 +70,7 @@ if ($current_time_timestamp < $event_start_timestamp) {
 // HTML Output
 echo '<html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             background-color:#f4f4f4;
