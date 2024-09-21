@@ -10,18 +10,19 @@ $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 
 // Initialize variables
 $club_name = 'All Clubs'; // Displaying for all clubs
-
-// Fetch all events that the student has not registered for, including latitude and longitude
 $student_id = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : 0; // Ensure student_id is available
 
+$currentDateTime = date('Y-m-d H:i:s'); // Get the current date and time
+
+// Fetch all upcoming events (those that have not started) that the student has not registered for
 $stmt_fetch_events = $conn->prepare("
     SELECT e.*, c.club_name, e.latitude, e.longitude 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     LEFT JOIN event_registrations r ON e.id = r.event_id AND r.student_id = ?
-    WHERE r.event_id IS NULL
+    WHERE r.event_id IS NULL AND e.event_start_time >= ?
 ");
-$stmt_fetch_events->bind_param("i", $student_id);
+$stmt_fetch_events->bind_param("is", $student_id, $currentDateTime);
 
 if ($stmt_fetch_events) {
     $stmt_fetch_events->execute();
@@ -47,9 +48,10 @@ if ($stmt_fetch_recruitments) {
     $_SESSION['message'] = "Error fetching recruitments.";
 }
 
-// Fetch registered events for the current student including latitude and longitude
+// Fetch registered events for the current student (those that have not ended), including event_start_time
 $stmt_fetch_registered_events = $conn->prepare("
-    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, e.latitude, e.longitude, r.student_id, s.student_name, s.college_email 
+    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, e.latitude, e.longitude, 
+           e.event_start_time, e.event_end_time, r.student_id, s.student_name, s.college_email 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
@@ -214,36 +216,37 @@ $conn->close();
     <div class="form-container">
         <div class="upbox update-item filter-registered-events">
            <?php if ($registeredEventsResult && $registeredEventsResult->num_rows > 0): ?>
-    <?php while ($event = $registeredEventsResult->fetch_assoc()): ?>
-        <div class="update-entry">
-            <h4><?php echo htmlspecialchars($event['title'] ?? ''); ?></h4>
-            <p><?php echo htmlspecialchars($event['description'] ?? ''); ?></p>
-            <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
-            <p>Registered on: <?php echo htmlspecialchars($event['registration_date'] ?? ''); ?></p>
+               <?php while ($event = $registeredEventsResult->fetch_assoc()): ?>
+                   <div class="update-entry">
+                       <h4><?php echo htmlspecialchars($event['title'] ?? ''); ?></h4>
+                       <p><?php echo htmlspecialchars($event['description'] ?? ''); ?></p>
+                       <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
+                       <p>Event Start Time: <?php echo htmlspecialchars($event['event_start_time'] ?? ''); ?></p>
+                       <p>Registered on: <?php echo htmlspecialchars($event['registration_date'] ?? ''); ?></p>
 
-            <!-- Check if latitude and longitude are provided for the map link -->
-            <?php if (!empty($event['latitude']) && !empty($event['longitude'])): ?>
-                <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude']); ?>,<?php echo htmlspecialchars($event['longitude']); ?>" target="_blank" class="btn btn-secondary">View Location</a>
-            <?php else: ?>
-                <p>Location coordinates not available.</p>
-            <?php endif; ?>
+                       <!-- Check if latitude and longitude are provided for the map link -->
+                       <?php if (!empty($event['latitude']) && !empty($event['longitude'])): ?>
+                           <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude']); ?>,<?php echo htmlspecialchars($event['longitude']); ?>" target="_blank" class="btn btn-secondary">View Location</a>
+                       <?php else: ?>
+                           <p>Location coordinates not available.</p>
+                       <?php endif; ?>
 
-            <button onclick="registerForEvent(
-                <?php echo htmlspecialchars($event['event_id'] ?? ''); ?>, 
-                <?php echo htmlspecialchars($event['student_id'] ?? ''); ?>, 
-                '<?php echo htmlspecialchars($event['student_name'] ?? ''); ?>', 
-                '<?php echo htmlspecialchars($event['college_email'] ?? ''); ?>'
-            )" class="btn btn-primary">Attend</button>
-        </div>
-    <?php endwhile; ?>
-<?php else: ?>
-    <p>You have not registered for any events yet.</p>
-<?php endif; ?>
-
+                       <button onclick="registerForEvent(
+                           <?php echo htmlspecialchars($event['event_id'] ?? ''); ?>, 
+                           <?php echo htmlspecialchars($event['student_id'] ?? ''); ?>, 
+                           '<?php echo htmlspecialchars($event['student_name'] ?? ''); ?>', 
+                           '<?php echo htmlspecialchars($event['college_email'] ?? ''); ?>'
+                       )" class="btn btn-primary">Attend</button>
+                   </div>
+               <?php endwhile; ?>
+           <?php else: ?>
+               <p>You have not registered for any events yet.</p>
+           <?php endif; ?>
         </div>
     </div>
 </section>
 <!-- /Registered Events Section -->
+
 
 
   <script>
