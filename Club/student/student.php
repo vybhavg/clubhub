@@ -56,7 +56,7 @@ $stmt_fetch_registered_events = $conn->prepare("
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
     INNER JOIN student_login_details s ON r.student_id = s.id
-    WHERE r.student_id = ? AND (e.event_end_time > NOW() OR e.event_end_time IS NULL)
+    WHERE r.student_id = ? AND e.event_end_time > NOW()
 ");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
 
@@ -68,6 +68,7 @@ if ($stmt_fetch_registered_events) {
     error_log("Prepare failed: " . $conn->error);
     $_SESSION['message'] = "Error fetching registered events.";
 }
+
 
 // Fetch the student's name
 if (isset($_SESSION['student_id'])) {
