@@ -77,9 +77,11 @@ echo '<html>
             margin: 20px 0;
             font-size: 1.5em;
             background-color: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 15px;
             display: inline-block;
+            max-width: 600px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         img {
             width: 200px;
@@ -103,9 +105,18 @@ echo '<html>
             cursor: pointer;
             font-size: 16px;
             margin-top: 20px;
+            transition: background-color 0.3s ease;
         }
         .button:hover {
             background-color: #218838; /* Darker green on hover */
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            .message {
+                font-size: 1.2em;
+            }
         }
     </style>
     <script>
@@ -116,13 +127,17 @@ echo '<html>
                 const timeUntilEnd = eventEndTime - now;
 
                 if (timeUntilStart > 0) {
+                    const days = Math.floor(timeUntilStart / 86400);
+                    const hours = Math.floor((timeUntilStart % 86400) / 3600);
                     const minutes = Math.floor((timeUntilStart % 3600) / 60);
                     const seconds = timeUntilStart % 60;
-                    document.getElementById("timer").innerHTML = "Starts in: " + minutes + "m " + seconds + "s";
+                    document.getElementById("timer").innerHTML = `Event Starts in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
                 } else if (timeUntilEnd > 0) {
+                    const days = Math.floor(timeUntilEnd / 86400);
+                    const hours = Math.floor((timeUntilEnd % 86400) / 3600);
                     const minutes = Math.floor((timeUntilEnd % 3600) / 60);
                     const seconds = timeUntilEnd % 60;
-                    document.getElementById("timer").innerHTML = "Ends in: " + minutes + "m " + seconds + "s";
+                    document.getElementById("timer").innerHTML = `Event Ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
                 } else {
                     clearInterval(interval);
                     document.getElementById("timer").innerHTML = "Event has ended!";
@@ -143,11 +158,11 @@ if ($distance_to_event <= $geofence_radius) {
     // Always show the event status and timer
     if ($current_time_timestamp < $event_start_timestamp) {
         echo "<p>Attendance is not yet allowed. Please check back later.</p>";
-        echo "<p>It will begin in: <span id='timer' class='timer'></span></p>";
+        echo "<p><span id='timer' class='timer'></span></p>";
         echo "<script>startTimer(" . $event_start_timestamp . ", " . $event_end_timestamp . ");</script>";
     } elseif ($current_time_timestamp < $event_end_timestamp) {
         echo "<p>The event is currently live!</p>";
-        echo "<p>It will end in: <span id='timer' class='timer'></span></p>";
+        echo "<p><span id='timer' class='timer'></span></p>";
         echo "<script>startTimer(" . $event_start_timestamp . ", " . $event_end_timestamp . ");</script>";
         
         // Show the Confirm Attendance button only if attendance is allowed
