@@ -10,31 +10,30 @@ if (!isset($_SESSION['student_id'])) {
 }
 
 // Get data from the form and cast to appropriate types
-$student_id = (int) $_POST['student_id']; // Cast to integer
-$event_id = (int) $_POST['event_id']; // Cast to integer
-$user_latitude = isset($_POST['latitude']) ? (float) $_POST['latitude'] : null;  // Cast to float, use null if not set
-$user_longitude = isset($_POST['longitude']) ? (float) $_POST['longitude'] : null; // Cast to float, use null if not set
-$name = isset($_POST['student_name']) ? trim($_POST['student_name']) : ''; // Trim and sanitize student name
-$email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : ''; // Trim, sanitize and validate student email
+$student_id = (int) $_POST['student_id'];
+$event_id = (int) $_POST['event_id'];
+$user_latitude = isset($_POST['latitude']) ? (float) $_POST['latitude'] : null;
+$user_longitude = isset($_POST['longitude']) ? (float) $_POST['longitude'] : null;
+$name = isset($_POST['student_name']) ? trim($_POST['student_name']) : '';
+$email = isset($_POST['student_email']) ? filter_var(trim($_POST['student_email']), FILTER_SANITIZE_EMAIL) : '';
 
 // Fetch the event details from the database
-$stmt = $conn->prepare("SELECT title, event_start_time, latitude, longitude, attendance_allowed, button_access_time FROM events WHERE id = ?");
+$stmt = $conn->prepare("SELECT title, event_start_time, event_end_time, latitude, longitude, attendance_allowed, button_access_time FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
-$stmt->bind_result($event_title, $event_start_time, $event_latitude, $event_longitude, $attendance_allowed, $button_access_time);
+$stmt->bind_result($event_title, $event_start_time, $event_end_time, $event_latitude, $event_longitude, $attendance_allowed, $button_access_time);
 $stmt->fetch();
 $stmt->close();
 
-// Ensure event latitude and longitude are cast to float
 $event_latitude = (float) $event_latitude;
 $event_longitude = (float) $event_longitude;
 
 // Geofence parameters
-$geofence_radius = 1.0; // 1 km radius (adjusted to km)
+$geofence_radius = 1.0;
 
-// Haversine formula to calculate the distance between two GPS coordinates
+// Haversine formula
 function haversine_distance($lat1, $lon1, $lat2, $lon2) {
-    $earth_radius = 6371;  // Earth radius in kilometers
+    $earth_radius = 6371; // Earth radius in kilometers
     $dLat = deg2rad($lat2 - $lat1);
     $dLon = deg2rad($lon2 - $lon1);
     $a = sin($dLat / 2) * sin($dLat / 2) +
@@ -43,39 +42,21 @@ function haversine_distance($lat1, $lon1, $lat2, $lon2) {
     return $earth_radius * $c;
 }
 
-// Calculate the distance between the event location and the user's location
+// Calculate distance
 $distance_to_event = haversine_distance($user_latitude, $user_longitude, $event_latitude, $event_longitude);
 
 // Set server time to IST
-$server_timezone = new DateTimeZone('UTC'); // Assuming server is in UTC
+$server_timezone = new DateTimeZone('UTC');
 $ist_timezone = new DateTimeZone('Asia/Kolkata');
 
-// Get current server time and convert to IST
+// Get current time and event times
 $current_time = new DateTime('now', $server_timezone);
 $current_time->setTimezone($ist_timezone);
-$current_time_timestamp = $current_time->getTimestamp(); // Use this timestamp for time calculations
-
-// Convert event start time to IST
+$current_time_timestamp = $current_time->getTimestamp();
 $event_start_time_ist = new DateTime($event_start_time, $ist_timezone);
-
-// Calculate time until the event starts
-$time_until_start = $event_start_time_ist->getTimestamp() - $current_time_timestamp;
-
-// Function to format time differences
-function format_time($seconds) {
-    if ($seconds < 0) return 'Event has already started.';
-    
-    $days = floor($seconds / 86400);
-    $hours = floor(($seconds % 86400) / 3600);
-    $minutes = floor(($seconds % 3600) / 60);
-
-    $formatted = '';
-    if ($days > 0) $formatted .= $days . ' days ';
-    if ($hours > 0) $formatted .= $hours . ' hours ';
-    if ($minutes > 0) $formatted .= $minutes . ' minutes ';
-    
-    return $formatted ?: '0 seconds';
-}
+$event_end_time_ist = new DateTime($event_end_time, $ist_timezone);
+$event_start_timestamp = $event_start_time_ist->getTimestamp();
+$event_end_timestamp = $event_end_time_ist->getTimestamp();
 
 // HTML Output
 echo '<html>
@@ -95,6 +76,10 @@ echo '<html>
         .message {
             margin: 20px 0;
             font-size: 1.5em;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
         }
         img {
             width: 200px;
@@ -110,6 +95,28 @@ echo '<html>
             margin-top: 20px;
         }
     </style>
+    <script>
+        function startTimer(eventStartTime, eventEndTime) {
+            const interval = setInterval(() => {
+                const now = Math.floor(Date.now() / 1000);
+                const timeUntilStart = eventStartTime - now;
+                const timeUntilEnd = eventEndTime - now;
+
+                if (timeUntilStart > 0) {
+                    const minutes = Math.floor((timeUntilStart % 3600) / 60);
+                    const seconds = timeUntilStart % 60;
+                    document.getElementById("timer").innerHTML = "Starts in: " + minutes + "m " + seconds + "s";
+                } else if (timeUntilEnd > 0) {
+                    const minutes = Math.floor((timeUntilEnd % 3600) / 60);
+                    const seconds = timeUntilEnd % 60;
+                    document.getElementById("timer").innerHTML = "Ends in: " + minutes + "m " + seconds + "s";
+                } else {
+                    clearInterval(interval);
+                    document.getElementById("timer").innerHTML = "Event has ended!";
+                }
+            }, 1000);
+        }
+    </script>
 </head>
 <body>';
 
@@ -121,27 +128,16 @@ if ($distance_to_event <= $geofence_radius) {
     echo "<p>You are within the geofence!</p>";
 
     if ($attendance_allowed) {
-        $button_access_time_ist = new DateTime($button_access_time, $ist_timezone);
-        $button_access_time_timestamp = $button_access_time_ist->getTimestamp();
-        $time_since_button_access = $current_time_timestamp - $button_access_time_timestamp;
-        $five_minutes = 5 * 60; // 5 minutes in seconds
-
-        if ($time_since_button_access <= $five_minutes) {
-            if ($current_time_timestamp >= $event_start_time_ist->getTimestamp()) {
-                echo '<form method="post" action="confirm_attendance.php">
-                        <input type="hidden" name="student_id" value="' . htmlspecialchars($student_id) . '">
-                        <input type="hidden" name="event_id" value="' . htmlspecialchars($event_id) . '">
-                        <input type="hidden" name="latitude" value="' . htmlspecialchars($user_latitude) . '">
-                        <input type="hidden" name="longitude" value="' . htmlspecialchars($user_longitude) . '">
-                        <input type="hidden" name="student_name" value="' . htmlspecialchars($name) . '">
-                        <input type="hidden" name="student_email" value="' . htmlspecialchars($email) . '">
-                        <button type="submit">Confirm Attendance</button>
-                      </form>';
-            } else {
-                echo "<p>Event hasn't started yet. It will begin in: <span class='timer'>" . format_time(max($time_until_start, 0)) . "</span></p>";
-            }
+        if ($current_time_timestamp < $event_start_timestamp) {
+            echo "<p>The event is not yet started. Please check back later.</p>";
+            echo "<p>It will begin in: <span id='timer' class='timer'></span></p>";
+            echo "<script>startTimer(" . $event_start_timestamp . ", " . $event_end_timestamp . ");</script>";
+        } elseif ($current_time_timestamp < $event_end_timestamp) {
+            echo "<p>The event is currently live!</p>";
+            echo "<p>It will end in: <span id='timer' class='timer'></span></p>";
+            echo "<script>startTimer(" . $event_start_timestamp . ", " . $event_end_timestamp . ");</script>";
         } else {
-            echo "<p>The 'Confirm Attendance' button is no longer available as the 5-minute window has passed.</p>";
+            echo "<p>The event has ended.</p>";
         }
     } else {
         echo "<p>Attendance is not yet allowed. Please check back later.</p>";
