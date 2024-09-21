@@ -102,6 +102,9 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Londrina+Outline&display=swap" rel="stylesheet">
     <title>Attendance Confirmation</title>
     <style>
         body {
@@ -117,17 +120,19 @@ $conn->close();
             width: 300px; /* Adjust as needed */
             height: auto;
         }
-        p {
+        h2 {
             margin-top: 20px;
             font-size: 18px;
             font-weight: bold;
-        }
+  font-family: "Londrina Outline", sans-serif;
+  font-style: normal;
+}
+
     </style>
 </head>
 <body>
     <img src="https://media.tenor.com/9zG09ZV_-roAAAAi/motivation-go.gif" alt="Motivation GIF">
     <h2>Attendance</h2>
-    <p><?php echo $attendance_message; ?></p>
 </body>
 </html>
 <?php
