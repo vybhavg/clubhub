@@ -17,13 +17,13 @@ $student_id = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : 0; // E
 
 $currentDateTime = date('Y-m-d H:i:s'); // Get the current date and time
 
-// Fetch all upcoming events (those that have not started) that the student has not registered for
+// Fetch all upcoming events that the student has not registered for
 $stmt_fetch_events = $conn->prepare("
     SELECT e.*, c.club_name, e.latitude, e.longitude 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     LEFT JOIN event_registrations r ON e.id = r.event_id AND r.student_id = ?
-    WHERE r.event_id IS NULL AND e.event_start_time >= ?
+    WHERE r.event_id IS NULL AND e.event_start_time > ?
 ");
 $stmt_fetch_events->bind_param("is", $student_id, $currentDateTime);
 
@@ -64,9 +64,6 @@ $stmt_fetch_registered_events = $conn->prepare("
 ");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
 
-
-
-
 if ($stmt_fetch_registered_events) {
     $stmt_fetch_registered_events->execute();
     $registeredEventsResult = $stmt_fetch_registered_events->get_result();
@@ -77,6 +74,7 @@ if ($stmt_fetch_registered_events) {
 }
 
 // Fetch the student's name
+$student_name = ''; // Initialize the student name variable
 if (isset($_SESSION['student_id'])) {
     $student_id = $_SESSION['student_id'];
 
