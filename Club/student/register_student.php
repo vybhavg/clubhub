@@ -84,7 +84,7 @@ echo '<html>
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         img {
-            width: 300px; /* Adjusted size */
+            width: 200px; /* Adjusted size */
             height: auto;
             margin-bottom: 20px;
         }
