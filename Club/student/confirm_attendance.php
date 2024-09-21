@@ -122,7 +122,7 @@ $conn->close();
         }
         h2 {
             margin-top: 20px;
-            font-size: 18px;
+            font-size: 30px;
             font-weight: bold;
   font-family: "Londrina Outline", sans-serif;
   font-style: normal;
