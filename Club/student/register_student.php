@@ -63,7 +63,7 @@ echo '<html>
 <head>
     <style>
         body {
-            background-color: #f4f4f4;
+            background-color:#4b9abb;
             color: white;
             font-family: Arial, sans-serif;
             text-align: center;
