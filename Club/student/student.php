@@ -198,7 +198,7 @@ $conn->close();
 </section>
 <!-- /Events Section -->
 
-    <!-- Registered Events Section -->
+   <!-- Registered Events Section -->
 <section id="registered-events" class="about section">
     <div class="container section-title" data-aos="fade-up">
         <h2>Registered Events</h2>
@@ -212,9 +212,7 @@ $conn->close();
                         <h4><?php echo htmlspecialchars($event['title'] ?? ''); ?></h4>
                         <p><?php echo htmlspecialchars($event['description'] ?? ''); ?></p>
                         <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
-                        <p>Event Start Time: <?php echo htmlspecialchars($event['event_start_time'] ?? ''); ?></p>
                         <p>Registered on: <?php echo htmlspecialchars($event['registration_date'] ?? ''); ?></p>
-                        <a href="https://www.google.com/maps?q=<?php echo htmlspecialchars($event['latitude'] ?? ''); ?>,<?php echo htmlspecialchars($event['longitude'] ?? ''); ?>" target="_blank" class="btn btn-secondary">View Location</a>
                         <button onclick="registerForEvent(
                             <?php echo htmlspecialchars($event['event_id'] ?? ''); ?>, 
                             <?php echo htmlspecialchars($event['student_id'] ?? ''); ?>, 
@@ -228,8 +226,7 @@ $conn->close();
             <?php endif; ?>
         </div>
     </div>
-</section>
-<!-- /Registered Events Section -->
+</section><!-- /Registered Events Section -->
 
 
   <script>
