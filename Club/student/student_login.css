@@ -38,7 +38,7 @@ body {
     position: relative;
     overflow: hidden;
     width: 768px;
-    max-width: 95%;
+    max-width: 100%;
     min-height: 480px;
     display: flex;
     align-items: center;
