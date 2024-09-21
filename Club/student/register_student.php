@@ -88,18 +88,37 @@ echo '<html>
             text-align: center;
             padding: 20px;
         }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
         .message {
             margin: 20px 0;
+            font-size: 1.5em;
+        }
+        img {
+            width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .timer {
+            font-size: 2em;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>';
 
-echo '<img src="https://media.tenor.com/5miqL4qPOGgAAAAj/school-book.gif" alt="Loading..." style="width: 100px; height: auto;"/>';
+echo '<img src="https://media.tenor.com/5miqL4qPOGgAAAAj/school-book.gif" alt="Loading..."/>';
+echo '<h1>Event Status</h1>';
 echo '<div class="message">';
 
 if ($distance_to_event <= $geofence_radius) {
-    echo "<p>You are within the geofence.</p>";
+    echo "<p>You are within the geofence!</p>";
 
     if ($attendance_allowed) {
         $button_access_time_ist = new DateTime($button_access_time, $ist_timezone);
@@ -119,16 +138,16 @@ if ($distance_to_event <= $geofence_radius) {
                         <button type="submit">Confirm Attendance</button>
                       </form>';
             } else {
-                echo "<p>Event not yet started. It will start in: " . format_time(max($time_until_start, 0)) . "</p>";
+                echo "<p>Event hasn't started yet. It will begin in: <span class='timer'>" . format_time(max($time_until_start, 0)) . "</span></p>";
             }
         } else {
             echo "<p>The 'Confirm Attendance' button is no longer available as the 5-minute window has passed.</p>";
         }
     } else {
-        echo "<p>The 'Confirm Attendance' button will be available once attendance is allowed.</p>";
+        echo "<p>Attendance is not yet allowed. Please check back later.</p>";
     }
 } else {
-    echo "<p>You are outside the geofence. The 'Confirm Attendance' button will not be available until you are within the geofence.</p>";
+    echo "<p>You're currently outside the geofence. The 'Confirm Attendance' button will be available once you are inside.</p>";
 }
 
 echo '</div></body></html>';
