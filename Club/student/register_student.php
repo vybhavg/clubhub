@@ -77,7 +77,7 @@ echo '<html>
         .message {
             margin: 20px 0;
             font-size: 1.3em; /* Decreased size */
-            background-color: linear-gradient(to right, #6dbfb8 0%, #4b9abb 100%);
+            background: linear-gradient(to right, #6dbfb8 0%, #4b9abb 100%);
             padding: 15px;
             border-radius: 15px;
             display: inline-block;
