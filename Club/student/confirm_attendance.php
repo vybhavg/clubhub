@@ -30,7 +30,7 @@ $event_latitude = (float) $event_latitude;
 $event_longitude = (float) $event_longitude;
 
 // Fetch the roll number from student_login_details
-$stmt = $conn->prepare("SELECT roll_number FROM student_login_details WHERE id = ? OR email = ?");
+$stmt = $conn->prepare("SELECT roll_number FROM student_login_details WHERE id = ? OR college_email = ?");
 $stmt->bind_param("is", $student_id, $email);
 $stmt->execute();
 $stmt->bind_result($roll_number);
