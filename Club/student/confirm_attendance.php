@@ -122,7 +122,7 @@ $conn->close();
         }
         h2 {
             margin-top: 20px;
-            font-size: 30px;
+            font-size: 100px;
             font-weight: bold;
   font-family: "Londrina Outline", sans-serif;
   font-style: normal;
@@ -132,7 +132,7 @@ $conn->close();
 </head>
 <body>
     <img src="https://media.tenor.com/9zG09ZV_-roAAAAi/motivation-go.gif" alt="Motivation GIF">
-    <h2>Attendance</h2>
+    <h1>Attendance</h1>
 </body>
 </html>
 <?php
