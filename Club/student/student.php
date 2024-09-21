@@ -4,7 +4,12 @@ include('/var/www/html/db_connect.php'); // Ensure this file connects to your da
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
+// Check if student is logged in
+if (!isset($_SESSION['student_id'])) {
+    // If not logged in, redirect to student_login.php
+    header("Location: student_login.php");
+    exit(); // Ensure no further code is executed
+}
 // Set the timezone to IST
 date_default_timezone_set('Asia/Kolkata'); // Set the timezone to IST
 
