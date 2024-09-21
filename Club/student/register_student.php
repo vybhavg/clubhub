@@ -63,7 +63,7 @@ echo '<html>
 <head>
     <style>
         body {
-            background-color:#4b9abb;
+            background-color:#f4f4f4;
             color: white;
             font-family: Arial, sans-serif;
             text-align: center;
@@ -72,11 +72,12 @@ echo '<html>
         h1 {
             font-size: 2.2em; /* Decreased size */
             margin-bottom: 20px;
+            color: black;
         }
         .message {
             margin: 20px 0;
             font-size: 1.3em; /* Decreased size */
-            background-color: #4b9abb;
+            background-color: linear-gradient(to right, #6dbfb8 0%, #4b9abb 100%);
             padding: 15px;
             border-radius: 15px;
             display: inline-block;
