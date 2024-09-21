@@ -63,7 +63,7 @@ echo '<html>
 <head>
     <style>
         body {
-            background-color: #4b9abb;
+            background-color: #f4f4f4;
             color: white;
             font-family: Arial, sans-serif;
             text-align: center;
@@ -98,7 +98,7 @@ echo '<html>
             text-align: center;
         }
         .time {
-            font-size: 2.2em; /* Decreased size */
+            font-size: 23px; /* Decreased size */
         }
         .metric {
             font-size: 1em; /* Decreased size */
@@ -168,11 +168,11 @@ echo '<html>
 <body>';
 
 echo '<img src="https://media.tenor.com/5miqL4qPOGgAAAAj/school-book.gif" alt="Celebration GIF"/>';
-echo '<h1>' . htmlspecialchars($event_title) . ' is Approaching!</h1>';
+echo '<h2>' . htmlspecialchars($event_title) . ' is Approaching!</h2>';
 echo '<div class="message">';
 
 if ($distance_to_event <= $geofence_radius) {
-    echo "<p>You are currently within the geofence!</p>";
+
 
     // Always show the event status and timer
     if ($current_time_timestamp < $event_start_timestamp) {
