@@ -11,11 +11,11 @@ $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 // Initialize variables
 $club_name = 'All Clubs'; // Displaying for all clubs
 
-// Fetch all events that the student has not registered for, including event start time, latitude, and longitude
+// Fetch all events that the student has not registered for
 $student_id = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : 0; // Ensure student_id is available
 
 $stmt_fetch_events = $conn->prepare("
-    SELECT e.*, c.club_name, e.event_start_time, e.latitude, e.longitude
+    SELECT e.*, c.club_name 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     LEFT JOIN event_registrations r ON e.id = r.event_id AND r.student_id = ?
@@ -33,10 +33,8 @@ if ($stmt_fetch_events) {
 }
 
 // Fetch all recruitments from all clubs
-$stmt_fetch_recruitments = $conn->prepare("
-    SELECT r.*, c.club_name FROM recruitments r
-    INNER JOIN clubs c ON r.club_id = c.id
-");
+$stmt_fetch_recruitments = $conn->prepare("SELECT r.*, c.club_name FROM recruitments r
+    INNER JOIN clubs c ON r.club_id = c.id");
 if ($stmt_fetch_recruitments) {
     $stmt_fetch_recruitments->execute();
     $recruitmentsResult = $stmt_fetch_recruitments->get_result();
@@ -46,9 +44,9 @@ if ($stmt_fetch_recruitments) {
     $_SESSION['message'] = "Error fetching recruitments.";
 }
 
-// Fetch registered events for the current student including event start time, latitude, longitude, and club name
+// Fetch registered events for the current student including the club name, registration date, and student details
 $stmt_fetch_registered_events = $conn->prepare("
-    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, e.event_start_time, e.latitude, e.longitude, s.student_name, s.college_email 
+    SELECT e.id AS event_id, e.title, e.description, c.club_name, r.registration_date, r.student_id, s.student_name, s.college_email 
     FROM events e
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
@@ -66,7 +64,6 @@ if ($stmt_fetch_registered_events) {
     $_SESSION['message'] = "Error fetching registered events.";
 }
 
-// Fetch the student's name
 if (isset($_SESSION['student_id'])) {
     $student_id = $_SESSION['student_id'];
 
@@ -88,8 +85,6 @@ if (isset($_SESSION['student_id'])) {
 // Close the database connection
 $conn->close();
 ?>
-
-
 
 
 
