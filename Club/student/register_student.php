@@ -76,7 +76,7 @@ echo '<html>
         .message {
             margin: 20px 0;
             font-size: 1.3em; /* Decreased size */
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: #4b9abb;
             padding: 15px;
             border-radius: 15px;
             display: inline-block;
@@ -249,6 +249,17 @@ if ($distance_to_event <= $geofence_radius) {
                 </div>
               </section>';
         echo "<script>startTimer(" . $event_start_timestamp . ", " . $event_end_timestamp . ");</script>";
+        if ($attendance_allowed) {
+            echo '<form method="post" action="confirm_attendance.php">
+                    <input type="hidden" name="student_id" value="' . htmlspecialchars($student_id) . '">
+                    <input type="hidden" name="event_id" value="' . htmlspecialchars($event_id) . '">
+                    <input type="hidden" name="latitude" value="' . htmlspecialchars($user_latitude) . '">
+                    <input type="hidden" name="longitude" value="' . htmlspecialchars($user_longitude) . '">
+                    <input type="hidden" name="student_name" value="' . htmlspecialchars($name) . '">
+                    <input type="hidden" name="student_email" value="' . htmlspecialchars($email) . '">
+                    <button type="submit" class="button">Confirm Attendance</button>
+                  </form>';
+        }
     } else {
         echo "<p>Attendance is no longer allowed as the event has concluded.</p>";
     }
