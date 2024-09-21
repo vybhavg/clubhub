@@ -44,7 +44,9 @@ body {
     align-items: center;
     justify-content: center;
 }
-    
+    h1{
+        font-size:28px;
+    }
     
 }
 .container p {
