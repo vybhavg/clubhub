@@ -69,8 +69,7 @@ echo '<html>
             text-align: center;
             padding: 20px;
         }
-        h1 {
-            font-size: 2.2em; /* Decreased size */
+        h2 {
             margin-bottom: 20px;
             color: black;
         }
