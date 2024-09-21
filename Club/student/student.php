@@ -53,7 +53,7 @@ if ($stmt_fetch_recruitments) {
 
 // Fetch registered events for the current student (those that have not ended)
 $stmt_fetch_registered_events = $conn->prepare("
-     SELECT e.id AS event_id, e.title, e.description, c.club_name, 
+    SELECT e.id AS event_id, e.title, e.description, c.club_name, 
            CONVERT_TZ(r.registration_date, '+00:00', 'Asia/Kolkata') AS registration_date_ist, 
            e.latitude, e.longitude, 
            e.event_start_time, 
@@ -67,6 +67,7 @@ $stmt_fetch_registered_events = $conn->prepare("
     AND CONVERT_TZ(NOW(), '+00:00', 'Asia/Kolkata') < DATE_ADD(e.event_start_time, INTERVAL e.event_duration MINUTE)
 ");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
+
 
 
 if ($stmt_fetch_registered_events) {
