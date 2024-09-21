@@ -46,6 +46,9 @@ function haversine_distance($lat1, $lon1, $lat2, $lon2) {
 // Calculate the distance between the event location and the user's location
 $distance_to_event = haversine_distance($user_latitude, $user_longitude, $event_latitude, $event_longitude);
 
+// Prepare the output
+ob_start(); // Start output buffering
+
 // Check if the user is within the geofence
 if ($distance_to_event <= $geofence_radius) {
     // Log the attendance
@@ -75,11 +78,48 @@ if ($distance_to_event <= $geofence_radius) {
     $insert_final_attendance_stmt->execute();
     $insert_final_attendance_stmt->close();
 
-    echo "<p>Attendance confirmed successfully.</p>";
+    $attendance_message = "Attendance confirmed successfully.";
 } else {
-    echo "<p>You are not within the geofence. Attendance could not be confirmed.</p>";
+    $attendance_message = "You are not within the geofence. Attendance could not be confirmed.";
 }
 
 // Close the database connection
 $conn->close();
+
+// Output the HTML
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Confirmation</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            text-align: center;
+        }
+        img {
+            width: 300px; /* Adjust as needed */
+            height: auto;
+        }
+        p {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <img src="https://media.tenor.com/9zG09ZV_-roAAAAi/motivation-go.gif" alt="Motivation GIF">
+    <h2>Attendace</h2>
+</body>
+</html>
+<?php
+ob_end_flush(); // Flush the output buffer
 ?>
