@@ -60,9 +60,11 @@ $stmt_fetch_registered_events = $conn->prepare("
     INNER JOIN clubs c ON e.club_id = c.id
     INNER JOIN event_registrations r ON e.id = r.event_id
     INNER JOIN student_login_details s ON r.student_id = s.id
-    WHERE r.student_id = ? AND NOW() < DATE_ADD(e.event_start_time, INTERVAL e.event_duration MINUTE)
+    WHERE r.student_id = ? 
+    AND CONVERT_TZ(NOW(), '+00:00', 'Asia/Kolkata') < DATE_ADD(e.event_start_time, INTERVAL e.event_duration MINUTE)
 ");
 $stmt_fetch_registered_events->bind_param("i", $student_id);
+
 
 if ($stmt_fetch_registered_events) {
     $stmt_fetch_registered_events->execute();
