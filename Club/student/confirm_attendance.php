@@ -120,7 +120,7 @@ $conn->close();
             width: 300px; /* Adjust as needed */
             height: auto;
         }
-        h2 {
+        h1 {
             margin-top: 20px;
             font-size: 100px;
             font-weight: bold;
