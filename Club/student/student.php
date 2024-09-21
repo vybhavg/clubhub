@@ -5,6 +5,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Set the timezone to IST
+date_default_timezone_set('Asia/Kolkata'); // Set the timezone to IST
+
 // Get the update type from the URL parameter, default to 'events'
 $updateType = isset($_GET['update_type']) ? $_GET['update_type'] : 'events';
 
@@ -69,7 +72,6 @@ if ($stmt_fetch_registered_events) {
     $_SESSION['message'] = "Error fetching registered events.";
 }
 
-
 // Fetch the student's name
 if (isset($_SESSION['student_id'])) {
     $student_id = $_SESSION['student_id'];
@@ -92,6 +94,7 @@ if (isset($_SESSION['student_id'])) {
 // Close the database connection
 $conn->close();
 ?>
+
 
 
 
@@ -223,7 +226,8 @@ $conn->close();
                        <p><?php echo htmlspecialchars($event['description'] ?? ''); ?></p>
                        <p>Club: <?php echo htmlspecialchars($event['club_name'] ?? ''); ?></p>
                        <p>Event Start Time: <?php echo htmlspecialchars($event['event_start_time'] ?? ''); ?></p>
-                       <p>Registered on: <?php echo htmlspecialchars($event['registration_date'] ?? ''); ?></p>
+                       <p>Registered on: <?php echo htmlspecialchars(date('Y-m-d H:i:s', strtotime($event['registration_date'] ?? ''))); ?></p>
+
 
                        <!-- Check if latitude and longitude are provided for the map link -->
                        <?php if (!empty($event['latitude']) && !empty($event['longitude'])): ?>
