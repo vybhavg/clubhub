@@ -29,6 +29,14 @@ $stmt->close();
 $event_latitude = (float) $event_latitude;
 $event_longitude = (float) $event_longitude;
 
+// Fetch the roll number from student_login_details
+$stmt = $conn->prepare("SELECT roll_number FROM student_login_details WHERE id = ? OR email = ?");
+$stmt->bind_param("is", $student_id, $email);
+$stmt->execute();
+$stmt->bind_result($roll_number);
+$stmt->fetch();
+$stmt->close();
+
 // Geofence parameters
 $geofence_radius = 1.0; // 1 km radius (adjusted to km)
 
@@ -57,8 +65,8 @@ if ($distance_to_event <= $geofence_radius) {
 
     // Insert into final_attendance
     $insert_final_attendance_stmt = $conn->prepare(
-        "INSERT INTO final_attendance (student_name, student_email, event_id, entry_time, exit_time, time_spent) 
-         VALUES (?, ?, ?, ?, ?, ?)"
+        "INSERT INTO final_attendance (student_name, student_email, roll_number, event_id, entry_time, exit_time, time_spent) 
+         VALUES (?, ?, ?, ?, ?, ?, ?)"
     );
 
     // Bind parameters. Note that timestamps are integers.
@@ -67,9 +75,10 @@ if ($distance_to_event <= $geofence_radius) {
     $time_spent = 0;
 
     $insert_final_attendance_stmt->bind_param(
-        "ssiiii", 
+        "sssiisi", 
         $name, 
         $email, 
+        $roll_number, // Insert roll number
         $event_id, 
         $entry_time, 
         $exit_time, 
@@ -117,7 +126,8 @@ $conn->close();
 </head>
 <body>
     <img src="https://media.tenor.com/9zG09ZV_-roAAAAi/motivation-go.gif" alt="Motivation GIF">
-    <h2>Attendace</h2>
+    <h2>Attendance</h2>
+    <p><?php echo $attendance_message; ?></p>
 </body>
 </html>
 <?php
