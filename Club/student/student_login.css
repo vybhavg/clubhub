@@ -32,12 +32,12 @@ body {
 }
 @media (max-width: 768px) {
     .container {
-        width: 90%; /* Adjust the width to occupy 90% of the screen on smaller devices */
+        width: 50%; /* Adjust the width to occupy 90% of the screen on smaller devices */
         border-radius: 15px; /* Reduce border-radius on mobile */
     }
 
     body {
-        padding: 10px; /* Add padding so the container has some space on the edges */
+        padding: 30px; /* Add padding so the container has some space on the edges */
     }
 }
 .container p {
